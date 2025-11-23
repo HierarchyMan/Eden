@@ -1,0 +1,897 @@
+kit-editor-menu:
+  title: "&8Kit Editor"
+  size: 54
+  border:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  items:
+    # Armor Slots (Helmet, Chestplate, Leggings, Boots)
+    armor:
+      helmet: 9
+      chestplate: 18
+      leggings: 27
+      boots: 36
+      # Empty Armor Slot Placeholder
+      # Set material to "" to disable placeholder (will show nothing when armor is AIR)
+      # Otherwise, this item will be shown when the armor piece is AIR
+      empty-placeholder:
+        material: "STAINED_GLASS_PANE"
+        data: 7
+        name: "&7Empty Armor Slot"
+        lore:
+          - " "
+    kit-slots:
+      - 11
+      - 12
+      - 14
+      - 15
+    # Book Button Configuration
+    # These are the main kit slot buttons that appear in the kit-slots positions
+    # Placeholders: %slot% = slot number (1-8), %name% = custom kit name
+    book-button:
+      # Empty Slot (when no kit is saved in this slot)
+      empty:
+        material: BOOK
+        data: 0
+        name: "&cEmpty Slot %slot%"
+        lore:
+          - "&7Click to create a new kit."
+      # Saved Kit (when a kit exists in this slot)
+      saved:
+        material: BOOK_AND_QUILL
+        data: 0
+        name: "&a%name%"
+        lore:
+          - "&7Click to load this kit into your inventory."
+    # Dynamic Kit Action Buttons
+    # These buttons appear below saved kits and can be enabled/disabled individually
+    # The 'slot-offset' is added to the kit slot position to determine button placement
+    dynamic-buttons:
+      # Save Button (formerly Load Button) - Saves current inventory to the kit
+      save:
+        enabled: true
+        slot-offset: 9  # 9 slots below the kit slot (1 row down)
+        material: NAME_TAG
+        data: 0
+        name: "&aSave"
+        lore:
+          - "&7Click to save your current"
+          - "&7inventory to this kit."
+      # Rename Button - Opens chat prompt to rename the kit
+      rename:
+        enabled: false
+        slot-offset: 18  # 18 slots below the kit slot (2 rows down)
+        material: NAME_TAG
+        data: 0
+        name: "&eRename"
+        lore:
+          - "&7Click to rename this kit."
+      # Reset Button - Resets kit to default layout
+      reset:
+        enabled: true
+        slot-offset: 18  # 27 slots below the kit slot (3 rows down)
+        material: STAINED_GLASS
+        data: 4  # Dandelion yellow dye
+        name: "&eReset to Default"
+        lore:
+          - "&7Click to reset this kit"
+          - "&7to default layout."
+      # Delete Button - Deletes the saved kit
+      delete:
+        enabled: true
+        slot-offset: 27  # 36 slots below the kit slot (4 rows down)
+        material: BARRIER
+        data: 0  # Red
+        name: "&cDelete"
+        lore:
+          - "&7Click to delete this kit."
+    # Extra Items Button
+    extra-items:
+      slot: 4
+      material: CHEST
+      name: "&eExtra Items"
+      lore:
+        - "&7Click to view and edit"
+        - "&7extra items for this kit."
+    # Pagination
+    previous-page:
+      slot: 45
+      material: ARROW
+      name: "&cPrevious Page"
+    next-page:
+      slot: 53
+      material: ARROW
+      name: "&aNext Page"
+    # Back to Kit Selector
+    back-button:
+      slot: 0
+      material: BED
+      name: "&cBack to Kit Selector"
+      lore:
+        - "&7Click to return to"
+        - "&7the kit selector menu."
+
+# Queue Menus (Ranked and Unranked)
+queue-menu:
+  # Title with placeholder: {queue-type} = "Unranked" or "Ranked"
+  title: "&bQueue &7» &f{queue-type}"
+  # Size: use "dynamic" for auto-calculate or fixed size (9, 18, 27, 36, 45, 54)
+  size: "dynamic"
+  # Maximum size when using dynamic (won't grow beyond this)
+  max-size: 54
+  border:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  items:
+    # Kit button configuration (dynamically created for each kit)
+    kit-button:
+      # Uses kit's display icon as material
+      # Name uses kit's display name
+      # Lore template with placeholders:
+      # {queue-count} - players in queue
+      # {fighting-count} - players in fights
+      # {kit-name} - kit display name
+      lore:
+        - ""
+        - "{description}"
+        - "&fIn Queue: &b{queue-count}"
+        - "&fFighting: &b{fighting-count}"
+        - ""
+        - "&bTop 3 Daily Winstreak"
+        - "&a{top3_name_1}: &7{top3_number_1}"
+        - "&a{top3_name_2}: &7{top3_number_2}"
+        - "&a{top3_name_3}: &7{top3_number_3}"
+        - ""
+        - "&e&nClick to join {kit-name} queue!"
+    # Pagination buttons
+    previous-page:
+      enabled: true
+      slot: 45
+      material: ARROW
+      name: "&cPrevious Page"
+      lore:
+        - ""
+        - "&7Click to go back"
+    next-page:
+      enabled: true
+      slot: 53
+      material: ARROW
+      name: "&aNext Page"
+      lore:
+        - ""
+        - "&7Click for more kits"
+
+# Kit Editor Select Kit Menu
+kit-editor-select-kit-menu:
+  title: "&bSelect a Kit"
+  size: "dynamic"
+  max-size: 54
+  border:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  items:
+    # Kit button configuration (dynamically created for each editable kit)
+    kit-button:
+      # Uses kit's display icon as material
+      # Name uses kit's display name  
+      # Placeholder: {kit-name} - kit display name
+      name: "&b{kit-name}"
+      lore:
+        - ""
+        - "&e&nClick to edit kit layout!"
+
+# Event Create Menu
+event-create-menu:
+  title: "&bCreate an Event"
+  size: 27
+  border:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  items:
+    # Event type buttons (one for each EventType)
+    # Placeholders: {event-name} - event type name
+    event-button:
+      # Slot is dynamically assigned based on order
+      # Material comes from EventType.getLogo()
+      name: "&b{event-name}"
+      lore-has-permission:
+        - ""
+        - "&e&n Click me to setup the Event!"
+      lore-no-permission:
+        - ""
+        - "&cYou don't have permission to host this event!"
+
+# Event Settings Menu
+event-settings-menu:
+  title: "&bEvent Settings"
+  size: 27
+  border:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  items:
+    max-players-button:
+      slot: 10
+      material: GHAST_TEAR
+      name: "&bMaximum Players"
+      lore:
+        - ""
+        - "&fCurrent Maximum Players: &b{max-players}"
+        - ""
+        - "&aLEFT CLICK &fto increase Maximum Players by 1"
+        - "&aSHIFT + LEFT CLICK &fto increase Maximum Players by 10"
+        - ""
+        - "&cRIGHT CLICK &fto decrease Maximum Players by 1"
+        - "&cSHIFT + RIGHT CLICK &fto decrease Maximum Players by 10"
+        - ""
+        - "&e&nClick to change Maximum Players!"
+    party-size-button:
+      slot: 12
+      material: SKULL_ITEM
+      data: 3
+      name: "&bTeam Size"
+      lore:
+        - ""
+        - "&fCurrent Team Size: &b{team-size}"
+        - ""
+        - "&aLEFT CLICK &fto increase Team Size by 1"
+        - "&cRIGHT CLICK &fto decrease Team Size by 1"
+        - ""
+        - "&e&nClick to change Team Size!"
+    kit-button:
+      slot: 14
+      material: BOOK
+      name: "&bKit"
+      lore:
+        - ""
+        - "&fCurrent Selected Kit: &b{kit-name}"
+        - ""
+        - "&e&nClick to change a Kit!"
+    start-button:
+      slot: 22
+      material: STAINED_GLASS_PANE
+      data: 5
+      name: "&bStart Event"
+      lore:
+        - ""
+        - "&fEvent: &b{event-name}"
+        - "&fMinimum Players: &b{min-players}"
+        - "&fMaximum Players: &b{max-players}"
+        - ""
+        - "&e&nClick to start Event!"
+
+# Profile Settings Menu
+profile-settings-menu:
+  title: "&bSettings"
+  size: 54
+  border:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  items:
+    time-changer:
+      slot: 10
+      normal:
+        material: WATCH
+        data: 0
+        glow: true
+        name: "&bTime Changer"
+        lore:
+          - "&7Change your time."
+          - ""
+          - "&7Current: &fServer Time"
+          - ""
+          - "&eClick to switch to Day!"
+      day:
+        material: WATCH
+        data: 0
+        glow: true
+        name: "&bTime Changer"
+        lore:
+          - "&7Change your time."
+          - ""
+          - "&7Current: &fDay"
+          - ""
+          - "&eClick to switch to Afternoon!"
+      afternoon:
+        material: WATCH
+        data: 0
+        glow: true
+        name: "&bTime Changer"
+        lore:
+          - "&7Change your time."
+          - ""
+          - "&7Current: &fAfternoon"
+          - ""
+          - "&eClick to switch to Night!"
+      night:
+        material: WATCH
+        data: 0
+        glow: true
+        name: "&bTime Changer"
+        lore:
+          - "&7Change your time."
+          - ""
+          - "&7Current: &fNight"
+          - ""
+          - "&eClick to switch to Midnight!"
+      midnight:
+        material: WATCH
+        data: 0
+        glow: true
+        name: "&bTime Changer"
+        lore:
+          - "&7Change your time."
+          - ""
+          - "&7Current: &fMidnight"
+          - ""
+          - "&eClick to switch to Server Time!"
+    arena-selection:
+      slot: 11
+      enabled:
+        material: GRASS
+        data: 0
+        glow: true
+        name: "&bArena Selection"
+        lore:
+          - "&7Toggle arena selection."
+          - ""
+          - "&7Status: &aEnabled"
+          - ""
+          - "&eClick to toggle!"
+      disabled:
+        material: GRASS
+        data: 0
+        glow: false
+        name: "&bArena Selection"
+        lore:
+          - "&7Toggle arena selection."
+          - ""
+          - "&7Status: &cDisabled"
+          - ""
+          - "&eClick to toggle!"
+    match-scoreboard:
+      slot: 12
+      enabled:
+        material: ITEM_FRAME
+        data: 0
+        glow: true
+        name: "&bMatch Scoreboard"
+        lore:
+          - "&7Toggle match scoreboard."
+          - ""
+          - "&7Status: &aEnabled"
+          - ""
+          - "&eClick to toggle!"
+      disabled:
+        material: ITEM_FRAME
+        data: 0
+        glow: false
+        name: "&bMatch Scoreboard"
+        lore:
+          - "&7Toggle match scoreboard."
+          - ""
+          - "&7Status: &cDisabled"
+          - ""
+          - "&eClick to toggle!"
+    allow-duel-request:
+      slot: 13
+      enabled:
+        material: DIAMOND_SWORD
+        data: 0
+        glow: true
+        name: "&bAllow Duel Requests"
+        lore:
+          - "&7Toggle duel requests."
+          - ""
+          - "&7Status: &aEnabled"
+          - ""
+          - "&eClick to toggle!"
+      disabled:
+        material: DIAMOND_SWORD
+        data: 0
+        glow: false
+        name: "&bAllow Duel Requests"
+        lore:
+          - "&7Toggle duel requests."
+          - ""
+          - "&7Status: &cDisabled"
+          - ""
+          - "&eClick to toggle!"
+    allow-party-invite:
+      slot: 14
+      enabled:
+        material: NETHER_STAR
+        data: 0
+        glow: true
+        name: "&bAllow Party Invites"
+        lore:
+          - "&7Toggle party invites."
+          - ""
+          - "&7Status: &aEnabled"
+          - ""
+          - "&eClick to toggle!"
+      disabled:
+        material: NETHER_STAR
+        data: 0
+        glow: false
+        name: "&bAllow Party Invites"
+        lore:
+          - "&7Toggle party invites."
+          - ""
+          - "&7Status: &cDisabled"
+          - ""
+          - "&eClick to toggle!"
+    spectator-visibility:
+      slot: 15
+      enabled:
+        material: SKULL_ITEM
+        data: 3
+        glow: true
+        name: "&bSpectator Visibility"
+        lore:
+          - "&7Toggle spectator visibility."
+          - ""
+          - "&7Status: &aEnabled"
+          - ""
+          - "&eClick to toggle!"
+      disabled:
+        material: SKULL_ITEM
+        data: 3
+        glow: false
+        name: "&bSpectator Visibility"
+        lore:
+          - "&7Toggle spectator visibility."
+          - ""
+          - "&7Status: &cDisabled"
+          - ""
+          - "&eClick to toggle!"
+    spectator-join-leave-message:
+      slot: 16
+      enabled:
+        material: FEATHER
+        data: 0
+        glow: true
+        name: "&bSpectator Messages"
+        lore:
+          - "&7Toggle spectator join/leave messages."
+          - ""
+          - "&7Status: &aEnabled"
+          - ""
+          - "&eClick to toggle!"
+      disabled:
+        material: FEATHER
+        data: 0
+        glow: false
+        name: "&bSpectator Messages"
+        lore:
+          - "&7Toggle spectator join/leave messages."
+          - ""
+          - "&7Status: &cDisabled"
+          - ""
+          - "&eClick to toggle!"
+    event-announcement:
+      slot: 22
+      enabled:
+        material: EMERALD
+        data: 0
+        glow: true
+        name: "&bEvent Announcements"
+        lore:
+          - "&7Toggle event announcements."
+          - ""
+          - "&7Status: &aEnabled"
+          - ""
+          - "&eClick to toggle!"
+      disabled:
+        material: EMERALD
+        data: 0
+        glow: false
+        name: "&bEvent Announcements"
+        lore:
+          - "&7Toggle event announcements."
+          - ""
+          - "&7Status: &cDisabled"
+          - ""
+          - "&eClick to toggle!"
+    ping-range:
+      slot: 24
+      material: STICK
+      data: 0
+      glow: true
+      name: "&bPing Range"
+      lore:
+        - "&7Change ping range."
+        - ""
+        - "&7Current: &f{current}"
+        - ""
+        - "&eClick to switch to {next}!"
+
+# Party - Other Parties Menu (Paginated)
+party-other-parties-menu:
+  title: "&bOther Parties"
+  size: "dynamic"
+  max-size: 54
+  border:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  items:
+    # Party item configuration (dynamically created for each party)
+    party-button:
+      material: SKULL_ITEM
+      data: 3
+      # Placeholders:
+      # {leader} - party leader name
+      # {members} - current party size
+      # {max-size} - max party size  
+      # {member-list} - formatted list of members
+      name: "&b{leader}'s Party"
+      lore:
+        - ""
+        - "&fMembers: &b{members}&7/&b{max-size}"
+        - ""
+        - "{member-list}"
+        - ""
+        - "&e&nClick to join party!"
+      member-format: " &7- &f{member}"
+    # Pagination buttons
+    previous-page:
+      enabled: true
+      slot: 45
+      material: ARROW
+      name: "&cPrevious Page"
+      lore:
+        - ""
+        - "&7Click to go back"
+    next-page:
+      enabled: true
+      slot: 53
+      material: ARROW
+      name: "&aNext Page"
+      lore:
+        - ""
+        - "&7Click for more parties"
+
+# Party Events Menu (Choose Match Type - FFA or Fight)
+party-events-menu:
+  title: "&bParty Events"
+  size: 27
+  border:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  items:
+    # Party Fight (Split) Button
+    split-button:
+      slot: 12
+      material: DIAMOND_SWORD
+      data: 0
+      name: "&bParty Fight"
+      lore:
+        - ""
+        - "&7Split your party into two teams"
+        - "&7and fight against each other!"
+        - ""
+        - "&e&nClick to select kit!"
+    # FFA Button
+    ffa-button:
+      slot: 14
+      material: GOLD_AXE
+      data: 0
+      name: "&bFree For All"
+      lore:
+        - ""
+        - "&7Everyone fights against"
+        - "&7everyone in your party!"
+        - ""
+        - "&e&nClick to select kit!"
+
+# Leaderboard Menu
+leaderboard-menu:
+  title: "&bLeaderboard"
+  size: 54
+  border:
+    enabled: false
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  items:
+    # Allowed slots for leaderboard entries (where player heads appear)
+    allowed-slots:
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 19
+      - 20
+      - 21
+      - 22
+      - 23
+      - 24
+      - 25
+      - 28
+      - 29
+      - 30
+      - 31
+      - 32
+      - 33
+      - 34
+    # Switch leaderboard buttons (bottom row)
+    switch-buttons:
+      wins:
+        slot: 46
+        material: CARPET
+        data: 1
+        name: "&bTotal Wins Leaderboard"
+        lore:
+          - ""
+          - "&e&nClick to view!"
+      elo:
+        slot: 47
+        material: CARPET
+        data: 2
+        name: "&bELO Leaderboard"
+        lore:
+          - ""
+          - "&e&nClick to view!"
+      view-stats:
+        slot: 49
+        material: DIAMOND
+        data: 0
+        name: "&bView Stats"
+        lore:
+          - ""
+          - "&e&nClick to view!"
+      winstreak:
+        slot: 51
+        material: CARPET
+        data: 3
+        name: "&bWinstreak Leaderboard"
+        lore:
+          - ""
+          - "&e&nClick to view!"
+      best-winstreak:
+        slot: 52
+        material: CARPET
+        data: 4
+        name: "&bBest Winstreak Leaderboard"
+        lore:
+          - ""
+          - "&e&nClick to view!"
+
+# Duel - Choose Kit Menu
+duel-choose-kit-menu:
+  title: "&bSelect a Kit"
+  size: "dynamic"
+  max-size: 54
+  border:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  items:
+    # Kit button configuration
+    kit-button:
+      # Uses kit's display icon as material
+      # Name uses kit's display name
+      # Placeholders: {kit-name}
+      lore:
+        - ""
+        - "&e&nClick to select this kit!"
+    # Pagination buttons
+    previous-page:
+      enabled: true
+      slot: 45
+      material: ARROW
+      name: "&cPrevious Page"
+      lore:
+        - ""
+        - "&7Click to go back"
+    next-page:
+      enabled: true
+      slot: 53
+      material: ARROW
+      name: "&aNext Page"
+      lore:
+        - ""
+        - "&7Click for more kits"
+
+# Duel - Choose Arena Menu
+duel-choose-arena-menu:
+  title: "&bSelect an Arena"
+  size: "dynamic"
+  max-size: 54
+  border:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  items:
+    # Arena button configuration
+    arena-button:
+      # Uses arena's icon as material
+      # Placeholders: {arena-name}
+      name: "&b{arena-name}"
+      lore:
+        - ""
+        - "&e&nClick to select this arena!"
+    # Random Arena Button
+    random-arena-button:
+      slot: 4
+      material: MAP
+      name: "&bRandom Arena"
+      lore:
+        - ""
+        - "&e&nClick to select a random arena!"
+    # Go Back Button
+    go-back:
+      enabled: true
+      slot: 0
+      material: BED
+      name: "&cGo Back"
+      lore:
+        - ""
+        - "&7Return to kit selection"
+    # Pagination buttons
+    previous-page:
+      enabled: true
+      slot: 45
+      material: ARROW
+      name: "&cPrevious Page"
+      lore:
+        - ""
+        - "&7Click to go back"
+    next-page:
+      enabled: true
+      slot: 53
+      material: ARROW
+      name: "&aNext Page"
+      lore:
+        - ""
+        - "&7Click for more arenas"
+
+# Party - Choose Kit Menu
+party-choose-kit-menu:
+  title: "&bSelect a Kit"
+  size: "dynamic"
+  max-size: 54
+  border:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  items:
+    # Kit button configuration
+    kit-button:
+      # Uses kit's display icon as material
+      # Name uses kit's display name
+      # Placeholders: {kit-name}
+      lore:
+        - ""
+        - "&e&nClick to select this kit!"
+    # Pagination buttons
+    previous-page:
+      enabled: true
+      slot: 45
+      material: ARROW
+      name: "&cPrevious Page"
+      lore:
+        - ""
+        - "&7Click to go back"
+    next-page:
+      enabled: true
+      slot: 53
+      material: ARROW
+      name: "&aNext Page"
+      lore:
+        - ""
+        - "&7Click for more kits"
+
+# Party - Choose Arena Menu
+party-choose-arena-menu:
+  title: "&bSelect an Arena"
+  size: "dynamic"
+  max-size: 54
+  border:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  items:
+    # Arena button configuration
+    arena-button:
+      # Uses arena's icon as material
+      # Placeholders: {arena-name}
+      name: "&b{arena-name}"
+      lore:
+        - ""
+        - "&e&nClick to select this arena!"
+    # Random Arena Button
+    random-arena-button:
+      slot: 4
+      material: MAP
+      name: "&bRandom Arena"
+      lore:
+        - ""
+        - "&e&nClick to select a random arena!"
+    # Go Back Button
+    go-back:
+      enabled: true
+      slot: 0
+      material: BED
+      name: "&cGo Back"
+      lore:
+        - ""
+        - "&7Return to kit selection"
+    # Pagination buttons
+    previous-page:
+      enabled: true
+      slot: 45
+      material: ARROW
+      name: "&cPrevious Page"
+      lore:
+        - ""
+        - "&7Click to go back"
+    next-page:
+      enabled: true
+      slot: 53
+      material: ARROW
+      name: "&aNext Page"
+      lore:
+        - ""
+        - "&7Click for more arenas"

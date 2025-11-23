@@ -1,0 +1,274 @@
+## Developer option, set to false if GoodestEnglish didn't tell you to set to true
+debug: false
+## Should arena and kit auto save after you make a changes?
+## If auto save is disabled, you have to use command '/kit save <Kit Name>' or '/arena save <Arena Name>' to save them manually
+## NOTE: Auto save will save each process after you made a changes into arena and kit, and changes are final (which means it cannot be reverted) if you set this to true
+arena-kit-auto-save: false
+## Should Eden disable auto saving world?
+## Note that you have to manually do `/save-all` if you want to save the world if this option is set to true
+## Disable auto saving world will not save the world after you do `/stop`
+disable-save-world: true
+## What command should only be able to use in lobby?
+## Command like /nick, /skin should ONLY be usable while in lobby
+lobby-only-commands: []
+## MongoDB login information
+mongo:
+  ## This option should be ALWAYS true. Unless you want to test specific stuff without modifying the database
+  ## If it is disabled, player stats will not be loaded and saved
+  enabled: true
+  uri-mode: false
+  normal:
+    host: 127.0.0.1
+    port: 27017
+    auth:
+      enabled: false
+      username: ''
+      password: ''
+  uri:
+    database: Practice
+    connection-string: mongodb://127.0.0.1:27017/Eden
+## Storage Type
+## Options: MONGODB, FLATFILE
+storage-type: FLATFILE
+## Built-in tablist editor
+## Note that some user might experience tablist column incorrectly format. If that happens, please do not use this tablist function
+fancy-tablist:
+  ## Toggle if the fancy tablist should be enabled or not
+  enabled: true
+  ## How should each tab element shown
+  ## This supports PlaceholderAPI, so if you wish to show player prefix, you can do it!
+  format: "&a{player-name}"
+  ## The ticks of how often the tablist will be updated
+  ## Default is 20, which is 1 second. 1 tick is equal to 0.05 second
+  update-ticks: 20
+nametag:
+  ## Toggle if the plugin should modify the nametag color or not
+  enabled: true
+  ## Nametag prefix
+  prefix:
+    ## What prefix should the nametag display when the player is in lobby?
+    lobby: "&9"
+    ## What prefix should the nametag display when the player is a spectator?
+    spectator: "&7"
+    ## What prefix should the nametag display when the player is a teammate?
+    teammate: "&a"
+    ## What prefix should the nametag display when the player is an opponent?
+    opponent: "&c"
+    ## If it doesn't match any of the above, what prefix should the nametag display?
+    ## One of the scenario is a spectator tries to view match players. Those match players nametag will display as the follow prefix
+    other: "&e"
+party:
+  ## When player creates a party, what is the default size?
+  default-max-size: 30
+  ## How many seconds should the party leader wait after use the announce command?
+  announce-cooldown: 10
+lobby:
+  ## Should player allow to see other players?
+  display-players: false
+queue:
+  ## How many wins should a player have to have access to queue ranked matches?
+  ranked-required-wins: 10
+match:
+  ## Should player allow to pre-fire their arrow before the match countdown?
+  allow-prefire: true
+  ## This option will give a 'Play Again' item to match players when a match is ended, like Minemen Club
+  allow-requeue: true
+  ## When player is outside the cuboid (which uses arena min/max), should player receive a instant death damage?
+  outside-cuboid-instant-death: true
+  ## Should Eden remove cactus and sugar cane's physics?
+  ## If true, when player places a block near cactus and sugar cane, cactus won't be destroyed
+  remove-cactus-sugar-cane-physics: true
+  death-lightning: true
+  death-animation: true
+  ## When a player dies, should Eden teleport the player 2 blocks up?
+  tp-2-blocks-up-when-die: true
+  ## When player dies and if the kit allows respawn, should Eden teleport the player to their spawn?
+  respawn-teleport-to-spawn-when-die: true
+  ## Command when the player wins. Only trigger when the player is playing unranked/ranked matches and not a custom duel match.
+  ## You can use {player} as the placeholder for the winner's name, and {loser-player} as the placeholder for the loser's name.
+  ## Example:
+  ## win-commands:
+  ## - "say {player} hello you win!"
+  ## - "pay {player} 100"
+  ## lose-commands:
+  ## - "say {player} hello you lost!"
+  ## - "pay {player} 1"
+  win-commands: []
+  lose-commands: []
+  ## The saturation for all players when match starts
+  start-saturation: 15
+  ## So each arena is a 'rectangle', which works similar to WorldEdit (Refer to https://github.com/diamond-rip/Eden/wiki/Arenas-Setup#edit-arenas-location)
+  ## This option will expend the 'rectangle' for spectator so spectator can spectate in a better view
+  ## This option will expend in horizontal, meaning it will expend in East/West/North/South side
+  spectate-expend-cuboid: 50
+  ## Golden apple settings for instant gapple in kit game rules
+  golden-apple:
+    ## When player consume a golden apple, should the system gives normal effects to the player (which contains instantly regenerate to full health, saturation and absorption hearts), or just regenerate to full health?
+    ## If false, then system will only set the player health to full, no effects are given
+    instant-gapple-effects: true
+    ## Should Eden gives absorption hearts everytime when a player consume a golden apple?
+    ## Disable this if you want Hypixel styled golden apple in bridge
+    give-absorption-hearts-everytime: false
+  ## Snow related options - Only works in spleef kit game rules
+  snow:
+    ## Chance of getting snowball when break a snow block (In 0 - 100)
+    snowball-drop-chance: 50
+    ## When you break the snow block, how many snowball should system give you?
+    snowball-drop-amount: 4
+  ## Titles - Which type of title should be shown?
+  title:
+    ## Shows title when someone scores a point?
+    score: true
+    ## Shows title when the match has a result?
+    end: true
+  ## The ticks which represents between from match ends to send the player to lobby and reset the arena
+  ## 20 ticks is 1 second, so if 100 ticks then it will be 5 seconds
+  ## Default is 100, and is recommended. Change this value with caution
+  end-duration: 100
+  ## What block should player allow to break when kit game rule has build enabled?
+  ## Do not let player break blocks which contain tile entities (For example: chest, sign)
+  allow-breaking-blocks:
+    - DEAD_BUSH
+    - GRASS
+    - LONG_GRASS
+    - CACTUS
+  ## Fireball - Settings related to fireball
+  fireball:
+    ## Should Eden handle how fireball works? (Including modify the value of fireball, explosion, speed, etc.)
+    enabled: true
+    ## Should Eden modify the fireball damage?
+    ## The damage will be original damage divide by 'divide-damage'
+    ## For example, if original damage is 10, 'divide-damage' is 5, then player will take 2 damage (10 / 5 = 2)
+    divide-damage: 5.0
+    ## How fast should the fireball speed goes?
+    ## This value is a double, meaning it can include decimal points
+    speed: 2.0
+    ## The power of the fireball's explosion
+    ## This value is a float, meaning it can include decimal points
+    yield: 2.0
+    ## The block which allow to break by the explosion
+    ## Blocks which is placed by match players will ALWAYS allow breaking
+    allowed-breaking-blocks:
+      - WOOD
+      - ENDER_STONE
+    ## The knockback when player takes damage by fireball
+    knockback:
+      ## Should Eden use our own knockback mechanism?
+      enabled: true
+      ## The knockback vertical multiplier
+      vertical: 1.1
+      ## The knockback horizontal multiplier
+      horizontal: 1.2
+  ## TNT - Settings related to TNT
+  tnt:
+    ## Should Eden handle how TNT works?
+    enabled: true
+    ## Should Eden modify the TNT damage?
+    ## The damage will be original damage divide by 'divide-damage'
+    ## For example, if original damage is 10, 'divide-damage' is 5, then player will take 2 damage (10 / 5 = 2)
+    divide-damage: 5.0
+    ## The power of the TNT explosion
+    ## This value is a float, meaning it can include decimal points
+    ## Default value of Minecraft's TNT yield is 4.0
+    yield: 4.0
+    ## The ticks of the tnt explosion
+    ## Remember: 20 ticks is equals to 1 second. Meaning 50 ticks is 2.5 seconds
+    fuse-ticks: 50
+    ## The block which allow to break by the explosion
+    ## Blocks which is placed by match players will ALWAYS allow breaking
+    allowed-breaking-blocks:
+      - WOOD
+      - ENDER_STONE
+    ## The knockback when player takes damage by TNT
+    knockback:
+      ## Should Eden use our own knockback mechanism?
+      enabled: true
+      ## The knockback vertical multiplier
+      vertical: 1.1
+      ## The knockback horizontal multiplier
+      horizontal: 1.2
+  ##Option to set golden head related stuff
+  golden-head:
+    ## A potion effect is separated to 3 parts - Effect Type, Duration and Amplifier. Each part is separated by using ';'
+    ## Effect Type means the actual effect name. You can find effect name here: https://helpch.at/docs/1.10/index.html?org/bukkit/potion/PotionEffectType.html
+    ## Duration is the duration of the effect. Note that 20 ticks is equal to 1 second. Meaning 200 ticks will be 10 seconds.
+    ## Amplifier is the level if the effect. Level 1 potion effect will be 0; Level 3 potion effect will be 2, etc
+    effects:
+      - "REGENERATION;200;2"
+      - "ABSORPTION;2400;0"
+      - "SPEED;200;0"
+    ## How much food level should system gives to player when they eat a golden head?
+    food-level: 6
+## Overall event config
+event:
+  ## Sumo Event configuration
+  sumo-event:
+    ## Which arena should allow for Sumo Event to use?
+    ## Arena which listed in here cannot be used in normal fight
+    arenas:
+      - "sumoevent"
+    ## Which kit you want to be used in this event?
+    ## You should not change this unless your sumo kit has a different kit ID
+    kit: "sumo"
+## Simple chat format
+chat-format:
+  ## Set this to true if you want to enable chat format
+  enabled: true
+  ## What is the format should be? (This supports PlaceholderAPI)
+  ## Use %1$s for player's name and %2$s for player's message
+  format: "&a%1$s&f: %2$s"
+## Player profile options
+profile:
+  ## The default elo for the player
+  default-elo: 1000
+  ## Should Eden save all online player data while server is stopping
+  ## Disable this if you used Eden's API to modify eden's player data document
+  save-on-server-stop: true
+  ## The default settings for a player
+  ## Player can customize their settings via '/settings' menu, however, permissions are required to change the settings.
+  ## Check https://github.com/diamond-rip/Eden/wiki/Permissions#Settings for more information about permissions
+  default-settings:
+    ## Available options: normal, day, afternoon, night, midnight
+    ## 'normal' means the player will have server-sided time displayed
+    time-changer: "normal"
+    ## Available options: true, false
+    arena-selection: false
+    ## Available options: true, false
+    match-scoreboard: true
+    ## Available options: true, false
+    allow-duel-request: true
+    ## Available options: true, false
+    allow-party-invite: true
+    ## Available options: true, false
+    spectator-visibility: true
+    ## Available options: true, false
+    spectator-join-leave-message: true
+    ## Available options: true, false
+    event-announcement: true
+    ## Available options: infinite, 300, 200, 150, 100, 50
+    ping-range: "infinite"
+## Option about crafting (Using crafting table/player's crafting inventory)
+crafting:
+  ## Should Eden allow crafting?
+  enabled: false
+  ## If Eden disallow crafting, what item should player allow to craft?
+  whitelisted-items:
+    - MUSHROOM_SOUP
+## These options will only works if you are using ImanitySpigot
+## If you are not using, then turn every imanity related settings off
+imanity:
+  teleport-async: true
+## Optimization related settings
+## These settings will sightly improve performance, but unexpected behavior might occur.
+optimization:
+  ## If true, Eden will use NMS instead of bukkit API to set specific block
+  set-block-fast: true
+## Experiment settings
+## Avoid to change any of these settings if the developer didn't tell you to change
+experiment:
+  disable-original-arena: false
+  new-arena-chunk-cache: false
+  k-factor: 32
+## Kit Editor Mode
+## Options: GUI, LEGACY
+kit-editor-mode: GUI

@@ -1,0 +1,19 @@
+# Project exclude paths
+# Gradle (legacy)
+/.gradle/
+/build/
+/build/classes/java/main/
+
+# Maven
+/target/
+dependency-reduced-pom.xml
+
+# IDE
+/.idea/
+*.iml
+*.iws
+*.ipr
+
+# OS
+.DS_Store
+Thumbs.db

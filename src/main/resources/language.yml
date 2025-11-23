@@ -1,0 +1,1512 @@
+scoreboard:
+  title: "&bPractice"
+  boxing-counter:
+    no-combo: "&fNo Combo"
+    text-solo: "{0}{1} Combo"
+    text-team: "{0}{1} Combo"
+  loading:
+    - "&7&m----------------------"
+    - "&cYour data is loading..."
+    - "&cPlease wait, if player data fail to load"
+    - "&c please contact a moderator and rejoin"
+    - "&7&m----------------------"
+  in-lobby:
+    - "&7&m----------------------"
+    - "&b&l┃ &fOnline: &b{online-players}"
+    - "&b&l┃ &fIn Queue: &b{queue-players}"
+    - "&b&l┃ &fIn Fights: &b{match-players}"
+    - "{event-information}"
+    - "&7&m----------------------"
+  in-party:
+    - "&7&m----------------------"
+    - "&b&l┃ &fOnline: &b{online-players}"
+    - "&b&l┃ &fIn Queue: &b{queue-players}"
+    - "&b&l┃ &fIn Fights: &b{match-players}"
+    - ""
+    - "&b&l┃ &fTeam:"
+    - "&b&l┃ &f Leader: &b{party-leader}"
+    - "&b&l┃ &f Member(s): &b{party-members}&7/&b{party-max}"
+    - "{event-information}"
+    - "&7&m----------------------"
+  in-edit:
+    - "&7&m----------------------"
+    - "&b&l┃ &fRight click the &banvil &fto save,"
+    - "&b&l┃ &f load or delete your layout."
+    - ""
+    - "&b&l┃ &fSome class allows allows extra "
+    - "&b&l┃ &f item, right click the &bchest"
+    - "&b&l┃ &f to obtain extra items"
+    - ""
+    - "&b&l┃ &fAfter editing your layout,"
+    - "&b&l┃ &f right click the &bsign &fto"
+    - "&b&l┃ &f return to lobby"
+    - "&7&m----------------------"
+  in-edit-gui:
+    - "&7&m----------------------"
+    - "&b&l┃ &fUse the &bmenu &fto save,"
+    - "&b&l┃ &f load, rename or delete"
+    - "&b&l┃ &f your kit layouts."
+    - ""
+    - "&b&l┃ &fClick &bExtra Items &fif"
+    - "&b&l┃ &f available for this kit"
+    - ""
+    - "&b&l┃ &fPress &bESC &for click &bBack"
+    - "&b&l┃ &f to return to kit selector"
+    - "&7&m----------------------"
+  in-queue-unranked:
+    - "&7&m----------------------"
+    - "&b&l┃ &fOnline: &b{online-players}"
+    - "&b&l┃ &fIn Queue: &b{queue-players}"
+    - "&b&l┃ &fIn Fights: &b{match-players}"
+    - ""
+    - "&b&l┃ &fQueuing: &b{queue-kit}"
+    - "&b&l┃ &fTime: &b{queue-time}"
+    - "&b&l┃ &fPing Range: &b{ping-range}"
+    - "{event-information}"
+    - "&7&m----------------------"
+  in-queue-ranked:
+    - "&7&m----------------------"
+    - "&b&l┃ &fOnline: &b{online-players}"
+    - "&b&l┃ &fIn Queue: &b{queue-players}"
+    - "&b&l┃ &fIn Fights: &b{match-players}"
+    - ""
+    - "&b&l┃ &fQueuing: &b{queue-kit}"
+    - "&b&l┃ &fTime: &b{queue-time}"
+    - "&b&l┃ &fPing Range: &b{ping-range}"
+    - "&b&l┃ &fRange: &7[&b{queue-ranked-min} &9-> &b{queue-ranked-max}&7]"
+    - "{event-information}"
+    - "&7&m----------------------"
+  in-match-solo:
+    fighting:
+      - "&7&m----------------------"
+      - "&b&l┃ &fFighting: &b{match-solo-opponent}"
+      - ""
+      - "&b&l┃ &fYour Ping: &b{match-solo-self-ping}ms"
+      - "&b&l┃ &fTheir Ping: &b{match-solo-opponent-ping}ms"
+      - "&7&m----------------------"
+    boxing:
+      - "&7&m----------------------"
+      - "&b&l┃ &fFighting: &b{match-solo-opponent}"
+      - ""
+      - "&b&l┃ &bHits: {match-solo-boxing-difference-color}({match-solo-boxing-difference-symbol}{match-solo-boxing-difference})"
+      - "&b&l┃ &a You: &f{match-solo-boxing-self-hit}"
+      - "&b&l┃ &c Them: &f{match-solo-boxing-opponent-hit}"
+      - "&b&l┃ &f {match-solo-boxing-difference-text}"
+      - ""
+      - "&b&l┃ &fYour Ping: &b{match-solo-self-ping}ms"
+      - "&b&l┃ &fTheir Ping: &b{match-solo-opponent-ping}ms"
+      - "&7&m----------------------"
+    bed:
+      - "&7&m----------------------"
+      - "&b&l┃ &fFighting: &b{match-solo-opponent}"
+      - ""
+      - "&b&l┃ &f{match-team1-logo}&7: &f{match-team1-bed-status}"
+      - "&b&l┃ &f{match-team2-logo}&7: &f{match-team2-bed-status}"
+      - ""
+      - "&b&l┃ &fBuild Height: &b{match-build-limit}{match-build-limit-difference}"
+      - ""
+      - "&b&l┃ &fYour Ping: &b{match-solo-self-ping}ms"
+      - "&b&l┃ &fTheir Ping: &b{match-solo-opponent-ping}ms"
+      - "&7&m----------------------"
+    point:
+      - "&7&m----------------------"
+      - "&b&l┃ &fFighting: &b{match-solo-opponent}"
+      - ""
+      - "&b&l┃ &f{match-team1-logo}&7: &f{match-team1-points}"
+      - "&b&l┃ &f{match-team2-logo}&7: &f{match-team2-points}"
+      - ""
+      - "&b&l┃ &fYour Ping: &b{match-solo-self-ping}ms"
+      - "&b&l┃ &fTheir Ping: &b{match-solo-opponent-ping}ms"
+      - "&7&m----------------------"
+    ending:
+      - "&7&m----------------------"
+      - "&b&l┃ &aMatch Over!"
+      - "&b&l┃ &fWinner: &b{match-solo-winner}"
+      - "&7&m----------------------"
+  in-match-teams:
+    fighting:
+      - "&7&m----------------------"
+      - "&b&l┃ &aTeam: &7(&b{match-team-self-alive}&7/&b{match-team-self-size}&7)"
+      - "&b&l┃ &cOpponents: &7(&b{match-team-opponent-alive}&7/&b{match-team-opponent-size}&7)"
+      - "&7&m----------------------"
+    boxing:
+      - "&7&m----------------------"
+      - "&b&l┃ &bHits: {match-team-boxing-difference-color}({match-team-boxing-difference-symbol}{match-team-boxing-difference})"
+      - "&b&l┃ &a You: &f{match-team-boxing-self-hit}"
+      - "&b&l┃ &c Them: &f{match-team-boxing-opponent-hit}"
+      - "&b&l┃ &f {match-team-boxing-difference-text}"
+      - ""
+      - "&b&l┃ &aTeam: &7(&b{match-team-self-alive}&7/&b{match-team-self-size}&7)"
+      - "&b&l┃ &cOpponents: &7(&b{match-team-opponent-alive}&7/&b{match-team-opponent-size}&7)"
+      - "&7&m----------------------"
+    bed:
+      - "&7&m----------------------"
+      - "&b&l┃ &f{match-team1-logo}&7: &f{match-team1-bed-status}"
+      - "&b&l┃ &f{match-team2-logo}&7: &f{match-team2-bed-status}"
+      - ""
+      - "&b&l┃ &fBuild Height: &b{match-build-limit}{match-build-limit-difference}"
+      - ""
+      - "&b&l┃ &aTeam: &7(&b{match-team-self-alive}&7/&b{match-team-self-size}&7)"
+      - "&b&l┃ &cOpponents: &7(&b{match-team-opponent-alive}&7/&b{match-team-opponent-size}&7)"
+      - "&7&m----------------------"
+    point:
+      - "&7&m----------------------"
+      - "&b&l┃ &f{match-team1-logo}&7: &f{match-team1-points}"
+      - "&b&l┃ &f{match-team2-logo}&7: &f{match-team2-points}"
+      - ""
+      - "&b&l┃ &aTeam: &7(&b{match-team-self-alive}&7/&b{match-team-self-size}&7)"
+      - "&b&l┃ &cOpponents: &7(&b{match-team-opponent-alive}&7/&b{match-team-opponent-size}&7)"
+      - "&7&m----------------------"
+    ending:
+      - "&7&m----------------------"
+      - "&b&l┃ &aMatch Over!"
+      - "&b&l┃ &fWinners: &b{match-team-winner}'s Team"
+      - "&7&m----------------------"
+  in-match-ffa:
+    fighting:
+      - "&7&m----------------------"
+      - "&b&l┃ &fAlive: &7(&b{match-ffa-alive}&7/&b{match-ffa-player-size}&7)"
+      - "&7&m----------------------"
+    ending:
+      - "&7&m----------------------"
+      - "&b&l┃ &aMatch Over!"
+      - "&b&l┃ &fWinner: &b{match-ffa-winner}"
+      - "&7&m----------------------"
+  in-spectate-solo:
+    fighting:
+      - "&7&m----------------------"
+      - "&b&l┃ &fKit: &b{spectate-kit}"
+      - "&b&l┃ &fTime: &b{spectate-duration}"
+      - ""
+      - "&b&l┃ &f{spectate-solo-player1}'s ping: &b{spectate-solo-player1-ping}ms"
+      - "&b&l┃ &f{spectate-solo-player2}'s ping: &b{spectate-solo-player2-ping}ms"
+      - "&7&m----------------------"
+    boxing:
+      - "&7&m----------------------"
+      - "&b&l┃ &fKit: &b{spectate-kit}"
+      - "&b&l┃ &fTime: &b{spectate-duration}"
+      - ""
+      - "&b&l┃ &bHits:"
+      - "&b&l┃ &f {spectate-solo-player1}: &b{spectate-solo-boxing-player1-hit}"
+      - "&b&l┃ &f {spectate-solo-player2}: &b{spectate-solo-boxing-player2-hit}"
+      - ""
+      - "&b&l┃ &f{spectate-solo-player1}'s ping: &b{spectate-solo-player1-ping}ms"
+      - "&b&l┃ &f{spectate-solo-player2}'s ping: &b{spectate-solo-player2-ping}ms"
+      - "&7&m----------------------"
+    bed:
+      - "&7&m----------------------"
+      - "&b&l┃ &fKit: &b{spectate-kit}"
+      - "&b&l┃ &fTime: &b{spectate-duration}"
+      - ""
+      - "&b&l┃ &f{spectate-team1-logo}&7: &f{spectate-team1-bed-status}"
+      - "&b&l┃ &f{spectate-team2-logo}&7: &f{spectate-team2-bed-status}"
+      - ""
+      - "&b&l┃ &f{spectate-solo-player1}'s ping: &b{spectate-solo-player1-ping}ms"
+      - "&b&l┃ &f{spectate-solo-player2}'s ping: &b{spectate-solo-player2-ping}ms"
+      - "&7&m----------------------"
+    point:
+      - "&7&m----------------------"
+      - "&b&l┃ &fKit: &b{spectate-kit}"
+      - "&b&l┃ &fTime: &b{spectate-duration}"
+      - ""
+      - "&b&l┃ &f{spectate-team1-logo}&7: &f{spectate-team1-points}"
+      - "&b&l┃ &f{spectate-team2-logo}&7: &f{spectate-team2-points}"
+      - ""
+      - "&b&l┃ &f{spectate-solo-player1}'s ping: &b{spectate-solo-player1-ping}ms"
+      - "&b&l┃ &f{spectate-solo-player2}'s ping: &b{spectate-solo-player2-ping}ms"
+      - "&7&m----------------------"
+    ending:
+      - "&7&m----------------------"
+      - "&b&l┃ &aMatch Over!"
+      - "&b&l┃ &fWinner: &b{spectate-solo-winner}"
+      - "&7&m----------------------"
+  in-spectate-teams:
+    fighting:
+      - "&7&m----------------------"
+      - "&b&l┃ &f{spectate-team1-leader}'s team: &7(&b{spectate-team1-alive}&7/&b{spectate-team1-size}&7)"
+      - "&b&l┃ &f{spectate-team2-leader}'s team: &7(&b{spectate-team2-alive}&7/&b{spectate-team2-size}&7)"
+      - "&7&m----------------------"
+    boxing:
+      - "&7&m----------------------"
+      - "&b&l┃ &bHits:"
+      - "&b&l┃ &f {spectate-team1-leader}'s team: &b{spectate-team1-boxing-hit}"
+      - "&b&l┃ &f {spectate-team2-leader}'s team: &b{spectate-team2-boxing-hit}"
+      - ""
+      - "&b&l┃ &f{spectate-team1-leader}'s team: &7(&b{spectate-team1-alive}&7/&b{spectate-team1-size}&7)"
+      - "&b&l┃ &f{spectate-team2-leader}'s team: &7(&b{spectate-team2-alive}&7/&b{spectate-team2-size}&7)"
+      - "&7&m----------------------"
+    bed:
+      - "&7&m----------------------"
+      - "&b&l┃ &f{spectate-team1-logo}&7: &f{spectate-team1-bed-status}"
+      - "&b&l┃ &f{spectate-team2-logo}&7: &f{spectate-team2-bed-status}"
+      - ""
+      - "&b&l┃ &f{spectate-team1-leader}'s team: &7(&b{spectate-team1-alive}&7/&b{spectate-team1-size}&7)"
+      - "&b&l┃ &f{spectate-team2-leader}'s team: &7(&b{spectate-team2-alive}&7/&b{spectate-team2-size}&7)"
+      - "&7&m----------------------"
+    point:
+      - "&7&m----------------------"
+      - "&b&l┃ &f{spectate-team1-logo}&7: &f{spectate-team1-points}"
+      - "&b&l┃ &f{spectate-team2-logo}&7: &f{spectate-team2-points}"
+      - ""
+      - "&b&l┃ &f{spectate-team1-leader}'s team: &7(&b{spectate-team1-alive}&7/&b{spectate-team1-size}&7)"
+      - "&b&l┃ &f{spectate-team2-leader}'s team: &7(&b{spectate-team2-alive}&7/&b{spectate-team2-size}&7)"
+      - "&7&m----------------------"
+    ending:
+      - "&7&m----------------------"
+      - "&b&l┃ &aMatch Over!"
+      - "&b&l┃ &fWinners: &b{spectate-team-winner}'s team"
+      - "&7&m----------------------"
+  in-spectate-ffa:
+    fighting:
+      - "&7&m----------------------"
+      - "&b&l┃ &fPlayers-Alive: &7(&b{spectate-ffa-alive}&7/&b{spectate-ffa-player-size}&7)"
+      - "&7&m----------------------"
+    ending:
+      - "&7&m----------------------"
+      - "&b&l┃ &aMatch Over!"
+      - "&b&l┃ &fWinner: &b{spectate-ffa-winner}"
+      - "&7&m----------------------"
+join-message:
+  - "&7&m------------------------------------------------"
+  - ""
+  - "&fWelcome to NA Practice"
+  - ""
+  - "&7&m------------------------------------------------"
+loading-profile: "&c[Eden] System is loading your profile... Please wait for a few seconds."
+invalid-syntax: "&cIncorrect format. Please try again."
+location-not-found: "&cLocation not found"
+location-changed: "&aSuccessfully changed {0}"
+no-permission: "&cNo permission."
+enabled: "Enabled"
+disabled: "Disabled"
+confirm-title: "Confirm?"
+reached-build-limit: "Reached Limit"
+banned-command: "&cYou can only use this command in lobby"
+arena:
+  exists: "&cArena '{0}' already exists!"
+  not-exists: "&cArena '{0}' does NOT exist! Please use command '/arena create {0}' to create one"
+  created: "&aArena '{0}' created! Please use command '/arena edit {0}' to edit"
+  successfully-set: "&e{0} &asuccessfully set!"
+  saved: "&aSaved arena &e'{0}' &ato arena.yml"
+  saved-all: "&aSaved all arenas to arena.yml"
+  cannot-set-because-clone-found: "&cThis command can only be used when the selected arena doesn't have any duplicates"
+  generate:
+    display: "&c[Arena] - {0} arena has been pasted to {1}, {2}"
+    hover: "&eClick here to teleport to the arena"
+    copying: "&eCopying arena..."
+  remove:
+    success-main: "&aArena removed! &eWarning: use command '/arena saveall' to save the current arena setting"
+    success-duplicate: "&aArena removed! &eWarning: use command '/arena save {0}' to save the current arena setting"
+  menu:
+    title: "Arenas Preview"
+    arena-edit:
+      name: "&b&l{0} &7({1})"
+      lore:
+        - ""
+        - "&e&nClick to edit arena settings!"
+  allowed-kits-menu:
+    title: "Arena Allowed Kits"
+    lore:
+      click-to-select: "&eClick to allow"
+      selected: "&aAllowed!"
+  details-menu:
+    title: "Arenas Info"
+    detail:
+      name: "&b#{0}"
+      lore:
+        - ""
+        - "&7Point-A-Position: {0}"
+        - "&7Point-B-Position: {1}"
+        - "&7Minimum-Position: {2}"
+        - "&7Maximum-Position: {3}"
+        - ""
+      lore-not-duplicated: "&cThis is not a duplicate, can't remove!"
+      click-to-delete: "&e&nLeft click to remove the arena"
+      click-to-teleport: "&e&nRight click to teleport to the arena"
+      teleported: "&eTeleported to arena &b{0} #{1}"
+    create-duplicate:
+      name: "&bCreate arena duplicate"
+      lore:
+        - "&cWarning: After creating arena duplicates, you can no longer change its location"
+        - "&cUse command '/arena save {0}' after create or change anything"
+        - ""
+        - "&e&nClick to create the arena copy!"
+  edit-menu:
+    title: "Editing Arena {0}..."
+    click-to-edit: "Click to edit {0}'s value"
+    display-name:
+      name: "Arena Display Name"
+      description: "Current Display Name: {0}"
+      action-description: "Click to change arena display name"
+      procedure:
+        message: "&e&lChanging &b&larena display name&e&l... Please enter a new value in chat"
+        success: "&fChanged arena &b{0} &fdisplay name to &b{1}"
+    allowed-kits:
+      name: "Allowed Kits"
+      description: "Current value: {0}"
+    a-position:
+      name: "Position A Location"
+      description: "Current location: {0}"
+      action-description:
+        - "&e&nLeft-Click to set position A to your current location"
+        - "&e&nRight-Click to teleport to position A"
+    b-position:
+      name: "Position B Location"
+      description: "Current location: {0}"
+      action-description:
+        - "&e&nLeft-Click to set position B to your current location"
+        - "&e&nRight-Click to teleport to position B"
+    spectator-position:
+      name: "Position Spectator Location"
+      description: "Current location: {0}"
+      action-description:
+        - "&e&nLeft-Click to set spectator position to your current location"
+        - "&e&nRight-Click to teleport to spectator position"
+    min:
+      name: "Minimum Location"
+      description: "Current value: {0}"
+      action-description:
+        - "&e&nLeft-Click to edit minimum location value"
+        - "&e&nRight-Click to teleport to minimum location"
+    max:
+      name: "Maximum Location"
+      description: "Current value: {0}"
+      action-description:
+        - "&e&nLeft-Click to edit maximum location value"
+        - "&e&nRight-Click to teleport to maximum location"
+    y-limit:
+      name: "Y Limit"
+      description: "Current value: {0}"
+    build-max:
+      name: "Build Limit"
+      description: "Current value: {0}"
+    portal-protection-radius:
+      name: "Portal Protection Radius"
+      description: "Current value: {0}"
+    clone:
+      name: "Arena Clone"
+      description: "Warning: Arena's value cannot be edited after a clone of the arena has been made"
+      action-description: "Click here to manage arena clones"
+    delete:
+      name: "Remove Arena"
+      description: "Warning: This step cannot be undone, backup is recommended before using this command"
+      action-description: "Click here to remove the arena"
+      action-description-has-clone: "&cYou need to remove the current arena to make new clone, to remove the main arena"
+    save:
+      name: "Save arena"
+      action-description: "Click here to save arena"
+    toggle:
+      name: "Arena status"
+      description: "Current status: {0}"
+      need-restart: "&eRestart is required"
+      action-description: "Click here to change arena status"
+      action-description-not-finished-setup: "&cYou need to complete arena setup to edit this setting"
+      action-description-need-restart: "&cRestart is required to change this setting"
+    icon:
+      name: "Arena Icon"
+      description: "Current icon: {0}"
+      action-description: "Click to use your hand item to become arena icon"
+      cannot-be-air: "&cCannot set arena icon as air"
+  edit:
+    min: "&e&lEditing the arena &b&l{0} &e&l's lowest position... Please left click a block to set the position"
+    max: "&e&lEditing the arena &b&l{0} &e&l's highest position... Please left click a block to set the position"
+    y-limit: "&e&lEditing the arena &b&l{0} &e&l's y limit... Please type a new value in chat"
+    build-max: "&e&lEditing the arena &b&l{0} &e&l's build height... Please type a new value in chat"
+    portal-protection-radius: "&e&lEditing the arena &b&l{0} &e&l's portal protection radius'... Please type a new value in chat"
+    allowed-kits: "&e&lEditing the arena &b&l{0} &e&l's available kits... Please enter then name of an existing kit"
+    allowed-kits-removed: "&aSuccessfully removed kit '{0}' to arena {1}"
+    allowed-kits-added: "&aSuccessfully added kit '{0}' to arena {1}"
+    cannot-edit-not-finished-setup: "&cThis setting can not be edited before arena has been fully setup"
+    cannot-edit-need-restart: "&cRestart is required to use the arena"
+duel:
+  cannot-find-player: "&cPlayer '{0}' cannot be found"
+  cannot-duel-self: "&cYou cannot duel yourself!"
+  cannot-duel-not-in-party: "&cYour opponent is not in a party"
+  has-pending-duel-request: "&cYou already have a pending duel request, please try again in 30 seconds"
+  invalid-player: "&cInvalid player with name '{0}'"
+  invalid-kit: "&cInvalid kit with name '{0}'"
+  invalid-arena: "&cInvalid arena with name '{0}'"
+  invalid-duel-request: "&cInvalid duel request! It may have already expired!"
+  help-message:
+    - "&cCommand usage:"
+    - "&c/duel <Player> [Kit] [Arena] - Duel a player/party"
+    - "&c/duel accept <UUID> - Accept a duel"
+  choose-arena-menu:
+    name: "Select Arena"
+    button:
+      name: "&b{0}"
+      random: "&bRandom Map"
+      lore:
+        - ""
+        - "&e&nClick to select the arena!"
+  choose-kit-menu:
+    name: "Select Kit"
+    button:
+      name: "&b{0}"
+      lore:
+        - ""
+        - "&e&nClick to select this kit!"
+  duel-request:
+    cannot-find-target: "&cThis player is offline"
+    display-1v1: "&b{0} &fsent a duel request to you with &b{1} kit&f, arena &b{2} "
+    display-party: "&b{0}'s team&9({3}) &fsent a duel request to you with &b{1} kit&f, arena &b{2} "
+    click-to-accept: "&a[Click to accept]"
+    click-to-accept-hover: "&aClick to accept"
+    click-to-view-ping: "&a[Click to see enemy's ping]"
+    click-to-view-ping-hover: "&f{0}'s ping: &b{1}ms"
+    success-1v1: "&fYou sent a duel to &b{2} &fwith kit &b{0}&f, arena &b{1}"
+    success-party: "&fYou sent a duel to &b{2}'s party &fwith kit &b{0}&f, arena &b{1}"
+  verify:
+    target-not-found: "&cPlayer is offline"
+    need-to-be-in-lobby: "&cYou need to be in a lobby to send duel requests"
+    target-need-to-be-in-lobby: "&cPlayer needs to be in a lobby to receive your duel request"
+    target-duel-request-disabled: "&This player has duel requests disabled"
+    arena-disabled: "&cError: Arena disabled"
+    cannot-find-arena: "&cError: cannot find arena"
+    target-in-a-party: "&cplayer is already in a party"
+    target-not-in-a-party: "&cPlayer is NOT in a party"
+    cannot-duel-same-party: "&cYou can not duel your own party"
+    player-not-in-lobby: "&c{0}'s party needs to be in the same lobby to accept duel requests"
+event:
+  event-is-running: "&cThere's already an active event!"
+  event-is-not-running: "&cThere's no active event!"
+  event-already-started: "&cEvent already started!"
+  no-available-status: "&cThis event has no available status to view!"
+  wrong-state: "&cYou must be in lobby to do this!"
+  auto-create-party-because-need-a-party: "&7[&bEvent&7] &eYou have been automatically created a party because event requires to be in a party to join!"
+  party-size-over: "&cYour party team members count is higher than {0}. The current event only allows maximum {0} player(s) per team"
+  auto-set-party-size: "&7[&bEvent&7] &eYour party maximum size has been corrected to &b&l{0} &ebecause you joined an event."
+  cannot-use-this-command: "&cYou cannot use this command when you are in an event"
+  leave-event-because-party-disband: "&eBecause of your party disbanded, your party has been automatically removed from the event"
+  cannot-join-party-because-in-event: "&cYou cannot join a party which is in the event!"
+  leave-event-because-error: "&cError: System Error. You have been automatically remove from the event"
+  force-cancel-event: "&c{0} has been cancelled by administrator"
+  no-winner-because-no-party: "&7[&bEvent&7] &cThis event doesn't have any winners due to no party was alive."
+  winner-announce:
+    message: "&7[&bEvent&7] &aWinners: &b{0}"
+    split-format: "&7, &b"
+  event-create-menu:
+    title: "Create an Event"
+    button:
+      name: "&b{0}"
+      lore:
+        click-to-create-event: "&e&nClick me to setup the Event!"
+        no-permission: "&cYou don't have permission to host this event!"
+  event-select-kit-menu:
+    title: "Choose Event's Kit"
+    button:
+      name: "{0}"
+      lore:
+        - ""
+        - "&e&nClick me to choose this kit!"
+  event-settings-menu:
+    title: "Event Settings"
+    max-players-button:
+      name: "&bMaximum Players"
+      lore:
+        - ""
+        - "&fCurrent Maximum Players: &b{0}"
+        - ""
+        - "&aLEFT CLICK &fto increase Maximum Players by 1"
+        - "&aSHIFT + LEFT CLICK &fto increase Maximum Players by 10"
+        - ""
+        - "&cRIGHT CLICK &fto decrease Maximum Players by 1"
+        - "&cSHIFT + RIGHT CLICK &fto decrease Maximum Players by 10"
+        - ""
+        - "&e&nClick to change Maximum Players!"
+    party-size-button:
+      name: "&bTeam Size"
+      lore:
+        - ""
+        - "&fCurrent Team Size: &b{0}"
+        - ""
+        - "&aLEFT CLICK &fto increase Team Size by 1"
+        - "&cRIGHT CLICK &fto decrease Team Size by 1"
+        - ""
+        - "&e&nClick to change Team Size!"
+    kit-button:
+      name: "&bKit"
+      lore:
+        - ""
+        - "&fCurrent Selected Kit: &b{0}"
+        - ""
+        - "&e&nClick to change a Kit!"
+    start-button:
+      name: "&bStart Event"
+      lore:
+        - ""
+        - "&fEvent: &b{0}"
+        - "&fMinimum Players: &b{1}"
+        - "&fMaximum Players: &b{2}"
+        - ""
+        - "&e&nClick to start Event!"
+  event-create:
+    message: "&7[&bEvent&7] &b{0} &fis hosting a &b{1} &fevent! "
+    clickable:
+      message: "&a(Click To Join)"
+      hover: "&eClick Me To Join!"
+  party-name-format: "'s Team"
+  event-join:
+    message: "&7[&bEvent&7] &b{0} &fjoined &b{1} &7(&b{2}&7/&b{3}&7) "
+    clickable:
+      message: "&a(Click To Join)"
+      hover: "&eClick Me To Join!"
+  starting-full: "&7[&bEvent&7] &fEvent is full. Starting event right now..."
+  event-leave:
+    message: "&7[&bEvent&7] &b{0} &cleft &b{1} &7(&b{2}&7/&b{3}&7)"
+  event-start-countdown:
+    message: "&7[&bEvent&7] &b{0} &fis starting in &b&l{1} &fseconds "
+    clickable:
+      message: "&a(Click To Join)"
+      hover: "&eClick Me To Join!"
+  cancel-not-enough-players: "&7[&bEvent&7] &cEvent is cancelled due to not enough participants"
+  tournament:
+    name: "Tournament"
+    match-end-message: "&7[&bEvent&7] &a{0} &fkilled &c{1} &7({2} &7matches left)"
+    scoreboard:
+      starting-event:
+        - ""
+        - "&b&l┃ &b&l{event-uncolored-name}"
+        - "&b&l┃  &fPlayers: &b{event-total-players}&7/&b{event-max-players}"
+        - "&b&l┃  &fStarting at &b&l{event-countdown} &fseconds"
+      starting-new-round:
+        - ""
+        - "&b&l┃ &b&l{event-uncolored-name}"
+        - "&b&l┃  &fRound &b&l{0}"
+        - "&b&l┃  &fStarting at &b&l{event-countdown} &fseconds"
+      fighting:
+        - ""
+        - "&b&l┃ &b&l{event-uncolored-name}"
+        - "&b&l┃  &fRound &b&l{0}"
+        - "&b&l┃  &fMatches left: &b{1}"
+    status:
+      starting-event:
+        - ""
+        - "&b&l{0}"
+        - "&fStarting soon..."
+        - ""
+      starting-new-round:
+        - ""
+        - "&b&l{0}"
+        - "&fRound &b&l{1} &fis starting soon..."
+        - ""
+      fighting:
+        - ""
+        - "&b&l{0}"
+        - "&fRound &b&l{1} &fis started!"
+        - ""
+        - "{2}"
+        - ""
+      fighting-team-format: "&b{0} &fvs &b{1}"
+    new-round:
+      countdown: "&7[&bEvent&7] &fRound &b&l{0} &fis starting in &b&l{1} &fseconds..."
+      start:
+        - ""
+        - "&7[&bEvent&7] &fRound &b&l{0} &fis started!"
+        - "&7[&bEvent&7] &fUse command &7'&b/event status&7' &fto see who is fighting!"
+        - ""
+      no-available-arena: "&7[&bEvent&7] &cError: Not enough arena. Your party have been automatically promoted to next round."
+      auto-promotion: "&7[&bEvent&7] &eThere were an odd number of teams in this round - so your team has advanced to the next round. &a:)"
+  sumo-event:
+    name: "Sumo Event"
+    match-end-message: "&7[&bEvent&7] &a{0} &fkilled &c{1}"
+    lobby-scoreboard:
+      starting-event:
+        - ""
+        - "&b&l┃ &b&l{event-uncolored-name}"
+        - "&b&l┃  &fPlayers: &b{event-total-players}&7/&b{event-max-players}"
+        - "&b&l┃  &fStarting at &b&l{event-countdown} &fseconds"
+      fighting:
+        - ""
+        - "&b&l┃ &b&l{event-uncolored-name}"
+        - "&b&l┃  &fRound &b&l{0}"
+        - "&b&l┃  &f{1} &bvs &f{2}"
+    in-game-scoreboard:
+      starting-match:
+        - "&7&m----------------------"
+        - "&b&l┃  &7&oStarting soon..."
+        - "&7&m----------------------"
+      fighting:
+        - "&7&m----------------------"
+        - "&b&l┃ &fEvent: &b{match-event-type}"
+        - "&b&l┃ &fDuration: &b{match-duration}"
+        - "&b&l┃ &fRound: &b{match-event-round}"
+        - ""
+        - "&b&l┃ &b{0}"
+        - "&b&l┃ &7vs"
+        - "&b&l┃ &b{1}"
+        - "&7&m----------------------"
+      ending:
+        - "&7&m----------------------"
+        - "&b&l┃ &aMatch Over!"
+        - "&b&l┃ &fWinner: &b{match-event-winner}"
+        - "&7&m----------------------"
+    status:
+      starting-event:
+        - ""
+        - "&b&l{0}"
+        - "&fStarting soon..."
+        - ""
+      starting-new-round:
+        - ""
+        - "&b&l{0}"
+        - "&fRound &b&l{1} &fis starting soon..."
+        - ""
+      fighting:
+        - ""
+        - "&b&l{0}"
+        - "&fRound &b&l{1} &fis started!"
+        - "{2} vs {3}"
+        - ""
+    new-round:
+      countdown: "&7Round &b&l{0} &7will be starting in &b&l{1}&7..."
+      started: "&bRound started!"
+hook:
+  found-custom-spigot: "&aRunning spigot version: &b{0}&a, custom knockback will be applied"
+  cannot-find-custom-spigot: "&eCannot find the custom spigot, vanilla knockback will be applied"
+  error-knockback-not-found: "&cError: please report this issue to a moderator (ERROR_KNOCKBACK_NOT_FOUND)"
+kit-editor:
+  cannot-edit-wrong-state: "&cYou cannot edit kits in this state"
+  extra-item-menu-name: "Extra Items"
+  save-menu:
+    name: "Save kit"
+    save-loadout-button-name: "&fSave layout &b{0}"
+    load-loadout-button-name: "&fLoad layout &b{0}"
+    rename-loadout-button-name: "&fRename layout &b{0}"
+    delete-loadout-button-name: "&cRemove layout &b{0}"
+    rename-instructions: "&e&lRenaming &b{0}&e&l... Please enter a new value in chat"
+    invalid-character: "&cID cannot contain special characters"
+  select-kit-menu:
+    name: "Select a kit"
+    button:
+      name: "&b{0}"
+      lore:
+        - ""
+        - "&e&nClick to edit kit layout!"
+  cannot-use-command-while-editing: "&cPlease exit your layout editor to use other commands"
+  disallow-extra-item: "&cThis kit does not allow extra items"
+  cannot-find-editor-location: "&cError: cannot find kit editor location"
+  editing:
+    - ""
+    - "&fYou are editing &b{0} &f's layout"
+    - ""
+    - "&9 • &fRight click the anvil to save your layout"
+    - "&9 • &fRight click the chest to obtain extra item (Does not apply to all kits)"
+    - "&9 • &fRight click the sign to exit layout editor"
+    - ""
+kit:
+  not-exists: "&cKit '{0}' does NOT exist!"
+  no-kits-found: "&cNo kit found! Use the command '/kit create <ID>' to create one!"
+  saved: "&aSaved kit &e'{0}' &ato database"
+  saved-all-kits: "&aKits saved!"
+  kit-already-exists: "&cKit '{0}' already exsits, cannot create kits with the same ID"
+  successfully-create: "&aKit created '{0}'!"
+  successfully-delete: "&aKit deleted '{0}!"
+  successfully-clone: "&aKit '{0}' game rules has been cloned to '{1}'"
+  cannot-save-extra-items: "&cannot save extra item, '{0}' == null"
+  successfully-updated-extra-items: "&aUpdated &b{0} &a's extra item!"
+  button:
+    edit-damage-ticks:
+      name: "&b&lEdit kit damage cooldown"
+      lore:
+        - ""
+        - "&7Current kit damage cooldown: {0}"
+        - "&cWarning: If you are using a custom spigot core, this setting may not function properly"
+        - ""
+        - "&e&nClick to edit kit damange cooldown!"
+      procedure:
+        message: "&e&lChanging &b&lkit damage cooldown&e&l... Please enter a new value in chat"
+        success: "&fChanged &b{0} &fkit damage cooldown to &b{1}"
+        additional-message: "&cYour message must be a number"
+    edit-description:
+      name: "&b&lEdit kit description"
+      lore-start:
+        - ""
+        - "&7Current kit description: "
+      lore-end:
+        - ""
+        - "&e&nClick to edit kit description!"
+        - "&e&nDrop to remove current description!"
+      procedure:
+        message: "&e&lEditing &b&lkit description&e&l... Please enter a new value in chat"
+        success: "&fChanged &b{0} &fkit description to &b{1}"
+        additional-message: "&eYou may use ';' to separate the lines"
+    edit-display-name:
+      name: "&b&lEdit kit display name"
+      lore:
+        - ""
+        - "&7Current kit display name: {0}"
+        - ""
+        - "&e&nClick to edit kit's display name!"
+      procedure:
+        message: "&e&lChanging &b&lkit name&e&l... Please enter a new value in chat"
+        success: "&fChanged &b{0} &fkit name to &b{1}"
+    edit-extra-items:
+      name: "&b&lEdit extra items"
+      lore:
+        - ""
+        - "&e&nClick to edit extra item!"
+    edit-icon:
+      name: "&b&lEdit kit icon"
+      lore:
+        - ""
+        - "&7Current icon: {0}"
+        - "&7Current icon durability: {1}"
+        - ""
+        - "&e&nClick to set your hand item as kit icon!"
+      procedure:
+        air: "&cYou cannot change your kit icon to air!"
+        success: "&fChanged &b{0} &fkit icon to &b{1}"
+    edit-match-type:
+      name: "&b&lEdit match type"
+      lore-click-left: "&e(Left click)"
+      lore-click-middle: "&e(Middle click)"
+      lore-click-right: "&e(Right click)"
+      lore:
+        - ""
+        - "&e&nClick to change match type"
+    edit-potion-effect:
+      name: "&b&lEdit potion effect"
+      lore-start:
+        - ""
+        - "&7Current potion effect: &9({0})"
+      lore-end:
+        - ""
+        - "&e&nClick to edit potion effect!"
+      procedure:
+        message: "&e&lChanging &b&lpotion effect&e&l... Please enter a new value in chat"
+        already-have-potion-effect:
+          - "&cKit &b'{0}' &calready has the potion effect &9{1}"
+          - "&cIf you want to replace the effect, please remove the current one before applying the new effect"
+        success-add: "&fAdded potion effect &b{1} to kit &b{0}"
+        success-remove: "&fRemoved potion effect &b{1} to kit &b{0}"
+        additional-message:
+          - "&eYour message must be '{effect name};{amplifier};{duration (in ticks)}'"
+          - "&eIf you want to remove a potion effect, enter '-{potion effect ID}'"
+    edit-priority:
+      name: "&b&lEdit kit priority"
+      lore:
+        - ""
+        - "&7Current kit priority: {0}"
+        - ""
+        - "&e&nClick to edit kit priority!"
+      procedure:
+        message: "&e&lChanging &b&lkit priority&e&l... Please enter a new value in chat"
+        success: "&fChanged kit &b{0} &f's kit priority to &b{1}"
+        additional-message: "&cYour message must be in numbers"
+    preview:
+      lore:
+        - ""
+        - "&e&nLeft click to preview this kit"
+        - "&e&nRight click to get the kit preview"
+    save:
+      name: "&b&lSave Kit"
+      lore:
+        - ""
+        - "&e&nClick to save kit settings"
+    rules-toggle:
+      success: "&fChanged &b{0} &f{1} to &b{2}"
+    rules-set-value:
+      name: "&b&l{0}"
+      lore:
+        - ""
+        - "&7{0}"
+        - ""
+        - "&7Current value: {1}"
+        - ""
+        - "&e&nClick to edit value!"
+      procedure:
+        message: "&e&lChanging &b&l{0}&e&l... Please enter a new value in chat"
+        success: "&fChanged kit's &b{0} &fto &b{1}"
+        additional-message: "&cYour message must be in numbers"
+    save-loadout:
+      name: "&b&lSave kit layout"
+      lore:
+        - ""
+        - "&7Warning: this will change your current inventory item layout"
+        - "&7to the current kit's layout"
+        - ""
+        - "&e&nClick to save kit layout!"
+      success: "&aUpdated kit {0} 's layout"
+    toggle:
+      name: "&b&lStatus"
+      description: "&7Current Status: {0}"
+      success: "&fChanged &b{0} &f's status to &b{1}"
+    toggle-ranked:
+      name: "&b&lRanked mode"
+      description: "&7Current status: {0}"
+      success: "&fChanged &b{0} &f's ranked mode to &b{1}"
+  kit-detail-menu:
+    title: "Editing {0}..."
+  kit-preview-menu:
+    title: "Previewing {0}..."
+  kit-management-menu:
+    title: "Kit Manager"
+    button:
+      name: "&b&l{0} &7({1})"
+      lore:
+        - ""
+        - "&e&nClick to edit kit's information!"
+  game-rules:
+    receive-kit-loadout-book:
+      rules: "Receive Kit Loadout Book"
+      description: "Setting for players to receive kit loadout book in the beginning of a match, if disabled, player will automatically receive layout settings"
+    death-on-water:
+      rules: "Death on Water"
+      description: "Setting for death upon touching water"
+    boxing:
+      rules: "Boxing"
+      description: "Setting to disable damage and end after 100 hits"
+    bed:
+      rules: "Bed"
+      description: "Setting for players to respawn before bed break"
+    break-goal:
+      rules: "Break Goal"
+      description: "Setting for wins after breaking the bed"
+    portal-goal:
+      rules: "Portal Goal"
+      description: "Setting for wins after enter into ender portal"
+    projectile-only:
+      rules: "Ranged Damage Only"
+      description: "Setting for this duel mode to only receive ranged damage"
+    hypixelUHC:
+      rules: "HypixelUHC"
+      description: "Setting for match to replace golden apple's regeneration to Regeneration III, and enable golden head"
+    spleef:
+      rules: "Spleef"
+      description: "Setting for match to allow breaking snow and sand"
+    health-regeneration:
+      rules: "Health Regeneration"
+      description: "Setting for match to allow auto regeneration"
+    show-health:
+      rules: "Show Health"
+      description: "Setting for match to show player's health"
+    food-level-change:
+      rules: "Hunger Bar Change"
+      description: "Setting for match for players to lose hunger bar"
+    point:
+      rules: "Point System"
+      description: "Setting for match to apply a point system"
+    ranked-point:
+      rules: "Point System (Ranked)"
+      description: "Setting for ranked match to apply a point system"
+    reset-arena-when-get-point:
+      rules: "Reset Arena After Get A Point"
+      description: "Settings for match to reset arena after player get a point"
+    only-loser-reset-position-when-get-point:
+      rules: "Only Loser Reset Position After Get A Point"
+      description: "Settings for match to reset player position after player get a point"
+    build:
+      rules: "Build"
+      description: "Setting for match to allow block placement/destruction"
+    start-freeze:
+      rules: "Start Freeze"
+      description: "Setting for match to freeze player movement on start"
+    no-damage:
+      rules: "No Damage"
+      description: "Setting for match to disable damage"
+    instant-gapple:
+      rules: "Instant Golden Apple"
+      description: "Setting for match to instant regeneration to full health with golden apple"
+    ender-pearl-cooldown:
+      rules: "Ender Pearl Cooldown"
+      description: "Setting for match to set a cooldown of 16 seconds on ender pearls"
+    clear-block:
+      rules: "Clear Block"
+      description: "Setting for match to remove all blocks placed in the past 10 seconds"
+    drop-item-when-die:
+      rules: "Item Drop On Death"
+      description: "Setting for players to drop items on death"
+    no-fall-damage:
+      rules: "No Fall Damage"
+      description: "Setting for disabling fall damage"
+    give-back-arrow:
+      rules: "Give Back Arrow"
+      description: "Settings for player who uses arrow will give back after 3.5 seconds"
+    drop-items:
+      rules: "Drop Items"
+      description: "Settings for player to drop item using 'Q' button"
+    team-projectile:
+      rules: "Team Projectile"
+      description: "Settings for player to allow to use projectile to shoot their teammate"
+    bow-boosting:
+      rules: "Bow Boosting"
+      description: "Settings for player to allow arrow to damage themselves"
+    respawn-time:
+      rules: "Respawn Time"
+      description: "Settings for the respawn timer (Only works if bed or goal is on)"
+    maximum-points:
+      rules: "Maximum Points"
+      description: "Settings for the maximum points (Only works if point system is on)"
+    match-countdown-duration:
+      rules: "Match Countdown Duration"
+      description: "Settings for the match countdown duration"
+    new-round-time:
+      rules: "New Round Time"
+      description: "Settings for the new round countdown time (Only works if point system is on)"
+    clear-block-time:
+      rules: "Clear Block Time"
+      description: "Settings for the clear block time (Only works if clear block is on)"
+    knockback-name:
+      rules: "Knockback Profile"
+      description: "Settings for the knockback profile (Only works if using specific spigot forks)"
+leaderboard:
+  reload: "&eReloading leaderboard..."
+  top10-display:
+    name: "&a{0} &7| &fTop 10"
+    lore: "&f#{0}: &b{1} &f- &b{2}"
+  best-winstreak-menu-title: "Best Winstreak Leaderboard"
+  elo-menu-title: "ELO Leaderboard"
+  wins-menu-title: "Total Wins Leaderbaord"
+  winstreak-menu-title: "Winstreak Leaderboard"
+  kit-stats-menu:
+    title: "{0}'s stats"
+    global-stats:
+      name: "&bDuel stats"
+      lore:
+        - "&bUnranked:"
+        - " &f• Wins: &b{0}"
+        - " &f• Losses: &b{1}"
+        - " &f• W/L: &b{2}"
+        - ""
+        - "&bRanked:"
+        - " &f• Elo: &b{3}"
+        - " &f• Wins: &b{4}"
+        - " &f• Loses: &b{5}"
+        - " &f• W/L: &b{6}"
+    kit-stats:
+      name: "&b{0}"
+      lore:
+        - "&bUnranked:"
+        - " &f• Wins: &b{0}"
+        - " &f• Losses: &b{1}"
+        - " &f• Win Streak: &b{2}"
+        - " &f• Highest Win Streak: &b{3}"
+        - " &f• W/L: &b{4}"
+        - ""
+        - "&bRanked:"
+        - " &f• Elo: &b{5}"
+        - " &f• Highest Elo Record: &b{6}"
+        - " &f• Wins: &b{7}"
+        - " &f• Loses: &b{8}"
+        - " &f• W/L: &b{9}"
+  error-not-enough-slot: "&cError: Not enough item slots"
+  switch-leaderboard-button:
+    view-stats-button:
+      name: "View Stats"
+      lore:
+        - ""
+        - "&e&nClick to view!"
+match:
+  separate: "&7, &b"
+  start-unranked:
+    - ""
+    - "&b{0}"
+    - "&9 • &7Kit: &b{1}"
+    - "&9 • &7Map: &b{2}"
+    - "&9 • &7Opponent(s): &b{3}"
+    - ""
+  start-ranked:
+    - ""
+    - "&b{0}"
+    - "&9 • &7Kit: &b{1}"
+    - "&9 • &7Map: &b{2}"
+    - "&9 • &7Opponent: &b{3}"
+    - "&9 • &7ELO: &b{4}"
+    - ""
+    - "&cWarning: This match is a ranked match, the result is going to affect your ELO!"
+    - ""
+  join-spectate: "&b{0} &eis now spectating"
+  leave-spectate: "&b{0} &eis no longer spectating"
+  cannot-drop-weapon: "&cYou cannot drop your weapon"
+  use-again-golden-head: "&cYou need to wait &c&l{0} &cseconds before using Golden Head again"
+  use-again-ender-pearl: "&cYou need to wait &c&l{0} &cseconds before using ender pearl again"
+  use-again-fireball: "&cYou need to wait &c&l{0} &cseconds before using fireball again"
+  received-kit-loadout: "&fYou have received &b{0} &fkit loadout"
+  received-kit-loadout-because-timeout: "No selected kit loadout. You have been automatically equipped &bdefault &fkit loadout"
+  auto-equipped-kit: "&a{0} automatically equipped."
+  kit-edit-saved: "&aChanges saved to {0}."
+  cannot-break-own-bed: "&cYou cannot break your own bed!"
+  can-use-enderpearl: "&aYou can now use Ender Pearl again."
+  arrow-damage: "&c{0}&e's health: &c{1}❤ &e{2}❤"
+  requeue-not-in-match: "&cError: You are not in a match"
+  cannot-prefire: "&cYou cannot prefire in your current state"
+  bed-break:
+    title: "&cBed Destroyed！"
+    subtitle: "&fYou will not respawn after die！"
+    message:
+      - ""
+      - "&f&lBed Destroyed > {0}'s bed &7has been destroyed by {1}{2}!"
+      - ""
+  death-message:
+    ## {0} - Entity relation color
+    ## {2} - Entity team color
+    disconnect: "{0}{1} &7disconnected."
+    ## {0} - Entity relation color
+    ## {2} - Killer relation color
+    ## {4} - Entity team color
+    ## {5} - Killer team color
+    killed: "{2}{3} &7killed {0}{1}&7."
+    ## {0} - Entity relation color
+    ## {2} - Entity team color
+    default: "{0}{1} &7died."
+  post-match-inventory:
+    winner: "&aWinner: &e"
+    loser: "&cLoser: &e"
+    hover: "&aClick to view &6{0}'s &ainventory"
+    message:
+      - "&7&m------------------------------------------------"
+      - "&bPost-Match Inventories &7(click to view)"
+      - "{post-match-inventories}"
+      - "&7&m------------------------------------------------"
+    rating-changes: "&eELO changes: &a{0} +{1} ({2})  &c{3} -{4} ({5})"
+  force-end:
+    message: "&cThe match is cancelled! Reason: {0} (Your stats related to this match will not be saved)"
+    not-online: "&cPlayer is not online!"
+    profile-not-found: "&cError: Player profile not found"
+    not-in-match: "&cPlayer is not in a match!"
+    reason: "&cAdmin Command"
+    success: "&aSuccessfully force ended {0}'s match"
+  spectate:
+    wrong-state: "&cYou cannot spectate match right now!"
+    have-party: "&cYou cannot spectate match while in a party!"
+    not-online: "&cPlayer is not online!"
+    profile-not-found: "&cError: Player profile not found"
+  no-speed:
+    not-in-match: "&cPlayer is not in a match!"
+    not-boxing: "&cThe current kit you are using is not boxing!"
+    success-removed: "&aSuccessfully removed speed potion effect"
+    success-added: "&aSuccessfully added speed potion effect"
+  view-inventory:
+    wrong-state: "&cYou can only view inventories in lobby"
+    usage: "&cUsage: /viewinventory <UUID>"
+    invalid-uuid: "&cInvalid UUID!"
+    cannot-find: "&cCannot find the selected inventory. Is it expired?"
+  spectate-menu:
+    title: "Spectate Menu"
+    button:
+      name-solo: "&b{0} &7vs &b{1}"
+      name-split: "&b{0}'s Team &7vs &b{0}'s Team"
+      name-ffa: "&7FFA with &b{0} &7players"
+      name-sumo-event: "&bSumo Event"
+      name-error: "&cError"
+      lore:
+        - "&bMatch Information"
+        - " &7• &fDuration: &b{0}"
+        - " &7• &fKit: &b{1}"
+        - " &7• &fMap: &b{2}"
+        - " &7• &fGame-Mode: &b{3}"
+        - " &7• &fPlayer(s): &b{4}"
+        - " &7• &fSpectator: &b{5}"
+        - ""
+        - "&e&nClick to spectate match!"
+    error-button:
+      name: "&cCannot read match information!"
+      lore:
+        - "&7An error occurred when reading"
+        - "&7 {0}'s information. Please view the"
+        - "&7 error in the console and report"
+        - "&7 it to developer"
+  spectate-teleport-menu:
+    title: "Spectator Teleportation"
+    button:
+      name: "&b{0}"
+      lore:
+        - ""
+        - "&e&nClick to teleport!"
+    wrong-state: "&cError: Wrong state"
+    already-died: "&cThe selected player already died"
+    not-online: "&cThe selected player is not online"
+    target-wrong-state: "&cError: Selected player wrong state"
+    not-same-match: "&cError: Incorrect match"
+  view-inventory-menu:
+    title: "Inventory of {0}"
+    open-message: "&fYou are now viewing &b{0}'s &finventory"
+    switch-inventory-button:
+      name: "&eView {0}'s inventory"
+    player-information-button:
+      name: "&bPlayer Information"
+      lore:
+        - ""
+        - "&fHearts: &b{0}/{1} &4❤"
+        - "&fHunger: &b{2}/20"
+        - ""
+    effects-button:
+      name: "&bPotion Effects"
+      no-effects-lore:
+        - ""
+        - "&fNo potion effects found"
+        - ""
+      effects-format: "&f{0} &7- &b{1}"
+    healing-button:
+      name: "&bHealing Count"
+      no-healing-lore:
+        - ""
+        - "&cNo Healing Method found"
+        - ""
+      healing-lore:
+        - ""
+        - "&b{0} &fhad &b{1} &f{2} left"
+        - ""
+    statistics-button:
+      name: "&bMatch Stats"
+      lore:
+        - ""
+        - "&fHits: &b{0}"
+        - "&fBlocked Hits: &b{1}"
+        - "&fLongest Combo: &b{2}"
+        - "&fPotion Thrown: &b{3}"
+        - "&fPotion Missed: &b{4}"
+        - "&fPotion Accuracy: &b{5}%"
+        - ""
+  healing-method:
+    potion: "Health Potions"
+    soup: "Soup"
+    golden-apple: "Golden Apple"
+    god-apple: "Golden Apple"
+  new-round-start:
+    countdown: "&e{0}..."
+    title: "&e{0}..."
+    message: "&aMatch started!"
+    scored-title: "{0}{1} &escored!"
+    scored-subtitle: "{0}{1} &7- {2}{3}"
+    score:
+      - "&b▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+      - ""
+      - "{0}&l{1}&7(&c{2}❤&7) &escored!"
+      - "{0}&l{3} &7- {4}&l{5}"
+      - ""
+      - "&b▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
+  respawn:
+    title: "&cYOU DIED!"
+    subtitle: "&e{0}..."
+    countdown: "&e{0}..."
+    message: "&aRespawned!"
+  ## As of right now, only red and blue are going to be usable.
+  ## Not sure what I should do to the rest, but just in case
+  team-color:
+    red:
+      name: "&cRed"
+      logo: "&c[R]"
+    blue:
+      name: "&9Blue"
+      logo: "&9[B]"
+    green:
+      name: "&aGreen"
+      logo: "&a[G]"
+    yellow:
+      name: "&eYellow"
+      logo: "&e[Y]"
+    aqua:
+      name: "&bAqua"
+      logo: "&b[A]"
+    white:
+      name: "&fWhite"
+      logo: "&f[W]"
+    pink:
+      name: "&dPink"
+      logo: "&d[P]"
+    gray:
+      name: "&8Gray"
+      logo: "&8[G]"
+  ##Please don't put color code into these
+  match-type:
+    solo: "Solo"
+    ffa: "FFA"
+    split: "Teams"
+    sumo-event: "Sumo Event"
+  end-title:
+    win:
+      title: "&aVICTORY!"
+      subtitle: "&a{0} &fwin the match!"
+    lose:
+      title: "&cDEFEAT!"
+      subtitle: "&c{0} win the match!"
+party:
+  created: "&fYou have created a new &bparty"
+  successfully-set-max-size: "&fSuccessfully changed max party size to &b{0} "
+  successfully-set-chat: "&fSuccessfully changed party chat to &b{0}"
+  announce:
+    message: "&7[&bParty&7] &b{0} &fhas invited &eall online players &fto join! "
+    clickable: "&a(Click here to join)"
+    hover: "&aClick here to join"
+  privacy:
+    message: "&fYour party privacy settings has been set to: &b{0}"
+    open: "Public"
+    closed: "Invites Only"
+  broadcast-format: "&f[&bParty&f] &r{0}"
+  ##Party chat is a party broadcast, meaning it will use the broadcast format above
+  party-chat-format: "&d{0}&7: &f{1}"
+  own-profile-not-found: "&cError: Profile cannot be found"
+  cannot-interact-self: "&cError: Cannot interact self"
+  join-message:
+    normal: "&b{0} &fhas joined your party"
+    force: "&b{0} &fhas &cHACKED &finto your party"
+  leave-message:
+    normal: "&b{0} &fhas left the party"
+    force: "&b{0} &fhas been &ckicked &ffrom your party"
+  disband: "&fParty &cdisbanded"
+  invite:
+    team-message: "&b{0} &finvited &b{1} &fto join the party! They have &b30 &fseconds to join"
+    invite-message: "&7[&bParty&7] &b{0} &fhas invited you to join their party! "
+    clickable: "&a(click here to join)"
+    hover: "&aclick here to join"
+  information:
+    - "&7&m------------------------------------------------"
+    - "&fParty Info:"
+    - "&f Leader: &b{0}"
+    - "&f Size: &7(&b{1}&7/&b{2}&7)"
+    - "&f Members: &b{3}"
+    - "&f Settings: &b{4}"
+    - "&f Chat: &b{5}"
+    - "&7&m------------------------------------------------"
+  chat-off: "&cParty chat has been muted"
+  toggle-party-chat: "&fYour party chat has been &b{0}"
+  disband-leader-left: "&cParty has been disbanded since the party leader is offline"
+  quit: "&b{0} &fhas left the server"
+  only-leader: "&cThis command can only be used by party leaders"
+  in-a-party: "&cYou are already in a party, cannot use this command"
+  not-in-a-party: "&cYou are not in the same party, cannot use this command"
+  wrong-state: "&cYou must be in a lobby to create a party"
+  party-not-open: "&cYour party must be public to use this command, use '/party open' to set it to public"
+  announce-cooldown: "&cThe announce command is in cooldown. Please wait {0} seconds to use it again"
+  player-not-found: "&cCannot find player '{0}'"
+  party-not-found: "&cCannot find '{0}' 's party"
+  full: "&cParty is full"
+  already-in-party: "&cYou are already in this party"
+  target-already-in-party: "&cThe opponent is already in another party"
+  not-invited: "&cYou have not been invited to this party!"
+  disabled-party-invite: "&cThis player has disabled party invites!"
+  not-integer: "'{0}' is not a valid number!"
+  size-below-1: "&cParty size cannot be lower than 1"
+  error-leader-not-found: "&cError: please report this issue to a moderator (ERROR_LEADER_PLAYER_NULL)"
+  max-size: "&cYour party's max size is {0}!"
+  already-invite: "&cThere's already an on-going invite request. If you want to invite the same player again, please wait 30 seconds."
+  invalid-match-type: "&cInvalid match type '{0}'"
+  invalid-kit: "&cInvalid kit with name '{0}'"
+  invalid-arena: "&cInvalid arena with name '{0}'"
+  help-message:
+    - "&6&m------------------------------------------------"
+    - "&dHelp party &7- &fHow to use party commands"
+    - "&6&m------------------------------------------------"
+    - "&9Party commands:"
+    - "&b/party leave &7- &eLeave your current party"
+    - "&b/party join <ID> &7- &eJoin/accept party requests"
+    - "&b/party list <ID> &7- &eCheck a specific player`s party status"
+    - ""
+    - "&9Leader commands:"
+    - "&b/party invite <ID> &7- &eInvite a player to your party"
+    - "&b/party mute &7- &eEnable/disable party chat"
+    - "&b/party chat &7- &eEnable/disable automatic party chat"
+    - "&b/party kick <ID> &7- &eKick a player from your party"
+    - "&b/party disband &7- &eDisband your party"
+    - "&b/party open &7- &eSetting party status to public"
+    - "&b/party close &7- &eSetting party status to invite-only"
+    - "&b/party size <party max-size> &7- &eSet party's max-size"
+    - "&b/party announce &7- &eMake an announcement in your party"
+    - ""
+    - "&9other tips:"
+    - "&bIf you want to use &eparty chat&b, use &7'&b@&7' &bor &7'&b!&7' &bbefore your messages"
+    - "&6&m------------------------------------------------"
+  choose-arena-menu:
+    title: "Select Arena"
+    button:
+      name: "&b{0}"
+      random: "&bRandom Map"
+      lore:
+        - ""
+        - "&e&nClick to select this arena!"
+  choose-kit-menu:
+    title: "Select Kit"
+    button:
+      name: "&b{0}"
+      lore:
+        - ""
+        - "&e&nClick to select this kit!"
+  choose-match-type-menu:
+    title: "Select Mode"
+    split-button:
+      name: "&bParty Fight"
+      lore:
+        - "&7This will split your party to two teams"
+        - "&7and start the match"
+        - ""
+        - "&e&nClick to select this mode!"
+    ffa-button:
+      name: "&bFFA"
+      lore:
+        - "&7Everyone in the party will be your enemy"
+        - "&7Last to survive will be the winner"
+        - ""
+        - "&e&nClick to select this mode!"
+  other-parties-menu:
+    title: "Other Parties"
+    button:
+      name: "&b{0}'s &fTeam"
+      lore-start:
+        - "&bTeam Information"
+        - " &fLeader: &b{0}"
+        - " &fSize: &b{1}&7/&b{2}"
+        - ""
+        - " &fMembers:"
+      lore-end:
+        - ""
+        - "&e&nClick to send duel request!"
+  start-party-fight:
+    only-leader: "&cThis can only be started by party leader"
+    need-more-than-2: "&cYour party needs to have at least 2 players!"
+    arena-disabled: "&cError: Arena disabled"
+    cannot-find-arena: "&cError: Cannot find arena"
+    players-not-in-lobby: "&cPlayer {0} is not in a lobby"
+profile:
+  cannot-find-player: "&cCannot find ID, player will need to have logged onto the server at least once to view profile"
+  error-cannot-load-player: "&cError: could not load player profile"
+  kit-right-click-to-receive:
+    - "&7Right click"
+    - "&7To receive your kit"
+  settings-menu:
+    title: "Settings"
+    click-to-switch-settings: "&e&nClick to switch setting!"
+    no-permission: "&cYou don't have permission to change this setting"
+  procedure:
+    enter-cancel-to-cancel: "&e&lEnter &c&lcancel &e&lto stop the procedure"
+    success-cancel: "&aProcedure has been cancelled"
+  settings:
+    successfully-changed: "Successfully changed setting {0}"
+    time-changer:
+      name: "Time"
+      lore:
+        - ""
+        - "&7Change your in-game time"
+        - ""
+      normal-server-time: "Default Time"
+      day: "Day"
+      afternoon: "Afternoon"
+      night: "Evening"
+      midnight: "Midnight"
+      successfully-changed: "&aSuccessfully changed your client time to: {0}"
+    arena-selection:
+      name: "Arena Selection"
+      lore:
+        - ""
+        - "&7Display and allow to choose arena"
+        - ""
+    match-scoreboard:
+      name: "Match Scoreboard"
+      lore:
+        - ""
+        - "&7Show/Hide scoreboard in matches"
+        - ""
+    allow-duel-request:
+      name: "Duel Requests"
+      lore:
+        - ""
+        - "&7Receive duel requests in lobby"
+        - ""
+    allow-party-invite:
+      name: "Party Invites"
+      lore:
+        - ""
+        - "&7Receive party invites in lobby"
+        - ""
+    spectator-visibility:
+      name: "Spectator Visibility"
+      lore:
+        - ""
+        - "&7See other spectators when spectating"
+        - ""
+    spectator-join-leave-message:
+      name: "Spectator Join/Leave Message"
+      lore:
+        - ""
+        - "&7See spectator join/leave message"
+        - ""
+    event-announcement:
+      name: "Event Announcement"
+      lore:
+        - ""
+        - "&7Receive event announcement"
+        - ""
+    ping-range:
+      name: "Ping Range"
+      lore:
+        - ""
+        - "&7Enable ping range for queuing"
+        - ""
+      unlimited: "Unlimited"
+queue:
+  usage: "&cCommand usage: /queue <Match-Type>"
+  cannot-quit-queue: "&cYou are not in a queue"
+  cannot-queue: "&cYou cannot start a queue right now"
+  type:
+    unranked: "Unranked"
+    ranked: "Ranked"
+  menu:
+    title: "Select {0} Mode"
+    button:
+      lore:
+        - ""
+        - "&fIn-Queue: &b{0}"
+        - "&fIn-Game: &b{1}"
+        - ""
+        - "&fClick to join &b{2} &f's Queue!"
+        - ""
+  error-found-queue-profile: "&cError: Found QueueProfile, cannot join the queue"
+  error-not-found-queue-profile: "&cError: Cannot find QueueProfile"
+  wrong-state: "&cCannot join a queue in the current state"
+  error-kit-data-not-found: "&cCannot join a queue, please rejoin"
+  error-not-enough-wins: "&cYou need at least {0} wins to queue ranked. You now have {1} wins."
+  success-join: "&fYou have joined &b{0} &f's game queue"
+  success-quit: "&fYou have left &b{0} &f's game queue"
+button:
+  back:
+    name: "&c&lGo Back"
+    lore:
+      - "&7Click here to return to the last page"
+  confirm:
+    name-confirm: "&aConfirm"
+    name-cancel: "&cCancel"
+  toggle:
+    name: "&b&l{0}"
+  jump-to-page:
+    name: "&ePage {0} "
+    current-page-lore:
+      - ""
+      - "&aYou are already on this page!"
+  page:
+    next-page-available:
+      name: "&aNext page"
+      lore:
+        - ""
+        - "&eClick here to jump to the next page"
+    next-page-current:
+      name: "&7Next page"
+      lore:
+        - ""
+        - "&eYou are already on the last page!"
+    previous-page-available:
+      name: "&aPrevious page"
+      lore:
+        - ""
+        - "&eClick here to jump to the previous page"
+    previous-page-current:
+      name: "&7Previous page"
+      lore:
+        - ""
+        - "&eYou are on the first page!"
+  page-filter:
+    name: "&bPage filter"
+    lore:
+      - ""
+      - "&eLeft click to change page filter"
+      - "&eRight click to switch page filter status"
+      - ""
+    no-filters: "&cNo filter available"
+menu:
+  view-all-pages:
+    title: "&bView all pages"
+tablist:
+  ## If you want to disable header or footer, just simply put null
+  ## Note that you cannot only keep the header and disable the footer, you have to enable both or disable both
+  header: "&bPractice"
+  footer: "&bdiamond.rip"

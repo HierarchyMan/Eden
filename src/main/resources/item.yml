@@ -1,0 +1,177 @@
+items:
+  lobby:
+    unranked-queue:
+      enabled: true
+      name: "&bUnranked Queue &7(Right-Click)"
+      lore:
+        - ""
+      material: IRON_SWORD
+      durability: 0
+      slot: 0
+      command: "eden:queue unranked"
+    ranked-queue:
+      enabled: true
+      name: "&bRanked Queue &7(Right-Click)"
+      lore:
+        - ""
+      material: DIAMOND_SWORD
+      durability: 0
+      slot: 1
+      command: "eden:queue ranked"
+    create-event:
+      enabled: true
+      name: "&bCreate Event &7(Right-Click)"
+      lore:
+        - ""
+      material: EYE_OF_ENDER
+      durability: 0
+      slot: 2
+      command: "eden:event create"
+    join-event:
+      enabled: true
+      name: "&bJoin Event &7(Right-Click)"
+      lore:
+        - ""
+      material: ENDER_PEARL
+      durability: 0
+      slot: 2
+      command: "eden:joinevent"
+    party-open:
+      enabled: true
+      name: "&bCreate Party &7(Right-Click)"
+      lore:
+        - ""
+      material: NETHER_STAR
+      durability: 0
+      slot: 4
+      command: "eden:party create"
+    leaderboard:
+      enabled: true
+      name: "&bView Leaderboard &7(Right-Click)"
+      lore:
+        - ""
+      material: EMERALD
+      durability: 0
+      slot: 6
+      command: "eden:stats"
+    settings:
+      enabled: true
+      name: "&bEdit Settings &7(Right-Click)"
+      lore:
+        - ""
+      material: WATCH
+      durability: 0
+      slot: 7
+      command: "eden:settings"
+    editor:
+      enabled: true
+      name: "&bEdit Kits &7(Right-Click)"
+      lore:
+        - ""
+      material: BOOK
+      durability: 0
+      slot: 8
+      command: "eden:editkits"
+  party:
+    party-list:
+      enabled: true
+      name: "&bYour Party &7(Right-Click)"
+      lore:
+        - ""
+      material: NETHER_STAR
+      durability: 0
+      slot: 0
+      command: "eden:party list"
+    party-fight:
+      enabled: true
+      name: "&bParty Events &7(Right-Click)"
+      lore:
+        - ""
+      material: COMPASS
+      durability: 0
+      slot: 1
+      command: "eden:choosematchtype"
+    other-parties:
+      enabled: true
+      name: "&bOther Parties &7(Right-Click)"
+      lore:
+        - ""
+      material: SKULL_ITEM
+      durability: 0
+      slot: 6
+      command: "eden:otherparties"
+    editor:
+      enabled: true
+      name: "&bEdit kits &7(Right-Click)"
+      lore:
+        - ""
+      material: BOOK
+      durability: 0
+      slot: 7
+      command: "eden:editkits"
+    party-leave:
+      enabled: true
+      name: "&cLeave Party &7(Right-Click)"
+      lore:
+        - ""
+      material: INK_SACK
+      durability: 1
+      slot: 8
+      command: "eden:party leave"
+  queue:
+    leave-queue:
+      enabled: true
+      name: "&cLeave Queue &7(Right-Click)"
+      lore:
+        - ""
+      material: INK_SACK
+      durability: 1
+      slot: 8
+      command: "eden:queue leave"
+  match:
+    requeue:
+      enabled: true
+      name: "&bPlay Again &7(Right-Click)"
+      lore:
+        - ""
+      material: PAPER
+      durability: 0
+      slot: -1
+      command: "eden:requeue"
+  spectate:
+    teleporter:
+      enabled: true
+      name: "&bTeleportation Tool &7(Right-Click)"
+      lore:
+        - ""
+      material: COMPASS
+      durability: 0
+      slot: 3
+      command: "eden:teleporter"
+    leave-spectate:
+      enabled: true
+      name: "&cLeave Spectate &7(Right-Click)"
+      lore:
+        - ""
+      material: INK_SACK
+      durability: 1
+      slot: 4
+      command: "eden:leavespectate"
+    toggle-visibility-off:
+      enabled: true
+      name: "&bDisable Spectators &7(Right-Click)"
+      lore:
+        - ""
+      material: REDSTONE_TORCH_ON
+      durability: 0
+      slot: 5
+      command: "eden:togglespectatorvisibility"
+    toggle-visibility-on:
+      enabled: true
+      name: "&bEnable Spectators &7(Right-Click)"
+      lore:
+        - ""
+      material: LEVER
+      durability: 0
+      slot: 5
+      command: "eden:togglespectatorvisibility"
