@@ -112,7 +112,7 @@ public class GeneralListener implements Listener {
         }
     }
 
-    //防止踐踏農作物
+    //
     @EventHandler
     public void onCropsTrampling(PlayerInteractEvent event) {
         if (event.getAction() == Action.PHYSICAL && event.getClickedBlock().getType() == Material.SOIL) {

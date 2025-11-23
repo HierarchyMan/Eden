@@ -78,7 +78,7 @@ public class ProfileListener implements Listener {
         Player player = event.getPlayer();
         PlayerProfile profile = PlayerProfile.get(player);
 
-        if (profile == null) { //當在 PlayerJoinEvent 未能加載資料的時候, profile 就會是 null
+        if (profile == null) { // PlayerJoinEvent , profile  null
             Common.log(player.getName() + "'s profile is not saved due to the profile is null");
             return;
         }
@@ -182,7 +182,7 @@ public class ProfileListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        //防止玩家移動物品欄中的物品
+        //
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
             PlayerProfile profile = PlayerProfile.get(player);

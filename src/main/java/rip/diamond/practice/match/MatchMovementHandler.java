@@ -71,12 +71,12 @@ public class MatchMovementHandler {
                         .isExpired())) {
                     TeamPlayer teamPlayer = match.getTeamPlayer(player);
                     if (match.getState() == MatchState.FIGHTING && !teamPlayer.isRespawning()) {
-                        // 檢查 KitGameRules 水上即死
+                        //  KitGameRules 
                         if (gameRules.isDeathOnWater() && (block.getType() == Material.WATER
                                 || block.getType() == Material.STATIONARY_WATER)) {
                             if (gameRules.isPoint(match)) {
                                 TeamPlayer lastHitDamager = teamPlayer.getLastHitDamager();
-                                // 玩家有機會在不被敵方攻擊的情況下死亡, 例如岩漿, 如果是這樣, 就在敵方隊伍隨便抽一個玩家出來
+                                // , , , 
                                 if (lastHitDamager == null) {
                                     lastHitDamager = match.getOpponentTeam(match.getTeam(player)).getAliveTeamPlayers()
                                             .get(0);
@@ -88,7 +88,7 @@ public class MatchMovementHandler {
                             return;
                         }
 
-                        // 檢查 KitGameRules 進入目標
+                        //  KitGameRules 
                         if (gameRules.isPortalGoal() && block.getType() == Material.ENDER_PORTAL) {
                             Team playerTeam = match.getTeam(player);
                             Team portalBelongsTo = match.getTeams().stream()

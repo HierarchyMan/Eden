@@ -120,7 +120,7 @@ public class SumoEvent extends EdenEvent {
                         broadcast(Language.EVENT_SUMO_EVENT_MATCH_END_MESSAGE.toString(match.getOpponentTeam(team).getLeader().getUsername(), team.getLeader().getUsername()));
 
                         Party party = Party.getByPlayer(team.getLeader().getPlayer());
-                        //如果玩家在戰鬥時退出伺服器的話, Party 可能會是null
+                        //, Party null
                         if (party != null) {
                             eliminate(party);
                         }
@@ -182,7 +182,7 @@ public class SumoEvent extends EdenEvent {
             }
         }
 
-        //這裏就是代表整個活動已經結束的時候要顯示的東西
+        //
         if (state == EventState.ENDING) {
             return Language.EVENT_SUMO_EVENT_IN_GAME_SCOREBOARD_ENDING.toStringList(player);
         }

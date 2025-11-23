@@ -176,7 +176,7 @@ public class MatchListener implements Listener {
                 new MatchRespawnTask(match, teamPlayer);
             } else if (gameRules.isPoint(match)) {
                 TeamPlayer lastHitDamager = teamPlayer.getLastHitDamager();
-                // 玩家有機會在不被敵方攻擊的情況下死亡, 例如岩漿, 如果是這樣, 就在敵方隊伍隨便抽一個玩家出來
+                // , , , 
                 if (lastHitDamager == null) {
                     lastHitDamager = match.getOpponentTeam(match.getTeam(player)).getAliveTeamPlayers().get(0);
                 }
@@ -320,9 +320,9 @@ public class MatchListener implements Listener {
                 Team teamEntity = match.getTeam(entity);
                 Team teamDamager = match.getTeam(damager);
 
-                // 檢查攻擊方和被攻擊方是不是同隊
+                // 
                 if (teamEntity == teamDamager) {
-                    // 檢查攻擊方和被攻擊方是不是同一個人
+                    // 
                     if (entity != damager) {
                         if (!kit.getGameRules().isTeamProjectile() && event.getDamager() instanceof Projectile) {
                             event.setCancelled(true);
@@ -339,7 +339,7 @@ public class MatchListener implements Listener {
                     }
                 }
 
-                // 檢查職業是否只允許遠程攻擊傷害
+                // 
                 if (kit.getGameRules().isProjectileOnly() && event.getDamager() instanceof Player) {
                     event.setCancelled(true);
                     return;
@@ -375,12 +375,12 @@ public class MatchListener implements Listener {
                 teamPlayerDamager.handleHit(event.getFinalDamage());
                 teamPlayerEntity.handleGotHit(match.getTeamPlayer(damager), entity.isBlocking());
 
-                // 顯示造成的傷害
+                // 
                 if (event.getDamager() instanceof Arrow && entity != damager) {
                     Util.sendArrowHitMessage(event);
                 }
 
-                // 檢查職業是否為Boxing, 和檢查是否達到最大Boxing攻擊數, 如果是的話就死亡
+                // Boxing, Boxing, 
                 if (kit.getGameRules().isBoxing()
                         && match.getTeam(entity).getGotHits() >= match.getMaximumBoxingHits()) {
                     match.getTeam(entity).getAliveTeamPlayers().forEach(teamPlayer -> {
@@ -566,7 +566,7 @@ public class MatchListener implements Listener {
                                 .amount(player.getItemInHand().getAmount() - 1).build());
                         player.updateInventory();
                     }
-                    // 無論金頭顱食用結果如何, 都必須要 cancel event, 不然玩家就可以放置金頭顱在地上
+                    // ,  cancel event, 
                     event.setCancelled(true);
                     return;
                 }
@@ -895,7 +895,7 @@ public class MatchListener implements Listener {
                 // Now get the bed location
                 Location bedLocation1 = new Location(block.getLocation().getWorld(), block.getLocation().getBlockX(),
                         block.getLocation().getBlockY(), block.getLocation().getBlockZ());
-                Location bedLocation2 = Util.getBedBlockNearBy(bedLocation1).clone(); // 因為一張床等於兩個方塊, 所以需要床的另一邊位置
+                Location bedLocation2 = Util.getBedBlockNearBy(bedLocation1).clone(); // , 
 
                 Team team = match.getTeam(player);
                 Team opponentTeam = match.getTeams().stream()

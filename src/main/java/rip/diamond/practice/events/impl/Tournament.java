@@ -72,7 +72,7 @@ public class Tournament extends EdenEvent {
                     broadcast(Language.EVENT_TOURNAMENT_MATCH_END_MESSAGE.toString(getTeamName(winner), getTeamName(loser), matches.size()));
 
                     Party party = Party.getByPlayer(loser.getLeader().getPlayer());
-                    //如果玩家在戰鬥時退出伺服器的話, Party 可能會是null
+                    //, Party null
                     if (party != null) {
                         eliminate(party);
                     }

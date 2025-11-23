@@ -59,7 +59,7 @@ public class MatchRespawnTask extends MatchTaskTicker {
             Util.teleport(player, match.getTeam(player).getSpawnLocation());
         }
 
-        // 我也不知道為什麼, 這兩項東西需要重新用一次才能正常運作
+        // , 
         player.setAllowFlight(true);
         player.setFlying(true);
 

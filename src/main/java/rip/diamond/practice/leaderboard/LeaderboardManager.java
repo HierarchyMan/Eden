@@ -40,7 +40,7 @@ public class LeaderboardManager {
         Common.debug("正在更新排行榜... 這可能需要一段時間");
         for (Map<Kit, KitLeaderboard> datas : Arrays.asList(winsLeaderboard, eloLeaderboard, winstreakLeaderboard,
                 bestWinstreakLeaderboard, dailyWinstreakLeaderboard)) {
-            // 每五分鐘更新排行榜
+            // 
             datas.values().forEach(Leaderboard::update);
         }
         long current = System.currentTimeMillis();

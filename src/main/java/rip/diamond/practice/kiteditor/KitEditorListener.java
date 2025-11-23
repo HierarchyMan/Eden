@@ -133,7 +133,7 @@ public class KitEditorListener implements Listener {
         }
     }
 
-    // 防止玩家放置物品到其他位置
+    // 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
         Player player = (Player) event.getWhoClicked();

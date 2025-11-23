@@ -271,7 +271,7 @@ public class Arena {
             arena.setAllowedKits(allowedKits);
             arena.setEnabled(enabled);
 
-            // 場地加載
+            // 
             ConfigurationSection details = arenaSection.getConfigurationSection(name + ".details");
             if (details != null) {
                 details.getKeys(false).forEach(id -> {

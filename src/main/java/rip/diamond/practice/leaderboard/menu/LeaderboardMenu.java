@@ -75,7 +75,7 @@ public abstract class LeaderboardMenu extends PaginatedMenu {
             buttons.putAll(global);
         }
 
-        // 給予一個用玻璃圍繞著的背景
+        // 
         for (int j = 0; j < getSize(); j++) {
             if (!buttons.containsKey(j)) {
                 buttons.put(j, placeholderButton);
