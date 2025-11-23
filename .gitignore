@@ -6,6 +6,8 @@
 /.idea/
 /.vscode/
 /target/
+*output.py
+*output.txt
 
 # Maven
 /target/
