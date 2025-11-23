@@ -3,6 +3,9 @@
 /.gradle/
 /build/
 /build/classes/java/main/
+/.idea/
+/.vscode/
+/target/
 
 # Maven
 /target/
