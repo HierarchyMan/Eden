@@ -2,6 +2,7 @@ package rip.diamond.practice.layout;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import rip.diamond.practice.Eden;
 import rip.diamond.practice.config.Config;
 import rip.diamond.practice.config.Language;
 import rip.diamond.practice.util.CC;
@@ -30,10 +31,17 @@ public class TabAdapter implements ImanityTabAdapter {
             int x = i / (maxSlots / 20) + 1; //Somehow ImanityTablist slot count starts at 1, so we have to start at 1 :shrug:
             int y = i % (maxSlots / 20);
 
+            // Replace placeholders BEFORE coloring
+            String format = Config.FANCY_TABLIST_FORMAT.toString().replace("{player-name}", target.getName());
+            // Apply Eden placeholders for the target player
+            format = Eden.INSTANCE.getPlaceholder().translate(target, format);
+            // Then colorize
+            String text = CC.translate(format);
+
             objects.add(new BufferedTabObject()
                     .slot(x)
                     .column(TabColumn.getFromOrdinal(y))
-                    .text(CC.translate(Language.translate(Config.FANCY_TABLIST_FORMAT.toString().replace("{player-name}", target.getName()), target)))
+                    .text(text)
                     .ping(target.spigot().getPing())
                     .skin(Skin.fromPlayer(target))
             );

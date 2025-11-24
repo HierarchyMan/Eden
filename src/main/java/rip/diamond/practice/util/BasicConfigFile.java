@@ -44,10 +44,6 @@ public class BasicConfigFile {
         return value instanceof Number ? ((Number) value).doubleValue() : 0.0D;
     }
 
-    public File getFile() {
-        return this.file;
-    }
-
     public int getInt(String path) {
         Object value = cache.get(path);
         return value instanceof Number ? ((Number) value).intValue() : 0;
@@ -59,14 +55,11 @@ public class BasicConfigFile {
             if (value == null) {
                 return path;
             }
-            return ColorUtil.colorize(String.valueOf(value));
+            // REMOVED ColorUtil.colorize here.
+            // If you need colors in raw config access, wrap the call in ColorUtil.colorize() in the calling class.
+            return String.valueOf(value);
         }
         return path;
-    }
-
-    public String getStringRaw(String path) {
-        Object value = cache.get(path);
-        return value == null ? path : value.toString();
     }
 
     public List<String> getStringList(String path) {
@@ -75,13 +68,21 @@ public class BasicConfigFile {
             List<String> strings = new ArrayList<>();
             for (Object entry : (List<?>) value) {
                 if (entry != null) {
-                    strings.add(ColorUtil.colorize(entry.toString()));
+                    // REMOVED ColorUtil.colorize here too
+                    strings.add(entry.toString());
                 }
             }
             return strings;
         }
         return Collections.singletonList(path);
     }
+
+    public String getStringRaw(String path) {
+        Object value = cache.get(path);
+        return value == null ? path : value.toString();
+    }
+
+
 
     public List<String> getRawStringList(String path) {
         Object value = cache.get(path);

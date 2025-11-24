@@ -36,6 +36,11 @@ public class EdenPlaceholder {
         public static final String NEW_LINE = "<new-line>";
 
         public String translate(Player player, String str) {
+                // Add null check at the start
+                if (str == null) {
+                        return null;
+                }
+
                 if (player != null) {
                         PlayerProfile profile = PlayerProfile.get(player);
 

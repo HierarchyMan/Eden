@@ -1,6 +1,7 @@
 package rip.diamond.practice.layout;
 
 import org.bukkit.entity.Player;
+import rip.diamond.practice.Eden;
 import rip.diamond.practice.config.Config;
 import rip.diamond.practice.config.Language;
 import rip.diamond.practice.match.Match;
@@ -20,7 +21,14 @@ public class NameTagAdapter extends NameTagProvider {
 
     @Override
     public NameTagInfo fetchNameTag(Player target, Player viewer) {
-        String prefix = Language.translate(getPrefix(target, viewer), target);
+        String prefix = getPrefix(target, viewer);
+
+        // 1. Placeholders first
+        prefix = Eden.INSTANCE.getPlaceholder().translate(target, prefix);
+
+        // 2. Colors last (Handles hex downsampling and legacy codes)
+        prefix = CC.translate(prefix);
+
         int length = prefix.length();
         if (length > 16) {
             Common.log(CC.RED + "[Eden] Nametag prefix should only contain 16 character. Currently prefix has " + length + " character. (" + prefix + ")");

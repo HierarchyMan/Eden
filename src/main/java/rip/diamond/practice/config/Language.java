@@ -3,6 +3,7 @@ package rip.diamond.practice.config;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.clip.placeholderapi.PlaceholderAPI;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -702,46 +703,58 @@ public enum Language {
     }
 
     public String toString(Player player, Object... replacements) {
-        String str = Eden.INSTANCE.getLanguageFile().getString(path);
-        if (str.equalsIgnoreCase("null")) {
-            return null; // Fix for #437 - If return a "null" string, it will send an empty message
+        // CHANGE: Use getStringRaw instead of getString to prevent early colorization
+        String str = Eden.INSTANCE.getLanguageFile().getStringRaw(path);
+
+        if (str == null || str.equalsIgnoreCase("null")) {
+            return null;
         }
         if (Util.isNull(str)) {
             return path;
         }
-        str = translate(str, player);
+
+        // 1. Replace argument placeholders {0}, {1} etc
         for (int i = 0; i < replacements.length; i++) {
             String replacement = convert(replacements[i]);
+            // Use literal replacement to avoid regex errors
             str = str.replace("{" + i + "}", replacement);
         }
-        return CC.translate(str);
+
+        // 2. Process Placeholders and Colors
+        return translate(str, player);
     }
+
 
     public List<String> toStringList(Object... replacements) {
         return toStringList(null, replacements);
     }
 
     public List<String> toStringList(Player player, Object... replacements) {
-        if (Util.isNull(Eden.INSTANCE.getLanguageFile().getString(path))) {
+        // CHANGE: Use getRawStringList
+        List<String> rawList = Eden.INSTANCE.getLanguageFile().getRawStringList(path);
+
+        if (rawList == null || rawList.isEmpty()) {
             return Collections.singletonList(path);
         }
+
         List<String> strings = new ArrayList<>();
 
-        for (String str : Eden.INSTANCE.getLanguageFile().getStringList(path)) {
-            str = translate(str, player);
-            if (str == null) {
-                continue;
-            }
+        for (String str : rawList) {
+            // 1. Argument replacements
             for (int i = 0; i < replacements.length; i++) {
                 String replacement = convert(replacements[i]);
                 str = str.replace("{" + i + "}", replacement);
             }
 
-            List<String> toBeAdded = Arrays.asList(str.split(EdenPlaceholder.NEW_LINE, -1));
+            // 2. Placeholders and Colors
+            String translated = translate(str, player);
+            if (translated == null) continue;
+
+            List<String> toBeAdded = Arrays.asList(translated.split(EdenPlaceholder.NEW_LINE, -1));
             strings.addAll(toBeAdded);
         }
 
-        return CC.translate(strings);
+        return strings;
     }
 
     public void sendMessage(Player player, Object... replacements) {
@@ -772,14 +785,31 @@ public enum Language {
         }
     }
 
-    public static String translate(String string, Player player) {
-        String str = string;
+    private String translate(String str, Player player) {
+        if (str == null) {
+            return null;
+        }
+
+        String withPlaceholders = str;
+
         if (player != null) {
-            str = Eden.INSTANCE.getPlaceholder().translate(player, str);
-            if (str != null && Checker.isPluginEnabled("PlaceholderAPI")) {
-                str = Eden.INSTANCE.getHookManager().getPlaceholderAPIHook().setPlaceholders(player, str);
+            withPlaceholders = Eden.INSTANCE.getPlaceholder().translate(player, withPlaceholders);
+
+            // Check if placeholder translation returned null
+            if (withPlaceholders == null) {
+                return null;
+            }
+
+            if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                withPlaceholders = PlaceholderAPI.setPlaceholders(player, withPlaceholders);
+
+                // Check if PlaceholderAPI returned null
+                if (withPlaceholders == null) {
+                    return null;
+                }
             }
         }
-        return str;
+
+        return CC.translate(withPlaceholders);
     }
 }

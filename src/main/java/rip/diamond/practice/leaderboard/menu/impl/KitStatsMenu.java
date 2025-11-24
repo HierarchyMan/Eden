@@ -25,7 +25,9 @@ public class KitStatsMenu extends LeaderboardMenu {
     @Override
     public String getPrePaginatedTitle(Player player) {
         String title = Eden.INSTANCE.getMenusConfig().getConfig().getString("kit-stats-menu.title");
-        return CC.translate(title.replace("{player}", profile.getUsername()));
+        // Replace placeholder BEFORE coloring
+        title = title.replace("{player}", profile.getUsername());
+        return CC.translate(title);
     }
 
     @Override
