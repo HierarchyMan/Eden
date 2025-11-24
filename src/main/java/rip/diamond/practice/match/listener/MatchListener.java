@@ -563,6 +563,7 @@ public class MatchListener implements Listener {
                         }
                         player.setFoodLevel(
                                 Math.min(player.getFoodLevel() + Config.MATCH_GOLDEN_HEAD_FOOD_LEVEL.toInteger(), 20));
+                        player.setSaturation(Math.min(player.getSaturation() + Config.MATCH_GOLDEN_HEAD_SATURATION_LEVEL.toInteger(), 20));
                         player.setItemInHand(new ItemBuilder(player.getItemInHand())
                                 .amount(player.getItemInHand().getAmount() - 1).build());
                         player.updateInventory();

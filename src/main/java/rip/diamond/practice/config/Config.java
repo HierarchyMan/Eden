@@ -84,6 +84,7 @@ public enum Config {
     MATCH_GOLDEN_HEAD_EFFECTS("match.golden-head.effects",
             ImmutableList.of("REGENERATION;200;2", "ABSORPTION;2400;0", "SPEED;200;0")),
     MATCH_GOLDEN_HEAD_FOOD_LEVEL("match.golden-head.food-level", 6),
+    MATCH_GOLDEN_HEAD_SATURATION_LEVEL("match.golden-head.saturation-level", 6),
     // Event
     EVENT_SUMO_EVENT_ARENAS("event.sumo-event.arenas", ImmutableList.of("sumoevent")),
     EVENT_SUMO_EVENT_KIT("event.sumo-event.kit", "sumo"),

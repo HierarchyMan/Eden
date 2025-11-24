@@ -9,7 +9,9 @@ import rip.diamond.practice.database.impl.FlatFileHandler;
 import rip.diamond.practice.database.impl.MongoHandler;
 import rip.diamond.practice.database.impl.MySqlHandler;
 import rip.diamond.practice.util.CC;
+import rip.diamond.practice.util.Checker;
 import rip.diamond.practice.util.Common;
+import rip.diamond.practice.util.ItemEditorUtil;
 import rip.diamond.practice.util.Tasks;
 import rip.diamond.practice.util.command.Command;
 import rip.diamond.practice.util.command.CommandArgs;
@@ -80,6 +82,13 @@ public class EdenCommand extends Command {
                 }
                 handleGoldenHead((Player) sender, args);
                 return;
+            case EDITITEM:
+                if (!(sender instanceof Player)) {
+                    Common.sendMessage(sender, CC.RED + "This command can only be executed by a player.");
+                    return;
+                }
+                handleEditItem((Player) sender, args);
+                return;
         }
     }
 
@@ -94,6 +103,53 @@ public class EdenCommand extends Command {
 
         // Call the GoldenHeadCommand logic directly
         new rip.diamond.practice.kits.command.GoldenHeadCommand().executeGoldenHead(player, newArgs);
+    }
+
+    private void handleEditItem(Player player, String[] args) {
+        if (!player.hasPermission("eden.command.edititem")) {
+            Language.NO_PERMISSION.sendMessage(player);
+            return;
+        }
+
+        if (args.length < 2) {
+            sendEditItemUsage(player);
+            return;
+        }
+
+        String subCommand = args[1].toLowerCase();
+
+        switch (subCommand) {
+            case "removeattributes":
+                ItemEditorUtil.removeAttributes(player);
+                break;
+            case "setunbreakable":
+                ItemEditorUtil.setUnbreakable(player);
+                break;
+            case "enchant":
+                if (args.length < 4) {
+                    Common.sendMessage(player, CC.RED + "Usage: /eden edititem enchant <ENCHANTMENT> <LEVEL>");
+                    return;
+                }
+                if (!Checker.isInteger(args[3])) {
+                    Common.sendMessage(player, CC.RED + "Invalid enchantment level! Must be a number.");
+                    return;
+                }
+                ItemEditorUtil.addEnchantment(player, args[2], Integer.parseInt(args[3]));
+                break;
+            default:
+                sendEditItemUsage(player);
+                break;
+        }
+    }
+
+    private void sendEditItemUsage(Player player) {
+        Common.sendMessage(player,
+                CC.CHAT_BAR,
+                CC.AQUA + "/eden edititem" + CC.GRAY + " - Item Editor Commands",
+                CC.YELLOW + "/eden edititem removeattributes " + CC.GRAY + "- Remove all attributes from item",
+                CC.YELLOW + "/eden edititem setunbreakable " + CC.GRAY + "- Make item unbreakable",
+                CC.YELLOW + "/eden edititem enchant <type> <level> " + CC.GRAY + "- Enchant item",
+                CC.CHAT_BAR);
     }
 
     private void handleMigration(CommandSender sender, String[] args) {
@@ -214,12 +270,26 @@ public class EdenCommand extends Command {
             return Arrays.asList("FLATFILE", "MONGODB", "MYSQL");
         } else if (args.length == 2 && args[0].equalsIgnoreCase("goldenhead")) {
             return Arrays.asList("1", "16", "32", "64");
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("edititem")) {
+            return Arrays.asList("removeattributes", "setunbreakable", "enchant");
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("edititem") && args[1].equalsIgnoreCase("enchant")) {
+            // List all enchantments
+            return Arrays.asList(
+                "PROTECTION", "FIRE_PROTECTION", "FEATHER_FALLING", "BLAST_PROTECTION",
+                "PROJECTILE_PROTECTION", "RESPIRATION", "AQUA_AFFINITY", "THORNS",
+                "DEPTH_STRIDER", "SHARPNESS", "SMITE", "BANE_OF_ARTHROPODS",
+                "KNOCKBACK", "FIRE_ASPECT", "LOOTING", "EFFICIENCY", "SILK_TOUCH",
+                "UNBREAKING", "FORTUNE", "POWER", "PUNCH", "FLAME", "INFINITY",
+                "LUCK_OF_THE_SEA", "LURE"
+            );
+        } else if (args.length == 4 && args[0].equalsIgnoreCase("edititem") && args[1].equalsIgnoreCase("enchant")) {
+            return Arrays.asList("1", "2", "3", "4", "5", "10");
         }
 
         return Arrays.stream(Action.values()).map(Action::name).collect(Collectors.toList());
     }
 
     enum Action {
-        RELOAD, DEBUG, SPIGOT, MIGRATE, GOLDENHEAD
+        RELOAD, DEBUG, SPIGOT, MIGRATE, GOLDENHEAD, EDITITEM
     }
 }

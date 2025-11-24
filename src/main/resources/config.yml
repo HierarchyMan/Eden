@@ -180,6 +180,8 @@ match:
       - "SPEED;200;0"
     ## How much food level should system gives to player when they eat a golden head?
     food-level: 6
+    ## How much saturation should system gives to player when they eat a golden head?
+    saturation-level: 6
 ## Overall event config
 event:
   ## Sumo Event configuration
