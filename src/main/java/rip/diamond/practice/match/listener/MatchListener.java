@@ -505,6 +505,7 @@ public class MatchListener implements Listener {
                             .amount(player.getItemInHand().getAmount() - 1).build());
                     player.setHealth(20);
                     player.setFoodLevel(Math.min(player.getFoodLevel() + 6, 20));
+                    player.setSaturation(Math.min(player.getSaturation() + 6, 20));
                     if (Config.MATCH_GOLDEN_APPLE_INSTANT_GAPPLE_EFFECTS.toBoolean()) {
                         player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 2400, 0));
                         if (Config.MATCH_GOLDEN_APPLE_GIVE_ABSORPTION_HEARTS_EVERYTIME.toBoolean()) {

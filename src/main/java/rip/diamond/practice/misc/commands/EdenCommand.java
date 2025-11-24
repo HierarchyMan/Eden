@@ -73,7 +73,27 @@ public class EdenCommand extends Command {
             case MIGRATE:
                 handleMigration(sender, args);
                 return;
+            case GOLDENHEAD:
+                if (!(sender instanceof Player)) {
+                    Common.sendMessage(sender, CC.RED + "This command can only be executed by a player.");
+                    return;
+                }
+                handleGoldenHead((Player) sender, args);
+                return;
         }
+    }
+
+    private void handleGoldenHead(Player player, String[] args) {
+        if (!player.hasPermission("eden.command.goldenhead")) {
+            Language.NO_PERMISSION.sendMessage(player);
+            return;
+        }
+
+        // Create new args array without the "goldenhead" subcommand
+        String[] newArgs = args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[0];
+
+        // Call the GoldenHeadCommand logic directly
+        new rip.diamond.practice.kits.command.GoldenHeadCommand().executeGoldenHead(player, newArgs);
     }
 
     private void handleMigration(CommandSender sender, String[] args) {
@@ -192,12 +212,14 @@ public class EdenCommand extends Command {
             return Arrays.asList("FLATFILE", "MONGODB", "MYSQL");
         } else if (args.length == 3 && args[0].equalsIgnoreCase("migrate")) {
             return Arrays.asList("FLATFILE", "MONGODB", "MYSQL");
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("goldenhead")) {
+            return Arrays.asList("1", "16", "32", "64");
         }
 
         return Arrays.stream(Action.values()).map(Action::name).collect(Collectors.toList());
     }
 
     enum Action {
-        RELOAD, DEBUG, SPIGOT, MIGRATE
+        RELOAD, DEBUG, SPIGOT, MIGRATE, GOLDENHEAD
     }
 }
