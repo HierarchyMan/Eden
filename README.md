@@ -25,6 +25,7 @@ As an open-source project, we'd love to see any improvements that happen to the 
 Head over to the pull requests to create a PR! Please note that if you want to improve or add a feature, you will have to follow the current code base to prevent confusion.
 
 ## Credit
+* [GoodestEnglish](https://github.com/goodestenglish/) - For making the entire base plugin in the first place
 * [Array](https://github.com/RefineDevelopment/Array) - Arena cloning, EntityHider
 * [Sconey](https://github.com/Saturn-Operations/Sconey) - Scoreboard API
 * [ImanityFramework](https://github.com/FairyProject/ImanityFramework) - Tablist API
