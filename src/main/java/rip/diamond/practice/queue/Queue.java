@@ -26,6 +26,24 @@ public class Queue {
         new QueueTask();
     }
 
+    /**
+     * Update Kit references in active QueueProfiles after kit reload
+     * This prevents queue matching failures when Kit instances are replaced
+     */
+    public static void updateKitReferences() {
+        for (QueueProfile qProfile : players.values()) {
+            Kit oldKit = qProfile.getKit();
+            Kit newKit = Kit.getKits().stream()
+                    .filter(k -> k.getName().equals(oldKit.getName()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (newKit != null && newKit != oldKit) {
+                qProfile.setKit(newKit);
+            }
+        }
+    }
+
     public static List<QueueProfile> getUnmatchedPlayers() {
         return players.values().stream().filter(qProfile -> !qProfile.isFound()).collect(Collectors.toList());
     }

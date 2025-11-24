@@ -1,6 +1,7 @@
 package rip.diamond.practice.leaderboard;
 
 import lombok.Getter;
+import org.bson.Document;
 import rip.diamond.practice.Eden;
 import rip.diamond.practice.kits.Kit;
 import rip.diamond.practice.leaderboard.impl.KitLeaderboard;
@@ -9,6 +10,7 @@ import rip.diamond.practice.util.Tasks;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,10 +22,35 @@ public class LeaderboardManager {
     private final Map<Kit, KitLeaderboard> bestWinstreakLeaderboard = new HashMap<>();
     private final Map<Kit, KitLeaderboard> dailyWinstreakLeaderboard = new HashMap<>();
 
+    private volatile List<Document> lastProfilesSnapshot;
+    private volatile long lastSnapshotAt;
+
     public void init() {
         if (Eden.INSTANCE.getDatabaseManager().getHandler() == null) {
             return;
         }
+        rebuildLeaderboards();
+
+        Tasks.runAsyncTimer(this::update, 0L, 20L * 60L * 5L); // Updates every 5 minutes
+    }
+
+    /**
+     * Rebuild all leaderboard maps with current Kit instances
+     * This should be called after Kit.reload() to ensure maps use new Kit objects
+     */
+    public void rebuildLeaderboards() {
+        if (Eden.INSTANCE.getDatabaseManager().getHandler() == null) {
+            return;
+        }
+
+        // Clear old maps
+        winsLeaderboard.clear();
+        eloLeaderboard.clear();
+        winstreakLeaderboard.clear();
+        bestWinstreakLeaderboard.clear();
+        dailyWinstreakLeaderboard.clear();
+
+        // Rebuild with current Kit instances
         for (Kit kit : Kit.getKits()) {
             winsLeaderboard.put(kit, new KitLeaderboard(LeaderboardType.WINS, kit));
             eloLeaderboard.put(kit, new KitLeaderboard(LeaderboardType.ELO, kit));
@@ -32,19 +59,29 @@ public class LeaderboardManager {
             dailyWinstreakLeaderboard.put(kit, new KitLeaderboard(LeaderboardType.WINSTREAK_DAILY, kit));
         }
 
-        Tasks.runAsyncTimer(this::update, 0L, 20L * 60L * 5L); // Updates every 5 minutes
+        // Trigger immediate update with existing snapshot if available
+        if (lastProfilesSnapshot != null && !lastProfilesSnapshot.isEmpty()) {
+            for (Map<Kit, KitLeaderboard> datas : Arrays.asList(winsLeaderboard, eloLeaderboard, winstreakLeaderboard,
+                    bestWinstreakLeaderboard, dailyWinstreakLeaderboard)) {
+                datas.values().forEach(lb -> lb.update(lastProfilesSnapshot));
+            }
+        }
     }
 
     public void update() {
         long previous = System.currentTimeMillis();
         Common.debug("正在更新排行榜... 這可能需要一段時間");
+
+        List<Document> snapshot = Eden.INSTANCE.getDatabaseManager().getHandler().getAllProfiles();
+        lastProfilesSnapshot = snapshot;
+        lastSnapshotAt = previous;
+
         for (Map<Kit, KitLeaderboard> datas : Arrays.asList(winsLeaderboard, eloLeaderboard, winstreakLeaderboard,
                 bestWinstreakLeaderboard, dailyWinstreakLeaderboard)) {
-            // 
-            datas.values().forEach(Leaderboard::update);
+            datas.values().forEach(lb -> lb.update(snapshot));
         }
         long current = System.currentTimeMillis();
-        Common.debug("排行榜更新完畢! 耗時" + (current - previous) + "ms");
+        Common.debug("排行榜更新完畢! 耗時" + (current - previous) + "ms | profiles=" + snapshot.size());
     }
 
     /**

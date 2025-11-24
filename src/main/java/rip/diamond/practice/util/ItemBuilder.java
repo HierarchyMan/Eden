@@ -4,8 +4,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
@@ -40,7 +38,7 @@ public class ItemBuilder implements Listener {
 
 	public ItemBuilder name(String name) {
 		ItemMeta meta = is.getItemMeta();
-		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+		meta.setDisplayName(ColorUtil.colorize(name));
 		is.setItemMeta(meta);
 		return this;
 	}
@@ -54,7 +52,7 @@ public class ItemBuilder implements Listener {
 		}
 
 		if (name != null) {
-			lore.add(ChatColor.translateAlternateColorCodes('&', name));
+			lore.add(ColorUtil.colorize(name));
 		}
 		meta.setLore(lore);
 
@@ -73,7 +71,7 @@ public class ItemBuilder implements Listener {
 
 		for (String string : lore) {
 			if (string != null) {
-				toSet.add(ChatColor.translateAlternateColorCodes('&', string));
+				toSet.add(ColorUtil.colorize(string));
 			}
 		}
 
@@ -93,7 +91,7 @@ public class ItemBuilder implements Listener {
 
 		for (String string : lore) {
 			if (string != null) {
-				toSet.add(ChatColor.translateAlternateColorCodes('&', string));
+				toSet.add(ColorUtil.colorize(string));
 			}
 		}
 

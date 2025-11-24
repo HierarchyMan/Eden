@@ -11,15 +11,23 @@ import rip.diamond.practice.leaderboard.LeaderboardPlayerCache;
 import rip.diamond.practice.leaderboard.LeaderboardType;
 import rip.diamond.practice.util.ItemBuilder;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
 
 @Getter
 public class KitLeaderboard extends Leaderboard {
 
     private final Kit kit;
+    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
+    private volatile List<LeaderboardPlayerCache> snapshot = new ArrayList<>();
 
     public KitLeaderboard(LeaderboardType type, Kit kit) {
         super(type);
@@ -27,77 +35,58 @@ public class KitLeaderboard extends Leaderboard {
     }
 
     @Override
-    public void update() {
-        String path = getType().getPath(kit);
-
-        // Get all documents from abstraction layer
-        List<Document> documents = Eden.INSTANCE.getDatabaseManager().getHandler().getAllProfiles();
-
-        // Sort in Java memory
-        documents.sort((doc1, doc2) -> {
-            Integer val1 = getStatsValue(doc1, path);
-            Integer val2 = getStatsValue(doc2, path);
-
-            // Handle time-based winstreak leaderboards
-            if (getType() == LeaderboardType.WINSTREAK_DAILY) {
-                long date1 = getStatsValueLong(doc1, path.replace("dailyWinstreak", "lastDailyReset"));
-                long date2 = getStatsValueLong(doc2, path.replace("dailyWinstreak", "lastDailyReset"));
-                if (!isSameDay(date1, System.currentTimeMillis()))
-                    val1 = 0;
-                if (!isSameDay(date2, System.currentTimeMillis()))
-                    val2 = 0;
-            } else if (getType() == LeaderboardType.WINSTREAK_WEEKLY) {
-                long date1 = getStatsValueLong(doc1, path.replace("weeklyWinstreak", "lastWeeklyReset"));
-                long date2 = getStatsValueLong(doc2, path.replace("weeklyWinstreak", "lastWeeklyReset"));
-                if (!isSameWeek(date1, System.currentTimeMillis()))
-                    val1 = 0;
-                if (!isSameWeek(date2, System.currentTimeMillis()))
-                    val2 = 0;
-            } else if (getType() == LeaderboardType.WINSTREAK_MONTHLY) {
-                long date1 = getStatsValueLong(doc1, path.replace("monthlyWinstreak", "lastMonthlyReset"));
-                long date2 = getStatsValueLong(doc2, path.replace("monthlyWinstreak", "lastMonthlyReset"));
-                if (!isSameMonth(date1, System.currentTimeMillis()))
-                    val1 = 0;
-                if (!isSameMonth(date2, System.currentTimeMillis()))
-                    val2 = 0;
-            }
-
-            return val2.compareTo(val1); // Descending order
-        });
-
-        getLeaderboard().clear();
-
-        // Take top entries, but skip those with 0 data (stale/expired entries)
-        int position = 1;
-        for (int i = 0; i < documents.size() && position <= 10; i++) {
-            Document document = documents.get(i);
-            String username = document.getString("username");
-            UUID uuid = UUID.fromString(document.getString("uuid"));
-            int data = getStatsValue(document, path);
-
-            // Handle time-based winstreak leaderboards
-            if (getType() == LeaderboardType.WINSTREAK_DAILY) {
-                long date = getStatsValueLong(document, path.replace("dailyWinstreak", "lastDailyReset"));
-                if (!isSameDay(date, System.currentTimeMillis()))
-                    data = 0;
-            } else if (getType() == LeaderboardType.WINSTREAK_WEEKLY) {
-                long date = getStatsValueLong(document, path.replace("weeklyWinstreak", "lastWeeklyReset"));
-                if (!isSameWeek(date, System.currentTimeMillis()))
-                    data = 0;
-            } else if (getType() == LeaderboardType.WINSTREAK_MONTHLY) {
-                long date = getStatsValueLong(document, path.replace("monthlyWinstreak", "lastMonthlyReset"));
-                if (!isSameMonth(date, System.currentTimeMillis()))
-                    data = 0;
-            }
-
-            // Skip entries with 0 data (stale/expired from previous time periods)
-            if (data == 0) {
-                continue;
-            }
-
-            getLeaderboard().put(position, new LeaderboardPlayerCache(username, uuid, data));
-            position++;
+    public void update(List<Document> profilesSnapshot) {
+        if (profilesSnapshot == null || profilesSnapshot.isEmpty()) {
+            return;
         }
+
+        List<LeaderboardPlayerCache> topEntries = profilesSnapshot.stream()
+                .map(doc -> buildCacheEntry(doc, getType().getPath(kit)))
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparingInt(LeaderboardPlayerCache::getData).reversed())
+                .limit(10)
+                .collect(Collectors.toList());
+
+        lock.writeLock().lock();
+        try {
+            LinkedHashMap<Integer, LeaderboardPlayerCache> board = getLeaderboard();
+            board.clear();
+            int pos = 1;
+            for (LeaderboardPlayerCache cache : topEntries) {
+                board.put(pos++, cache);
+            }
+            snapshot = new ArrayList<>(board.values());
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    private LeaderboardPlayerCache buildCacheEntry(Document document, String path) {
+        String username = document.getString("username");
+        UUID uuid = UUID.fromString(document.getString("uuid"));
+        int data = getStatsValue(document, path);
+
+        // Handle time-based winstreak leaderboards
+        if (getType() == LeaderboardType.WINSTREAK_DAILY) {
+            long date = getStatsValueLong(document, path.replace("dailyWinstreak", "lastDailyReset"));
+            if (!isSameDay(date, System.currentTimeMillis()))
+                data = 0;
+        } else if (getType() == LeaderboardType.WINSTREAK_WEEKLY) {
+            long date = getStatsValueLong(document, path.replace("weeklyWinstreak", "lastWeeklyReset"));
+            if (!isSameWeek(date, System.currentTimeMillis()))
+                data = 0;
+        } else if (getType() == LeaderboardType.WINSTREAK_MONTHLY) {
+            long date = getStatsValueLong(document, path.replace("monthlyWinstreak", "lastMonthlyReset"));
+            if (!isSameMonth(date, System.currentTimeMillis()))
+                data = 0;
+        }
+
+        // Skip entries with 0 data (stale/expired from previous time periods)
+        if (data == 0) {
+            return null;
+        }
+
+        return new LeaderboardPlayerCache(username, uuid, data);
     }
 
     /**
@@ -105,46 +94,49 @@ public class KitLeaderboard extends Leaderboard {
      * This is much more performant than doing a full update
      */
     public void updatePlayer(UUID uuid, String username, int newData) {
-        // For time-based leaderboards, check if data is stale
-        if (newData == 0) {
-            // Remove player if they have 0 data
-            getLeaderboard().entrySet().removeIf(entry -> entry.getValue().getPlayerUUID().equals(uuid));
-            return;
-        }
-
-        // Check if player is already in leaderboard
-        Integer existingPosition = null;
-        for (Map.Entry<Integer, LeaderboardPlayerCache> entry : getLeaderboard().entrySet()) {
-            if (entry.getValue().getPlayerUUID().equals(uuid)) {
-                existingPosition = entry.getKey();
-                break;
+        lock.writeLock().lock();
+        try {
+            LinkedHashMap<Integer, LeaderboardPlayerCache> board = getLeaderboard();
+            LeaderboardPlayerCache existing = board.values().stream()
+                    .filter(entry -> entry.getPlayerUUID().equals(uuid)).findFirst().orElse(null);
+            if (newData <= 0) {
+                if (existing != null) {
+                    board.values().remove(existing);
+                    rebuildPositions(board);
+                }
+                snapshot = new ArrayList<>(board.values());
+                return;
             }
-        }
 
-        // If player is already in leaderboard, update their data
-        if (existingPosition != null) {
-            getLeaderboard().get(existingPosition).setData(newData);
-        } else if (getLeaderboard().size() < 10) {
-            // If leaderboard has less than 10 entries, add player
-            getLeaderboard().put(getLeaderboard().size() + 1, new LeaderboardPlayerCache(username, uuid, newData));
-        } else {
-            // Check if new data is better than the worst entry
-            int worstPosition = 10;
-            LeaderboardPlayerCache worstEntry = getLeaderboard().get(worstPosition);
-            if (worstEntry != null && newData > worstEntry.getData()) {
-                // Replace worst entry with new player
-                getLeaderboard().put(worstPosition, new LeaderboardPlayerCache(username, uuid, newData));
+            if (existing != null) {
+                existing.setData(newData);
+            } else if (board.size() < 10) {
+                board.put(board.size() + 1, new LeaderboardPlayerCache(username, uuid, newData));
+            } else {
+                Map.Entry<Integer, LeaderboardPlayerCache> worst = board.entrySet().stream()
+                        .min(Comparator.comparingInt(e -> e.getValue().getData()))
+                        .orElse(null);
+                if (worst != null && worst.getValue().getData() < newData) {
+                    board.remove(worst.getKey());
+                    board.put(worst.getKey(), new LeaderboardPlayerCache(username, uuid, newData));
+                } else {
+                    return;
+                }
             }
+            rebuildPositions(board);
+            snapshot = new ArrayList<>(board.values());
+        } finally {
+            lock.writeLock().unlock();
         }
+    }
 
-        // Re-sort the leaderboard
-        List<Map.Entry<Integer, LeaderboardPlayerCache>> entries = new ArrayList<>(getLeaderboard().entrySet());
-        entries.sort((e1, e2) -> Integer.compare(e2.getValue().getData(), e1.getValue().getData()));
-
-        // Rebuild with correct positions
-        getLeaderboard().clear();
-        for (int i = 0; i < entries.size(); i++) {
-            getLeaderboard().put(i + 1, entries.get(i).getValue());
+    private void rebuildPositions(LinkedHashMap<Integer, LeaderboardPlayerCache> board) {
+        List<LeaderboardPlayerCache> sorted = board.values().stream()
+                .sorted(Comparator.comparingInt(LeaderboardPlayerCache::getData).reversed())
+                .collect(Collectors.toList());
+        board.clear();
+        for (int i = 0; i < sorted.size(); i++) {
+            board.put(i + 1, sorted.get(i));
         }
     }
 
@@ -240,4 +232,12 @@ public class KitLeaderboard extends Leaderboard {
                 .build().clone();
     }
 
+    public List<LeaderboardPlayerCache> getSnapshot() {
+        lock.readLock().lock();
+        try {
+            return new ArrayList<>(snapshot);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
 }

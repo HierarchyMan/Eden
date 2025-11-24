@@ -11,6 +11,7 @@ import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.ItemBuilder;
 import rip.diamond.practice.util.menu.Button;
 import rip.diamond.practice.util.menu.Menu;
+import rip.diamond.practice.util.menu.MenuUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,40 +35,9 @@ public class ChooseMatchTypeMenu extends Menu {
         final Map<Integer, Button> buttons = new HashMap<>();
         BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
 
-        // Filler
-        if (config.getBoolean("party-events-menu.filler.enabled")) {
-            ItemStack filler = new ItemBuilder(Material.valueOf(config.getString("party-events-menu.filler.material")))
-                    .durability(config.getInt("party-events-menu.filler.data"))
-                    .name(" ")
-                    .build();
-            for (int i = 0; i < getSize(); i++) {
-                buttons.put(i, new Button() {
-                    @Override
-                    public ItemStack getButtonItem(Player player) {
-                        return filler;
-                    }
-                });
-            }
-        }
-
-        // Border
-        if (config.getBoolean("party-events-menu.border.enabled")) {
-            ItemStack border = new ItemBuilder(Material.valueOf(config.getString("party-events-menu.border.material")))
-                    .durability(config.getInt("party-events-menu.border.data"))
-                    .name(" ")
-                    .build();
-            int size = getSize();
-            for (int i = 0; i < size; i++) {
-                if (i < 9 || i >= size - 9 || i % 9 == 0 || i % 9 == 8) {
-                    buttons.put(i, new Button() {
-                        @Override
-                        public ItemStack getButtonItem(Player player) {
-                            return border;
-                        }
-                    });
-                }
-            }
-        }
+        // Filler and Border
+        MenuUtil.addFillerButtons(buttons, config, "party-events-menu", getSize());
+        MenuUtil.addBorderButtons(buttons, config, "party-events-menu", getSize());
 
         // Split Button (Party Fight)
         int splitSlot = config.getInt("party-events-menu.items.split-button.slot");

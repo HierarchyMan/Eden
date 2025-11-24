@@ -76,6 +76,32 @@ public abstract class Match {
         new ProfileCooldownTask();
     }
 
+    /**
+     * Update Kit references in active Matches after kit reload
+     * This is critical for ensuring leaderboard updates work correctly after reload
+     * Note: Only updates the kit reference if the kit name matches - does not reload match rules mid-game
+     */
+    public static void updateKitReferences() {
+        for (Match match : matches.values()) {
+            Kit oldKit = match.getKit();
+            Kit newKit = Kit.getKits().stream()
+                    .filter(k -> k.getName().equals(oldKit.getName()))
+                    .findFirst()
+                    .orElse(null);
+
+            // Use reflection to update the final kit field
+            if (newKit != null && newKit != oldKit) {
+                try {
+                    java.lang.reflect.Field kitField = Match.class.getDeclaredField("kit");
+                    kitField.setAccessible(true);
+                    kitField.set(match, newKit);
+                } catch (Exception e) {
+                    Common.log("&cFailed to update kit reference for match " + match.getUuid());
+                }
+            }
+        }
+    }
+
     public Match(ArenaDetail arenaDetail, Kit kit, List<Team> teams) {
         this.arenaDetail = arenaDetail;
         this.kit = kit;

@@ -17,6 +17,7 @@ import rip.diamond.practice.util.ItemBuilder;
 import rip.diamond.practice.util.exception.PracticeUnexpectedException;
 import rip.diamond.practice.util.menu.Button;
 import rip.diamond.practice.util.menu.Menu;
+import rip.diamond.practice.util.menu.MenuUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -54,42 +55,9 @@ public class EventSettingsMenu extends Menu {
         final Map<Integer, Button> buttons = new HashMap<>();
         BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
 
-        // Filler
-        if (config.getBoolean("event-settings-menu.filler.enabled")) {
-            ItemStack filler = new ItemBuilder(
-                    Material.valueOf(config.getString("event-settings-menu.filler.material")))
-                    .durability(config.getInt("event-settings-menu.filler.data"))
-                    .name(" ")
-                    .build();
-            for (int i = 0; i < getSize(); i++) {
-                buttons.put(i, new Button() {
-                    @Override
-                    public ItemStack getButtonItem(Player player) {
-                        return filler;
-                    }
-                });
-            }
-        }
-
-        // Border
-        if (config.getBoolean("event-settings-menu.border.enabled")) {
-            ItemStack border = new ItemBuilder(
-                    Material.valueOf(config.getString("event-settings-menu.border.material")))
-                    .durability(config.getInt("event-settings-menu.border.data"))
-                    .name(" ")
-                    .build();
-            int size = getSize();
-            for (int i = 0; i < size; i++) {
-                if (i < 9 || i >= size - 9 || i % 9 == 0 || i % 9 == 8) {
-                    buttons.put(i, new Button() {
-                        @Override
-                        public ItemStack getButtonItem(Player player) {
-                            return border;
-                        }
-                    });
-                }
-            }
-        }
+        // Filler and Border
+        MenuUtil.addFillerButtons(buttons, config, "event-settings-menu", getSize());
+        MenuUtil.addBorderButtons(buttons, config, "event-settings-menu", getSize());
 
         // Max Players Button
         buttons.put(config.getInt("event-settings-menu.items.max-players-button.slot"), new Button() {

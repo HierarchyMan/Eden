@@ -14,7 +14,7 @@ public class TitleSender {
         if (Util.isNull(text)) {
             return;
         }
-        IChatBaseComponent chatTitle = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + CC.translate(text) + "\",color:" + ChatColor.GOLD.name().toLowerCase() + "}");
+        IChatBaseComponent chatTitle = IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + CC.translate(text) + "\",color:gold}");
 
         PacketPlayOutTitle title = new PacketPlayOutTitle(titleAction, chatTitle);
         PacketPlayOutTitle length = new PacketPlayOutTitle(fadeInTime, showTime, fadeOutTime);

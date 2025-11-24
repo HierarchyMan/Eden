@@ -25,6 +25,7 @@
 package rip.diamond.practice.util.tablist.util;
 
 import org.bukkit.ChatColor;
+import rip.diamond.practice.util.CC;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,12 +39,12 @@ public class LegacyClientUtil {
         List<String> list = new ArrayList<>();
         for (int i = 1; i <= 15; i++) {
             String entry = ChatColor.values()[i].toString();
-            list.add(ChatColor.RED + entry);
-            list.add(ChatColor.GREEN + entry);
-            list.add(ChatColor.DARK_RED + entry);
-            list.add(ChatColor.DARK_GREEN + entry);
-            list.add(ChatColor.BLUE + entry);
-            list.add(ChatColor.DARK_BLUE + entry);
+            list.add(CC.RED + entry);
+            list.add(CC.GREEN + entry);
+            list.add(CC.DARK_RED + entry);
+            list.add(CC.DARK_GREEN + entry);
+            list.add(CC.BLUE + entry);
+            list.add(CC.DARK_BLUE + entry);
         }
         TAB_ENTRIES = list.toArray(new String[0]);
 

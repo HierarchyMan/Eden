@@ -2,9 +2,7 @@ package rip.diamond.practice.misc.commands;
 
 import org.bson.Document;
 import org.bukkit.command.CommandSender;
-import rip.diamond.practice.Eden;
-import rip.diamond.practice.config.Config;
-import rip.diamond.practice.database.DatabaseHandler;
+import rip.diamond.practice.config.DatabaseConfig;
 import rip.diamond.practice.database.impl.FlatFileHandler;
 import rip.diamond.practice.database.impl.MongoHandler;
 import rip.diamond.practice.util.CC;
@@ -23,6 +21,10 @@ public class DatabaseConvertCommand extends Command {
         CommandSender sender = command.getSender();
         String[] args = command.getArgs();
 
+        Common.sendMessage(sender, CC.YELLOW + "This command is deprecated!");
+        Common.sendMessage(sender, CC.YELLOW + "Please use: " + CC.AQUA + "/eden migrate <source> <destination>");
+        Common.sendMessage(sender, CC.YELLOW + "Example: " + CC.AQUA + "/eden migrate MONGODB MYSQL");
+
         if (args.length == 0) {
             Common.sendMessage(sender, CC.RED + "Usage: /databaseconvert <mongo2flatfile|flatfile2mongo>");
             return;
@@ -33,33 +35,12 @@ public class DatabaseConvertCommand extends Command {
             Common.sendMessage(sender, CC.YELLOW + "Starting conversion from MongoDB to FlatFile...");
             Tasks.runAsync(() -> {
                 try {
-                    // Source: Mongo
                     MongoHandler mongoHandler = new MongoHandler();
-                    // We don't init mongoHandler here because we assume it might be active or we
-                    // just want to read
-                    // But strictly speaking, if we are in FlatFile mode, Mongo might not be
-                    // initialized.
-                    // So we should probably init it temporarily or assume the user has configured
-                    // it.
-                    // For safety, let's just use the raw connection logic or instantiate it.
-                    // However, MongoHandler.init() connects to the database.
-
-                    // If we are currently in FlatFile mode, we need to connect to Mongo to read.
-                    // If we are in Mongo mode, we are already connected.
-
-                    // Let's assume we can just create a new instance and init it for the purpose of
-                    // this command.
-                    // But we need to be careful not to conflict with existing connections if any.
-                    // Actually, the safest way is to just create a new handler, init it, read, and
-                    // close it.
-
                     mongoHandler.init();
                     List<Document> mongoDocs = mongoHandler.getAllProfiles();
 
-                    // Target: FlatFile
-                    // If we are in Mongo mode, FlatFile might not be active.
                     FlatFileHandler flatFileHandler = new FlatFileHandler();
-                    flatFileHandler.init(); // Ensures folder exists
+                    flatFileHandler.init();
 
                     int count = 0;
                     for (Document doc : mongoDocs) {
@@ -67,10 +48,7 @@ public class DatabaseConvertCommand extends Command {
                         count++;
                     }
 
-                    // We don't necessarily need to shutdown flatfile handler as it just writes
-                    // files.
-                    // But we should shutdown mongo if we opened it just for this.
-                    if (!Config.STORAGE_TYPE.toString().equalsIgnoreCase("MONGODB")) {
+                    if (!DatabaseConfig.STORAGE_TYPE.toString().equalsIgnoreCase("MONGODB")) {
                         mongoHandler.shutdown();
                     }
 
@@ -88,23 +66,14 @@ public class DatabaseConvertCommand extends Command {
             Common.sendMessage(sender, CC.YELLOW + "Starting conversion from FlatFile to MongoDB...");
             Tasks.runAsync(() -> {
                 try {
-                    // Source: FlatFile
                     FlatFileHandler flatFileHandler = new FlatFileHandler();
                     flatFileHandler.init();
                     List<Document> flatFileDocs = flatFileHandler.getAllProfiles();
 
-                    // Target: Mongo
                     MongoHandler mongoHandler = new MongoHandler();
-                    // Only init if not already the active handler (though init is usually
-                    // idempotent-ish or we should check)
-                    // If we are in FlatFile mode, we MUST init Mongo.
-                    if (!Config.STORAGE_TYPE.toString().equalsIgnoreCase("MONGODB")) {
+                    if (!DatabaseConfig.STORAGE_TYPE.toString().equalsIgnoreCase("MONGODB")) {
                         mongoHandler.init();
                     } else {
-                        // If we are in Mongo mode, we can potentially use the existing one,
-                        // but creating a new one is safer to avoid state issues,
-                        // provided the driver handles connection pooling correctly (which it does).
-                        // However, to be safe and simple:
                         mongoHandler.init();
                     }
 
@@ -114,7 +83,7 @@ public class DatabaseConvertCommand extends Command {
                         count++;
                     }
 
-                    if (!Config.STORAGE_TYPE.toString().equalsIgnoreCase("MONGODB")) {
+                    if (!DatabaseConfig.STORAGE_TYPE.toString().equalsIgnoreCase("MONGODB")) {
                         mongoHandler.shutdown();
                     }
 

@@ -955,48 +955,9 @@ leaderboard:
   top10-display:
     name: "&a{0} &7| &fTop 10"
     lore: "&f#{0}: &b{1} &f- &b{2}"
-  best-winstreak-menu-title: "Best Winstreak Leaderboard"
-  elo-menu-title: "ELO Leaderboard"
-  wins-menu-title: "Total Wins Leaderbaord"
-  winstreak-menu-title: "Winstreak Leaderboard"
   kit-stats-menu:
     title: "{0}'s stats"
-    global-stats:
-      name: "&bDuel stats"
-      lore:
-        - "&bUnranked:"
-        - " &f• Wins: &b{0}"
-        - " &f• Losses: &b{1}"
-        - " &f• W/L: &b{2}"
-        - ""
-        - "&bRanked:"
-        - " &f• Elo: &b{3}"
-        - " &f• Wins: &b{4}"
-        - " &f• Loses: &b{5}"
-        - " &f• W/L: &b{6}"
-    kit-stats:
-      name: "&b{0}"
-      lore:
-        - "&bUnranked:"
-        - " &f• Wins: &b{0}"
-        - " &f• Losses: &b{1}"
-        - " &f• Win Streak: &b{2}"
-        - " &f• Highest Win Streak: &b{3}"
-        - " &f• W/L: &b{4}"
-        - ""
-        - "&bRanked:"
-        - " &f• Elo: &b{5}"
-        - " &f• Highest Elo Record: &b{6}"
-        - " &f• Wins: &b{7}"
-        - " &f• Loses: &b{8}"
-        - " &f• W/L: &b{9}"
   error-not-enough-slot: "&cError: Not enough item slots"
-  switch-leaderboard-button:
-    view-stats-button:
-      name: "View Stats"
-      lore:
-        - ""
-        - "&e&nClick to view!"
 match:
   separate: "&7, &b"
   start-unranked:

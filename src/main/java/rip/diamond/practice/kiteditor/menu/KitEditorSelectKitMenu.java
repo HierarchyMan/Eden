@@ -11,6 +11,7 @@ import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.ItemBuilder;
 import rip.diamond.practice.util.menu.Button;
 import rip.diamond.practice.util.menu.Menu;
+import rip.diamond.practice.util.menu.MenuUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,42 +58,9 @@ public class KitEditorSelectKitMenu extends Menu {
 		Map<Integer, Button> buttons = new HashMap<>();
 		BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
 
-		// Filler
-		if (config.getBoolean("kit-editor-select-kit-menu.filler.enabled")) {
-			ItemStack filler = new ItemBuilder(
-					Material.valueOf(config.getString("kit-editor-select-kit-menu.filler.material")))
-					.durability(config.getInt("kit-editor-select-kit-menu.filler.data"))
-					.name(" ")
-					.build();
-			for (int i = 0; i < getSize(); i++) {
-				buttons.put(i, new Button() {
-					@Override
-					public ItemStack getButtonItem(Player player) {
-						return filler;
-					}
-				});
-			}
-		}
-
-		// Border
-		if (config.getBoolean("kit-editor-select-kit-menu.border.enabled")) {
-			ItemStack border = new ItemBuilder(
-					Material.valueOf(config.getString("kit-editor-select-kit-menu.border.material")))
-					.durability(config.getInt("kit-editor-select-kit-menu.border.data"))
-					.name(" ")
-					.build();
-			int size = getSize();
-			for (int i = 0; i < size; i++) {
-				if (i < 9 || i >= size - 9 || i % 9 == 0 || i % 9 == 8) {
-					buttons.put(i, new Button() {
-						@Override
-						public ItemStack getButtonItem(Player player) {
-							return border;
-						}
-					});
-				}
-			}
-		}
+		// Filler and Border
+		MenuUtil.addFillerButtons(buttons, config, "kit-editor-select-kit-menu", getSize());
+		MenuUtil.addBorderButtons(buttons, config, "kit-editor-select-kit-menu", getSize());
 
 		// Kit buttons
 		List<Kit> editableKits = getEditableKits();

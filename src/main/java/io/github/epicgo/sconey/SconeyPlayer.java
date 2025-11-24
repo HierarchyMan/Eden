@@ -45,7 +45,7 @@ public class SconeyPlayer {
      */
     public void handleUpdate() {
         final SconeyElement boardElement = this.adapter.getElement(player);
-        String title = ChatColor.translateAlternateColorCodes('&', boardElement.getTitle());
+        String title = rip.diamond.practice.util.ColorUtil.colorize(boardElement.getTitle());
         if (title.length() > 32)
             title = title.substring(0, 32);
 
@@ -77,7 +77,7 @@ public class SconeyPlayer {
             final int nextValue = (index + 1);
             final int displayValue = boardElement.getMode().isDescending() ? cache-- : cache++;
 
-            final String[] attributes = this.splitText(ChatColor.translateAlternateColorCodes('&', line), nextValue);
+            final String[] attributes = this.splitText(rip.diamond.practice.util.ColorUtil.colorize(line), nextValue);
 
             final String prefix = attributes[0];
             final String score = attributes[1];

@@ -6,22 +6,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import rip.diamond.practice.Eden;
-import rip.diamond.practice.config.Language;
 import rip.diamond.practice.leaderboard.menu.impl.*;
 import rip.diamond.practice.profile.PlayerProfile;
+import rip.diamond.practice.util.BasicConfigFile;
 import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.ItemBuilder;
 import rip.diamond.practice.util.menu.Button;
+import rip.diamond.practice.util.menu.MenuUtil;
 import rip.diamond.practice.util.menu.pagination.PageButton;
 import rip.diamond.practice.util.menu.pagination.PaginatedMenu;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public abstract class LeaderboardMenu extends PaginatedMenu {
-    private final Eden plugin = Eden.INSTANCE;
 
     private Integer[] getAllowedSlots() {
         List<String> slotStrings = Eden.INSTANCE.getMenusConfig().getConfig()
@@ -43,12 +42,17 @@ public abstract class LeaderboardMenu extends PaginatedMenu {
 
     @Override
     public Map<Integer, Button> getButtons(Player player) {
+        BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
         int minIndex = (int) ((double) (getPage() - 1) * getMaxItemsPerPage(player));
         int maxIndex = (int) ((double) (getPage()) * getMaxItemsPerPage(player));
         int topIndex = 0;
         Integer[] allowedSlots = getAllowedSlots();
 
         HashMap<Integer, Button> buttons = new HashMap<>();
+
+        // Add filler and border first
+        MenuUtil.addFillerButtons(buttons, config, "leaderboard-menu", getSize());
+        MenuUtil.addBorderButtons(buttons, config, "leaderboard-menu", getSize());
 
         for (Map.Entry<Integer, Button> entry : getAllPagesButtons(player).entrySet()) {
             int index = entry.getKey();
@@ -75,30 +79,84 @@ public abstract class LeaderboardMenu extends PaginatedMenu {
             buttons.putAll(global);
         }
 
-        // 
-        for (int j = 0; j < getSize(); j++) {
-            if (!buttons.containsKey(j)) {
-                buttons.put(j, placeholderButton);
-            }
-        }
 
         return buttons;
     }
 
     @Override
     public Map<Integer, Button> getGlobalButtons(Player player) {
+        BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
         Map<Integer, Button> buttons = new HashMap<>();
 
-        buttons.put(getSize() - 9 + 1, new SwitchLeaderboardButton(Material.CARPET, 1,
-                Language.LEADERBOARD_WINS_MENU_TITLE.toString(), WinsLeaderboardMenu.class));
-        buttons.put(getSize() - 9 + 2, new SwitchLeaderboardButton(Material.CARPET, 2,
-                Language.LEADERBOARD_ELO_MENU_TITLE.toString(), EloLeaderboardMenu.class));
-        buttons.put(getSize() - 9 + 4, new SwitchLeaderboardButton(Material.DIAMOND, 0,
-                Language.LEADERBOARD_SWITCH_LEADERBOARD_BUTTON_VIEW_STATS_BUTTON_NAME.toString(), KitStatsMenu.class));
-        buttons.put(getSize() - 9 + 6, new SwitchLeaderboardButton(Material.CARPET, 3,
-                Language.LEADERBOARD_WINSTREAK_MENU_TITLE.toString(), WinstreakLeaderboardMenu.class));
-        buttons.put(getSize() - 9 + 7, new SwitchLeaderboardButton(Material.CARPET, 4,
-                Language.LEADERBOARD_BEST_WINSTREAK_MENU_TITLE.toString(), BestWinstreakLeaderboardMenu.class));
+        // Wins button
+        if (config.getConfiguration().contains("leaderboard-menu.items.switch-buttons.wins")) {
+            buttons.put(
+                config.getInt("leaderboard-menu.items.switch-buttons.wins.slot"),
+                new SwitchLeaderboardButton(
+                    Material.valueOf(config.getString("leaderboard-menu.items.switch-buttons.wins.material")),
+                    config.getInt("leaderboard-menu.items.switch-buttons.wins.data"),
+                    config.getString("leaderboard-menu.items.switch-buttons.wins.name"),
+                    config.getStringList("leaderboard-menu.items.switch-buttons.wins.lore"),
+                    WinsLeaderboardMenu.class
+                )
+            );
+        }
+
+        // ELO button
+        if (config.getConfiguration().contains("leaderboard-menu.items.switch-buttons.elo")) {
+            buttons.put(
+                config.getInt("leaderboard-menu.items.switch-buttons.elo.slot"),
+                new SwitchLeaderboardButton(
+                    Material.valueOf(config.getString("leaderboard-menu.items.switch-buttons.elo.material")),
+                    config.getInt("leaderboard-menu.items.switch-buttons.elo.data"),
+                    config.getString("leaderboard-menu.items.switch-buttons.elo.name"),
+                    config.getStringList("leaderboard-menu.items.switch-buttons.elo.lore"),
+                    EloLeaderboardMenu.class
+                )
+            );
+        }
+
+        // View Stats button
+        if (config.getConfiguration().contains("leaderboard-menu.items.switch-buttons.view-stats")) {
+            buttons.put(
+                config.getInt("leaderboard-menu.items.switch-buttons.view-stats.slot"),
+                new SwitchLeaderboardButton(
+                    Material.valueOf(config.getString("leaderboard-menu.items.switch-buttons.view-stats.material")),
+                    config.getInt("leaderboard-menu.items.switch-buttons.view-stats.data"),
+                    config.getString("leaderboard-menu.items.switch-buttons.view-stats.name"),
+                    config.getStringList("leaderboard-menu.items.switch-buttons.view-stats.lore"),
+                    KitStatsMenu.class
+                )
+            );
+        }
+
+        // Winstreak button
+        if (config.getConfiguration().contains("leaderboard-menu.items.switch-buttons.winstreak")) {
+            buttons.put(
+                config.getInt("leaderboard-menu.items.switch-buttons.winstreak.slot"),
+                new SwitchLeaderboardButton(
+                    Material.valueOf(config.getString("leaderboard-menu.items.switch-buttons.winstreak.material")),
+                    config.getInt("leaderboard-menu.items.switch-buttons.winstreak.data"),
+                    config.getString("leaderboard-menu.items.switch-buttons.winstreak.name"),
+                    config.getStringList("leaderboard-menu.items.switch-buttons.winstreak.lore"),
+                    WinstreakLeaderboardMenu.class
+                )
+            );
+        }
+
+        // Best Winstreak button
+        if (config.getConfiguration().contains("leaderboard-menu.items.switch-buttons.best-winstreak")) {
+            buttons.put(
+                config.getInt("leaderboard-menu.items.switch-buttons.best-winstreak.slot"),
+                new SwitchLeaderboardButton(
+                    Material.valueOf(config.getString("leaderboard-menu.items.switch-buttons.best-winstreak.material")),
+                    config.getInt("leaderboard-menu.items.switch-buttons.best-winstreak.data"),
+                    config.getString("leaderboard-menu.items.switch-buttons.best-winstreak.name"),
+                    config.getStringList("leaderboard-menu.items.switch-buttons.best-winstreak.lore"),
+                    BestWinstreakLeaderboardMenu.class
+                )
+            );
+        }
 
         return buttons;
     }
@@ -108,14 +166,15 @@ public abstract class LeaderboardMenu extends PaginatedMenu {
         private final Material material;
         private final int durability;
         private final String name;
+        private final List<String> lore;
         private final Class<?> clazz;
 
         @Override
         public ItemStack getButtonItem(Player player) {
             ItemBuilder builder = new ItemBuilder(material)
                     .durability(durability)
-                    .name(CC.AQUA + name)
-                    .lore(Language.LEADERBOARD_SWITCH_LEADERBOARD_BUTTON_VIEW_STATS_BUTTON_LORE.toStringList(player));
+                    .name(CC.translate(name))
+                    .lore(CC.translate(lore));
             if (clazz.getName().equals(LeaderboardMenu.this.getClass().getName())) {
                 builder.glow();
             }

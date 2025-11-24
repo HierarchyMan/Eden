@@ -9,6 +9,7 @@ import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.HumanEntity;
 import rip.diamond.practice.Eden;
 import rip.diamond.practice.config.Language;
+import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.Tasks;
 import rip.diamond.practice.util.command.argument.CommandArguments;
 
@@ -83,7 +84,7 @@ public abstract class Command {
         @Override
         public boolean execute(CommandSender sender, String label, String[] args) {
             if (this.inGameOnly && sender instanceof ConsoleCommandSender) {
-                sender.sendMessage(ChatColor.RED + "This is for player use only!");
+                sender.sendMessage(CC.RED + "This is for player use only!");
                 return false;
             }
             if (this.getPermission().length() > 0 && !sender.hasPermission(this.getPermission())) {

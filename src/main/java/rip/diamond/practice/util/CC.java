@@ -92,14 +92,14 @@ public class CC {
 	}
 
 	public static String translate(String in) {
-		return ChatColor.translateAlternateColorCodes('&', in);
+		return ColorUtil.colorize(in);
 	}
 
 	public static List<String> translate(List<String> lines) {
 		List<String> toReturn = new ArrayList<>();
 
 		for (String line : lines) {
-			toReturn.add(ChatColor.translateAlternateColorCodes('&', line));
+			toReturn.add(ColorUtil.colorize(line));
 		}
 
 		return toReturn;
@@ -110,7 +110,7 @@ public class CC {
 
 		for (String line : lines) {
 			if (line != null) {
-				toReturn.add(ChatColor.translateAlternateColorCodes('&', line));
+				toReturn.add(ColorUtil.colorize(line));
 			}
 		}
 

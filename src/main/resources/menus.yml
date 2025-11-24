@@ -625,7 +625,6 @@ party-events-menu:
 
 # Leaderboard Menu
 leaderboard-menu:
-  title: "&bLeaderboard"
   size: 54
   border:
     enabled: false
@@ -659,6 +658,12 @@ leaderboard-menu:
       - 32
       - 33
       - 34
+    # Menu titles for each leaderboard type
+    titles:
+      wins: "&bTotal Wins Leaderboard"
+      elo: "&bELO Leaderboard"
+      winstreak: "&bWinstreak Leaderboard"
+      best-winstreak: "&bBest Winstreak Leaderboard"
     # Switch leaderboard buttons (bottom row)
     switch-buttons:
       wins:
@@ -701,6 +706,83 @@ leaderboard-menu:
         lore:
           - ""
           - "&e&nClick to view!"
+
+# Kit Stats Menu (Personal Stats Viewer)
+kit-stats-menu:
+  # Title with placeholder: {player} = player username
+  title: "&b{player}'s Stats"
+  size: 54
+  border:
+    enabled: false
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  items:
+    # Allowed slots for kit stat entries
+    allowed-slots:
+      - 10
+      - 11
+      - 12
+      - 13
+      - 14
+      - 15
+      - 16
+      - 19
+      - 20
+      - 21
+      - 22
+      - 23
+      - 24
+      - 25
+      - 28
+      - 29
+      - 30
+      - 31
+      - 32
+      - 33
+      - 34
+    # Global stats button (slot 4, center top)
+    global-stats:
+      slot: 4
+      material: NETHER_STAR
+      data: 0
+      name: "&bDuel Stats"
+      lore:
+        - "&bUnranked:"
+        - " &f• Wins: &b{unranked-wins}"
+        - " &f• Losses: &b{unranked-losses}"
+        - " &f• W/L: &b{unranked-wl}"
+        - ""
+        - "&bRanked:"
+        - " &f• Elo: &b{ranked-elo}"
+        - " &f• Wins: &b{ranked-wins}"
+        - " &f• Losses: &b{ranked-losses}"
+        - " &f• W/L: &b{ranked-wl}"
+    # Kit stats button template (dynamically created for each kit)
+    kit-stats:
+      # Uses kit's display icon
+      # Name uses kit's display name
+      # Placeholders for lore:
+      # {unranked-wins}, {unranked-losses}, {winstreak}, {best-winstreak}, {unranked-wl}
+      # {elo}, {peak-elo}, {ranked-wins}, {ranked-losses}, {ranked-wl}
+      name: "&b{kit-name}"
+      lore:
+        - "&bUnranked:"
+        - " &f• Wins: &b{unranked-wins}"
+        - " &f• Losses: &b{unranked-losses}"
+        - " &f• Win Streak: &b{winstreak}"
+        - " &f• Highest Win Streak: &b{best-winstreak}"
+        - " &f• W/L: &b{unranked-wl}"
+        - ""
+        - "&bRanked:"
+        - " &f• Elo: &b{elo}"
+        - " &f• Highest Elo Record: &b{peak-elo}"
+        - " &f• Wins: &b{ranked-wins}"
+        - " &f• Losses: &b{ranked-losses}"
+        - " &f• W/L: &b{ranked-wl}"
 
 # Duel - Choose Kit Menu
 duel-choose-kit-menu:

@@ -5,6 +5,8 @@ import io.github.epicgo.sconey.SconeyHandler;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import rip.diamond.practice.arenas.Arena;
 import rip.diamond.practice.arenas.command.ArenaCommand;
@@ -59,6 +61,7 @@ import rip.diamond.practice.queue.Queue;
 import rip.diamond.practice.queue.QueueListener;
 import rip.diamond.practice.queue.command.QueueCommand;
 import rip.diamond.practice.util.BasicConfigFile;
+import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.EntityHider;
 import rip.diamond.practice.util.InventoryUtil;
 import rip.diamond.practice.util.command.CommandManager;
@@ -79,6 +82,7 @@ public class Eden extends JavaPlugin {
     public static final Gson GSON = new Gson();
 
     private BasicConfigFile configFile;
+    private BasicConfigFile databaseFile;
     private BasicConfigFile languageFile;
     private BasicConfigFile locationFile;
     private BasicConfigFile itemFile;
@@ -148,6 +152,7 @@ public class Eden extends JavaPlugin {
 
     private void loadFiles() {
         this.configFile = new BasicConfigFile(this, "config.yml");
+        this.databaseFile = new BasicConfigFile(this, "database.yml");
         this.languageFile = new BasicConfigFile(this, "language.yml");
         this.locationFile = new BasicConfigFile(this, "locations.yml");
         this.itemFile = new BasicConfigFile(this, "item.yml");
@@ -157,10 +162,14 @@ public class Eden extends JavaPlugin {
         this.menusConfig = new MenusConfig(this);
 
         Config.loadDefault();
+        rip.diamond.practice.config.DatabaseConfig.loadDefault();
     }
 
-    public void reload() {
+    public void reloadPlugin(CommandSender sender) {
+        sender.sendMessage(CC.translate("&eReloading EdenPractice..."));
+
         this.configFile.load();
+        // NOTE: database.yml is NOT reloaded - requires server restart
         this.languageFile.load();
         this.locationFile.load();
         this.itemFile.load();
@@ -169,7 +178,56 @@ public class Eden extends JavaPlugin {
         this.soundFile.load();
         this.menusConfig.reload();
 
+        Config.invalidateCache();
         Config.loadDefault();
+
+        Arena.reload();
+        Kit.reload();
+
+        // Update all Kit references after Kit.reload() to prevent systemic issues
+        // This is critical because Kit.reload() creates new Kit instances, but many
+        // objects throughout the codebase hold references to the old Kit instances
+        sender.sendMessage(CC.translate("&eUpdating kit references in active matches, queues, and editors..."));
+
+        // Update leaderboards (fixes leaderboard display issues)
+        if (leaderboardManager != null) {
+            leaderboardManager.rebuildLeaderboards();
+        }
+
+        // Update active matches (fixes stats updates after matches)
+        rip.diamond.practice.match.Match.updateKitReferences();
+
+        // Update queue profiles (fixes queue matching after reload)
+        rip.diamond.practice.queue.Queue.updateKitReferences();
+
+        // Update kit editor profiles (fixes kit editing after reload)
+        if (kitEditorManager != null) {
+            kitEditorManager.updateKitReferences();
+        }
+
+        sender.sendMessage(CC.translate("&eReapplying visual elements to all players..."));
+        reapplyPlayerVisuals();
+        sender.sendMessage(CC.translate("&aReload complete! All changes have been applied instantly."));
+        sender.sendMessage(CC.translate("&eNote: Database configuration requires server restart to take effect."));
+    }
+
+    private void reapplyPlayerVisuals() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (scoreboardHandler != null) {
+                scoreboardHandler.removeScoreboard(player);
+                scoreboardHandler.addScoreboard(player);
+            }
+
+            if (Config.FANCY_TABLIST_ENABLED.toBoolean() && tabHandler != null) {
+                tabHandler.removePlayerTablist(player);
+                tabHandler.registerPlayerTablist(player);
+            }
+
+            if (Config.NAMETAG_ENABLED.toBoolean() && nameTagManager != null) {
+                nameTagManager.reloadPlayer(player);
+                nameTagManager.reloadOthersFor(player);
+            }
+        }
     }
 
     private void loadManagers() {

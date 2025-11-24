@@ -103,7 +103,7 @@ public class ProtocolLibTabImpl implements IImanityTabImpl {
                     profile,
                     1,
                     EnumWrappers.NativeGameMode.SURVIVAL,
-                    WrappedChatComponent.fromText(ChatColor.translateAlternateColorCodes('&', newStrings.length > 1 ? newStrings[0] + newStrings[1] : newStrings[0]))
+                    WrappedChatComponent.fromText(rip.diamond.practice.util.ColorUtil.colorize(newStrings.length > 1 ? newStrings[0] + newStrings[1] : newStrings[0]))
             );
             packet.getPlayerInfoDataLists().write(0, Collections.singletonList(playerInfoData));
             sendPacket(player, packet);
@@ -129,7 +129,7 @@ public class ProtocolLibTabImpl implements IImanityTabImpl {
                 profile,
                 latency,
                 EnumWrappers.NativeGameMode.SURVIVAL,
-                WrappedChatComponent.fromText(ChatColor.translateAlternateColorCodes('&', tabEntry.getText()))
+                WrappedChatComponent.fromText(rip.diamond.practice.util.ColorUtil.colorize(tabEntry.getText()))
         );
 
         packet.getPlayerInfoDataLists().write(0, Collections.singletonList(playerInfoData));

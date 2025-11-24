@@ -70,6 +70,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>4.0.3</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
             <version>2.9.3</version>
@@ -257,6 +264,8 @@
                                 <includes>
                                     <include>org.mongodb:*</include>
                                     <include>com.github.ben-manes.caffeine:caffeine</include>
+                                    <include>com.zaxxer:HikariCP</include>
+                                    <include>org.slf4j:slf4j-api</include>
                                 </includes>
                             </artifactSet>
                             <filters>

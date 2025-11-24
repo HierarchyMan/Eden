@@ -12,6 +12,7 @@ import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.ItemBuilder;
 import rip.diamond.practice.util.menu.Button;
 import rip.diamond.practice.util.menu.Menu;
+import rip.diamond.practice.util.menu.MenuUtil;
 import rip.diamond.practice.util.option.Option;
 import rip.diamond.practice.util.option.TrueOption;
 import rip.diamond.practice.util.option.FalseOption;
@@ -58,42 +59,9 @@ public class ProfileSettingsMenu extends Menu {
         final Map<Integer, Button> buttons = new HashMap<>();
         BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
 
-        // Filler
-        if (config.getBoolean("profile-settings-menu.filler.enabled")) {
-            ItemStack filler = new ItemBuilder(
-                    Material.valueOf(config.getString("profile-settings-menu.filler.material")))
-                    .durability(config.getInt("profile-settings-menu.filler.data"))
-                    .name(" ")
-                    .build();
-            for (int i = 0; i < getSize(); i++) {
-                buttons.put(i, new Button() {
-                    @Override
-                    public ItemStack getButtonItem(Player player) {
-                        return filler;
-                    }
-                });
-            }
-        }
-
-        // Border
-        if (config.getBoolean("profile-settings-menu.border.enabled")) {
-            ItemStack border = new ItemBuilder(
-                    Material.valueOf(config.getString("profile-settings-menu.border.material")))
-                    .durability(config.getInt("profile-settings-menu.border.data"))
-                    .name(" ")
-                    .build();
-            int size = getSize();
-            for (int i = 0; i < size; i++) {
-                if (i < 9 || i >= size - 9 || i % 9 == 0 || i % 9 == 8) {
-                    buttons.put(i, new Button() {
-                        @Override
-                        public ItemStack getButtonItem(Player player) {
-                            return border;
-                        }
-                    });
-                }
-            }
-        }
+        // Filler and Border
+        MenuUtil.addFillerButtons(buttons, config, "profile-settings-menu", getSize());
+        MenuUtil.addBorderButtons(buttons, config, "profile-settings-menu", getSize());
 
         // Settings buttons
         for (ProfileSettings settings : ProfileSettings.values()) {

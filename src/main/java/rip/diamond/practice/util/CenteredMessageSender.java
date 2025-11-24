@@ -11,7 +11,7 @@ public class CenteredMessageSender {
             return "";
         }
 
-        message = ChatColor.translateAlternateColorCodes('&', message);
+        message = ColorUtil.colorize(message);
 
         int messagePxSize = 0;
         boolean previousCode = false;

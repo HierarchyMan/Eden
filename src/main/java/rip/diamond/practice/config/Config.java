@@ -5,11 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.Material;
 import rip.diamond.practice.Eden;
+import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.BasicConfigFile;
 import rip.diamond.practice.util.Common;
 import rip.diamond.practice.util.Util;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public enum Config {
@@ -18,18 +22,7 @@ public enum Config {
     ARENA_KIT_AUTO_SAVE("arena-kit-auto-save", false),
     DISABLE_SAVE_WORLD("disable-save-world", true),
     LOBBY_ONLY_COMMANDS("lobby-only-commands", ImmutableList.of()),
-    // MongoDB
-    MONGO_ENABLED("mongo.enabled", false),
-    MONGO_URI_MODE("mongo.uri-mode", false),
-    MONGO_NORMAL_HOST("mongo.normal.host", "127.0.0.1"),
-    MONGO_NORMAL_PORT("mongo.normal.port", 27017),
-    MONGO_NORMAL_AUTH_ENABLED("mongo.normal.auth.enabled", false),
-    MONGO_NORMAL_AUTH_USERNAME("mongo.normal.auth.username", ""),
-    MONGO_NORMAL_AUTH_PASSWORD("mongo.normal.auth.password", ""),
-    MONGO_URI_DATABASE("mongo.uri.database", "Practice"),
-    MONGO_URI_CONNECTION_STRING("mongo.uri.connection-string", ""),
 
-    STORAGE_TYPE("storage-type", "FLATFILE"), // Options: MONGODB, FLATFILEmongodb://127.0.0.1:27017/Eden"),
     // Tablist Edit
     FANCY_TABLIST_ENABLED("fancy-tablist.enabled", true),
     FANCY_TABLIST_FORMAT("fancy-tablist.format", "&a{player-name}"),
@@ -126,36 +119,52 @@ public enum Config {
     private final String path;
     @Getter
     private final Object defaultValue;
+    private static final Map<Config, Object> CACHE = new ConcurrentHashMap<>();
 
     public String toString() {
-        String str = Eden.INSTANCE.getConfigFile().getString(path);
-        if (str.equals(path)) {
-            return defaultValue.toString();
+        return CC.translate(toStringRaw());
+    }
+
+    private String toStringRaw() {
+        if (CACHE.containsKey(this)) {
+            return String.valueOf(CACHE.get(this));
         }
-        return str;
+        String value = Eden.INSTANCE.getConfigFile().getStringRaw(path);
+        if (value.equals(path)) {
+            value = defaultValue.toString();
+        }
+        CACHE.put(this, value);
+        return value;
     }
 
     public List<String> toStringList() {
-        List<String> str = Eden.INSTANCE.getConfigFile().getStringList(path);
-        if (str.isEmpty() || str.get(0).equals(path)) {
-            return (List<String>) defaultValue;
+        if (CACHE.containsKey(this)) {
+            return (List<String>) CACHE.get(this);
         }
-        if (str.get(0).equals("null")) {
-            return ImmutableList.of();
+        List<String> result = Eden.INSTANCE.getConfigFile().getRawStringList(path);
+        if (result.isEmpty() || result.get(0).equals(path)) {
+            result = (List<String>) defaultValue;
         }
-        return str;
+        List<String> colored = result.stream().map(CC::translate).collect(Collectors.toList());
+        List<String> finalResult = ImmutableList.copyOf(colored);
+        CACHE.put(this, finalResult);
+        return finalResult;
     }
 
     public boolean toBoolean() {
-        return Boolean.parseBoolean(toString());
+        return Boolean.parseBoolean(toStringRaw());
     }
 
     public int toInteger() {
-        return Integer.parseInt(toString());
+        return Integer.parseInt(toStringRaw());
     }
 
     public double toDouble() {
-        return Double.parseDouble(toString());
+        return Double.parseDouble(toStringRaw());
+    }
+
+    public static void invalidateCache() {
+        CACHE.clear();
     }
 
     public static void loadDefault() {
@@ -163,15 +172,16 @@ public enum Config {
 
         for (Config config : Config.values()) {
             String path = config.getPath();
-            String str = configFile.getString(path);
+            String str = configFile.getStringRaw(path);
             if (str.equals(path)) {
                 Common.debug("沒有找到 '" + path + "'... 正在加入到 config.yml");
-                configFile.getConfiguration().set(path, config.getDefaultValue());
+                configFile.set(path, config.getDefaultValue());
             }
         }
 
         configFile.save();
         configFile.load();
+        invalidateCache();
     }
 
 }

@@ -11,25 +11,6 @@ disable-save-world: true
 ## What command should only be able to use in lobby?
 ## Command like /nick, /skin should ONLY be usable while in lobby
 lobby-only-commands: []
-## MongoDB login information
-mongo:
-  ## This option should be ALWAYS true. Unless you want to test specific stuff without modifying the database
-  ## If it is disabled, player stats will not be loaded and saved
-  enabled: true
-  uri-mode: false
-  normal:
-    host: 127.0.0.1
-    port: 27017
-    auth:
-      enabled: false
-      username: ''
-      password: ''
-  uri:
-    database: Practice
-    connection-string: mongodb://127.0.0.1:27017/Eden
-## Storage Type
-## Options: MONGODB, FLATFILE
-storage-type: FLATFILE
 ## Built-in tablist editor
 ## Note that some user might experience tablist column incorrectly format. If that happens, please do not use this tablist function
 fancy-tablist:

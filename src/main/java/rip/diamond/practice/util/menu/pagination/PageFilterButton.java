@@ -34,17 +34,17 @@ public class PageFilterButton<T> extends Button {
 			String decoration = "";
 			String icon;
 
-			if (filter.isEnabled()) {
-				color = ChatColor.GREEN.toString();
-				icon = StringEscapeUtils.unescapeJava("\u2713");
-			} else {
-				color = ChatColor.RED.toString();
-				icon = StringEscapeUtils.unescapeJava("\u2717");
-			}
+		if (filter.isEnabled()) {
+			color = CC.GREEN;
+			icon = StringEscapeUtils.unescapeJava("\u2713");
+		} else {
+			color = CC.RED;
+			icon = StringEscapeUtils.unescapeJava("\u2717");
+		}
 
-			if (menu.getFilters().get(menu.getScrollIndex()).equals(filter)) {
-				decoration = ChatColor.YELLOW + StringEscapeUtils.unescapeJava("» ") + " ";
-			}
+		if (menu.getFilters().get(menu.getScrollIndex()).equals(filter)) {
+			decoration = CC.YELLOW + StringEscapeUtils.unescapeJava("» ") + " ";
+		}
 
 			lore.add(decoration + color + icon + " " + filter.getName());
 		}

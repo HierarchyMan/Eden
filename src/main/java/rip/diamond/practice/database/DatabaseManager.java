@@ -2,9 +2,10 @@ package rip.diamond.practice.database;
 
 import lombok.Getter;
 import rip.diamond.practice.Eden;
-import rip.diamond.practice.config.Config;
+import rip.diamond.practice.config.DatabaseConfig;
 import rip.diamond.practice.database.impl.FlatFileHandler;
 import rip.diamond.practice.database.impl.MongoHandler;
+import rip.diamond.practice.database.impl.MySqlHandler;
 import rip.diamond.practice.util.Common;
 
 @Getter
@@ -19,15 +20,21 @@ public class DatabaseManager {
     }
 
     public void init() {
-        String type = Config.STORAGE_TYPE.toString();
+        String type = DatabaseConfig.STORAGE_TYPE.toString().toUpperCase();
 
         if (type.equalsIgnoreCase("FLATFILE")) {
             this.handler = new FlatFileHandler();
             Common.log("&a[Database] Selected Storage: FlatFile (JSON)");
-        } else {
-            // Default to Mongo if not FlatFile, or if Mongo is enabled in old config style
+        } else if (type.equalsIgnoreCase("MYSQL")) {
+            this.handler = new MySqlHandler();
+            Common.log("&a[Database] Selected Storage: MySQL (HikariCP)");
+        } else if (type.equalsIgnoreCase("MONGODB")) {
             this.handler = new MongoHandler();
             Common.log("&a[Database] Selected Storage: MongoDB");
+        } else {
+            // Default to FlatFile if invalid type
+            this.handler = new FlatFileHandler();
+            Common.log("&c[Database] Invalid storage type '" + type + "', defaulting to FlatFile (JSON)");
         }
 
         try {

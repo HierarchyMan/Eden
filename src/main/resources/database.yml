@@ -1,0 +1,55 @@
+## Database Configuration
+## NOTE: You must restart the server for any changes to take effect
+## This file cannot be reloaded with /eden reload
+
+## Storage Type
+## Options: FLATFILE, MONGODB, MYSQL
+storage-type: FLATFILE
+
+## MongoDB Configuration
+mongodb:
+  enabled: true
+  uri-mode: false
+  ## Normal connection mode
+  normal:
+    host: 127.0.0.1
+    port: 27017
+    auth:
+      enabled: false
+      username: ''
+      password: ''
+  ## URI connection mode
+  uri:
+    database: Practice
+    connection-string: mongodb://127.0.0.1:27017/Eden
+
+## MySQL Configuration
+mysql:
+  host: 127.0.0.1
+  port: 3306
+  database: eden_practice
+  username: root
+  password: ''
+  ## Use SSL for MySQL connection
+  ssl: false
+  ## Table name for storing player profiles
+  table: profiles
+  ## Connection pool settings (HikariCP)
+  pool:
+    ## Maximum number of connections in the pool
+    max-pool-size: 10
+    ## Minimum number of idle connections to maintain
+    min-idle: 1
+    ## Connection timeout in milliseconds (10 seconds)
+    connection-timeout-ms: 10000
+    ## Validation timeout in milliseconds (3 seconds)
+    validation-timeout-ms: 3000
+    ## Maximum lifetime of a connection in milliseconds (4 minutes)
+    max-lifetime-ms: 240000
+    ## Maximum idle time for a connection in milliseconds (2 minutes)
+    idle-timeout-ms: 120000
+    ## Keepalive time in milliseconds (1 minute)
+    keepalive-time-ms: 60000
+    ## Connection test query
+    test-query: "SELECT 1"
+

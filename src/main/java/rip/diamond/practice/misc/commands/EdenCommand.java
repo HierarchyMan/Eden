@@ -1,11 +1,16 @@
 package rip.diamond.practice.misc.commands;
 
 import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import rip.diamond.practice.config.Language;
+import rip.diamond.practice.database.impl.FlatFileHandler;
+import rip.diamond.practice.database.impl.MongoHandler;
+import rip.diamond.practice.database.impl.MySqlHandler;
 import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.Common;
+import rip.diamond.practice.util.Tasks;
 import rip.diamond.practice.util.command.Command;
 import rip.diamond.practice.util.command.CommandArgs;
 import rip.diamond.practice.util.command.argument.CommandArguments;
@@ -51,16 +56,11 @@ public class EdenCommand extends Command {
 
         switch (action) {
             case RELOAD:
-                // Use centralized reload method to ensure all configs including menus.yml are
-                // reloaded
-                plugin.reload();
-                Common.sendMessage(sender, CC.GREEN + "Files reloaded!", CC.YELLOW
-                        + "Remember: some part of the files might require restart the server to work. And we strongly recommend");
+                plugin.reloadPlugin(sender);
                 return;
             case DEBUG:
-                plugin.getConfigFile().getConfiguration().set("debug", !plugin.getConfigFile().getBoolean("debug"));
+                plugin.getConfigFile().set("debug", !plugin.getConfigFile().getBoolean("debug"));
                 plugin.getConfigFile().save();
-                plugin.getConfigFile().load();
                 Common.sendMessage(sender,
                         CC.GREEN + "Debug is now: "
                                 + (plugin.getConfigFile().getBoolean("debug") ? CC.GREEN + Language.ENABLED.toString()
@@ -70,15 +70,134 @@ public class EdenCommand extends Command {
                 Common.sendMessage(sender, CC.YELLOW + "Eden is currently hooked to " + CC.AQUA
                         + SpigotAPI.INSTANCE.getSpigotType().name());
                 return;
+            case MIGRATE:
+                handleMigration(sender, args);
+                return;
+        }
+    }
+
+    private void handleMigration(CommandSender sender, String[] args) {
+        if (args.length < 3) {
+            Common.sendMessage(sender, CC.RED + "Usage: /eden migrate <source> <destination>");
+            Common.sendMessage(sender, CC.YELLOW + "Available types: FLATFILE, MONGODB, MYSQL");
+            Common.sendMessage(sender, CC.YELLOW + "Example: /eden migrate MONGODB MYSQL");
+            return;
+        }
+
+        String source = args[1].toUpperCase();
+        String destination = args[2].toUpperCase();
+
+        if (!isValidStorageType(source) || !isValidStorageType(destination)) {
+            Common.sendMessage(sender, CC.RED + "Invalid storage type! Available types: FLATFILE, MONGODB, MYSQL");
+            return;
+        }
+
+        if (source.equals(destination)) {
+            Common.sendMessage(sender, CC.RED + "Source and destination cannot be the same!");
+            return;
+        }
+
+        Common.sendMessage(sender, CC.YELLOW + "Starting migration from " + source + " to " + destination + "...");
+
+        Tasks.runAsync(() -> {
+            try {
+                // Initialize source handler
+                Object sourceHandler = createHandler(source);
+                if (sourceHandler instanceof MongoHandler) {
+                    ((MongoHandler) sourceHandler).init();
+                } else if (sourceHandler instanceof MySqlHandler) {
+                    ((MySqlHandler) sourceHandler).init();
+                } else if (sourceHandler instanceof FlatFileHandler) {
+                    ((FlatFileHandler) sourceHandler).init();
+                }
+
+                // Get all profiles from source
+                List<Document> documents;
+                if (sourceHandler instanceof MongoHandler) {
+                    documents = ((MongoHandler) sourceHandler).getAllProfiles();
+                } else if (sourceHandler instanceof MySqlHandler) {
+                    documents = ((MySqlHandler) sourceHandler).getAllProfiles();
+                } else {
+                    documents = ((FlatFileHandler) sourceHandler).getAllProfiles();
+                }
+
+                // Initialize destination handler
+                Object destHandler = createHandler(destination);
+                if (destHandler instanceof MongoHandler) {
+                    ((MongoHandler) destHandler).init();
+                } else if (destHandler instanceof MySqlHandler) {
+                    ((MySqlHandler) destHandler).init();
+                } else if (destHandler instanceof FlatFileHandler) {
+                    ((FlatFileHandler) destHandler).init();
+                }
+
+                // Save all profiles to destination
+                int count = 0;
+                for (Document doc : documents) {
+                    if (destHandler instanceof MongoHandler) {
+                        ((MongoHandler) destHandler).saveDocumentRaw(doc);
+                    } else if (destHandler instanceof MySqlHandler) {
+                        ((MySqlHandler) destHandler).saveDocumentRaw(doc);
+                    } else {
+                        ((FlatFileHandler) destHandler).saveDocumentRaw(doc);
+                    }
+                    count++;
+                }
+
+                // Shutdown handlers
+                if (sourceHandler instanceof MongoHandler) {
+                    ((MongoHandler) sourceHandler).shutdown();
+                } else if (sourceHandler instanceof MySqlHandler) {
+                    ((MySqlHandler) sourceHandler).shutdown();
+                }
+
+                if (destHandler instanceof MongoHandler) {
+                    ((MongoHandler) destHandler).shutdown();
+                } else if (destHandler instanceof MySqlHandler) {
+                    ((MySqlHandler) destHandler).shutdown();
+                }
+
+                Common.sendMessage(sender, CC.GREEN + "Successfully migrated " + count + " profiles from " + source + " to " + destination + ".");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Common.sendMessage(sender, CC.RED + "An error occurred during migration. Check console for details.");
+            }
+        });
+    }
+
+    private boolean isValidStorageType(String type) {
+        return type.equals("FLATFILE") || type.equals("MONGODB") || type.equals("MYSQL");
+    }
+
+    private Object createHandler(String type) {
+        switch (type) {
+            case "MONGODB":
+                return new MongoHandler();
+            case "MYSQL":
+                return new MySqlHandler();
+            case "FLATFILE":
+            default:
+                return new FlatFileHandler();
         }
     }
 
     @Override
     public List<String> getDefaultTabComplete(CommandArguments command) {
+        String[] args = command.getArgs();
+
+        if (args.length == 1) {
+            return Arrays.stream(Action.values()).map(Action::name).collect(Collectors.toList());
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("migrate")) {
+            return Arrays.asList("FLATFILE", "MONGODB", "MYSQL");
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("migrate")) {
+            return Arrays.asList("FLATFILE", "MONGODB", "MYSQL");
+        }
+
         return Arrays.stream(Action.values()).map(Action::name).collect(Collectors.toList());
     }
 
     enum Action {
-        RELOAD, DEBUG, SPIGOT
+        RELOAD, DEBUG, SPIGOT, MIGRATE
     }
 }

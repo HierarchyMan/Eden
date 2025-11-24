@@ -20,5 +20,4 @@ public class MenusConfig {
     public BasicConfigFile getConfig() {
         return configFile;
     }
-
 }

@@ -8,8 +8,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 import lombok.Getter;
 import org.bson.Document;
-import rip.diamond.practice.Eden;
-import rip.diamond.practice.config.Config;
+import rip.diamond.practice.config.DatabaseConfig;
 import rip.diamond.practice.database.DatabaseHandler;
 import rip.diamond.practice.profile.PlayerProfile;
 import rip.diamond.practice.util.Tasks;
@@ -28,22 +27,22 @@ public class MongoHandler implements DatabaseHandler {
 
     @Override
     public void init() {
-        if (Config.MONGO_URI_MODE.toBoolean()) {
-            this.client = MongoClients.create(Config.MONGO_URI_CONNECTION_STRING.toString());
+        if (DatabaseConfig.MONGODB_URI_MODE.toBoolean()) {
+            this.client = MongoClients.create(DatabaseConfig.MONGODB_URI_CONNECTION_STRING.toString());
         } else {
-            String uri = "mongodb://" + Config.MONGO_NORMAL_HOST.toString() + ":"
-                    + Config.MONGO_NORMAL_PORT.toInteger();
-            if (Config.MONGO_NORMAL_AUTH_ENABLED.toBoolean()) {
-                String username = Config.MONGO_NORMAL_AUTH_USERNAME.toString();
-                String password = Config.MONGO_NORMAL_AUTH_PASSWORD.toString()
+            String uri = "mongodb://" + DatabaseConfig.MONGODB_NORMAL_HOST.toString() + ":"
+                    + DatabaseConfig.MONGODB_NORMAL_PORT.toInteger();
+            if (DatabaseConfig.MONGODB_NORMAL_AUTH_ENABLED.toBoolean()) {
+                String username = DatabaseConfig.MONGODB_NORMAL_AUTH_USERNAME.toString();
+                String password = DatabaseConfig.MONGODB_NORMAL_AUTH_PASSWORD.toString()
                         .replaceAll("%(?![0-9a-fA-F]{2})", "%25")
                         .replaceAll("\\+", "%2B");
-                uri = "mongodb://" + username + ":" + password + "@" + Config.MONGO_NORMAL_HOST.toString() + ":"
-                        + Config.MONGO_NORMAL_PORT.toInteger();
+                uri = "mongodb://" + username + ":" + password + "@" + DatabaseConfig.MONGODB_NORMAL_HOST.toString() + ":"
+                        + DatabaseConfig.MONGODB_NORMAL_PORT.toInteger();
             }
             this.client = MongoClients.create(uri);
         }
-        this.database = client.getDatabase(Config.MONGO_URI_DATABASE.toString());
+        this.database = client.getDatabase(DatabaseConfig.MONGODB_URI_DATABASE.toString());
         this.profiles = this.database.getCollection("profiles");
     }
 

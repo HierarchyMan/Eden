@@ -144,7 +144,7 @@ public class ImanityTablist {
                 prefix = prefix.substring(0, 14);
                 suffix = text.substring(14);
             } else {
-                suffix = ChatColor.getLastColors(ChatColor.translateAlternateColorCodes('&',prefix)) + text.substring(16, text.length());
+                suffix = ChatColor.getLastColors(rip.diamond.practice.util.ColorUtil.colorize(prefix)) + text.substring(16, text.length());
             }
 
             if (suffix.length() > 16) {

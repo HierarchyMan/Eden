@@ -54,16 +54,55 @@ public class KitEditorManager {
         return editing.get(player.getUniqueId());
     }
 
+    /**
+     * Update Kit references in active KitEditProfiles after kit reload
+     * This ensures players editing kits don't save to wrong kit instances
+     */
+    public void updateKitReferences() {
+        for (KitEditProfile kProfile : editing.values()) {
+            Kit oldKit = kProfile.getKit();
+            Kit newKit = Kit.getKits().stream()
+                    .filter(k -> k.getName().equals(oldKit.getName()))
+                    .findFirst()
+                    .orElse(null);
+
+            // Use reflection to update the final kit field
+            if (newKit != null && newKit != oldKit) {
+                try {
+                    java.lang.reflect.Field kitField = KitEditProfile.class.getDeclaredField("kit");
+                    kitField.setAccessible(true);
+                    kitField.set(kProfile, newKit);
+                } catch (Exception e) {
+                    Common.log("&cFailed to update kit reference for edit profile");
+                }
+            }
+        }
+    }
+
     public void addKitEditor(Player player, Kit kit) {
+        PlayerProfile profile = PlayerProfile.get(player);
+
+        // Get the kit contents to use - check if player has saved kit 1, otherwise use default
+        ItemStack[] contentsToUse;
+        rip.diamond.practice.profile.data.ProfileKitData kitData = profile.getKitData().get(kit.getName());
+        rip.diamond.practice.kits.KitLoadout savedLoadout = (kitData != null) ? kitData.getLoadout(0) : null;
+
+        if (savedLoadout != null) {
+            // Use saved kit 1
+            contentsToUse = savedLoadout.getContents();
+        } else {
+            // Use default kit
+            contentsToUse = kit.getKitLoadout().getContents();
+        }
+
         if (Eden.INSTANCE.getConfigFile().getString("kit-editor-mode").equalsIgnoreCase("GUI")) {
-            PlayerProfile profile = PlayerProfile.get(player);
             profile.setPlayerState(PlayerState.IN_EDIT);
 
             KitEditProfile kProfile = new KitEditProfile(player.getUniqueId(), kit);
             editing.put(player.getUniqueId(), kProfile);
 
             player.getInventory().clear();
-            player.getInventory().setContents(kit.getKitLoadout().getContents());
+            player.getInventory().setContents(contentsToUse);
             colorize(player, kit);
 
             new rip.diamond.practice.kiteditor.menu.KitEditorMenu(kit, 1).openMenu(player);
@@ -74,7 +113,6 @@ public class KitEditorManager {
             Language.KIT_EDITOR_CANNOT_FIND_EDITOR_LOCATION.sendMessage(player);
             return;
         }
-        PlayerProfile profile = PlayerProfile.get(player);
         profile.setPlayerState(PlayerState.IN_EDIT);
 
         KitEditProfile kProfile = new KitEditProfile(player.getUniqueId(), kit);
@@ -82,7 +120,7 @@ public class KitEditorManager {
 
         Util.teleport(player, editorLocation);
         player.getInventory().clear();
-        player.getInventory().setContents(kit.getKitLoadout().getContents());
+        player.getInventory().setContents(contentsToUse);
         colorize(player, kit);
 
         Language.KIT_EDITOR_EDITING.sendListOfMessage(player, kit.getDisplayName());
