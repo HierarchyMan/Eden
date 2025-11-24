@@ -14,7 +14,7 @@ Please note that Eden doesn't support vanilla Spigot. We only support specific S
 Eden supports spigot forks! Check out what other Spigot forks are supported at the Wiki Page [(Click here)](https://github.com/diamond-rip/Eden/wiki).
 
 ## Supported Languages
-Eden currently offers support for two languages: English and Traditional Chinese (Simplified Chinese only works in support, not configuration!). If you wish to download any other language translation files, [click here](https://github.com/diamond-rip/Eden/wiki/Configurations).
+IDK what to do here, english supported for now, i might add comprehensive multi language support if i ever finish what i set out to do with this
 
 ## Bug Report
 Found a bug? Please file a bug report at issues [(Click here)](https://github.com/HierarchyMan/Eden/issues/new)!
