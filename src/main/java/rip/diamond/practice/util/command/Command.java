@@ -45,7 +45,7 @@ public abstract class Command {
         return new ArrayList<>();
     }
 
-    //This is default tab complete which should return a list of online players
+    
     public List<String> getDefaultTabComplete(CommandArguments command) {
         List<String> completors = new ArrayList<>();
 

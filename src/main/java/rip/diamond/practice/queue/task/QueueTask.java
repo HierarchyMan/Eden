@@ -34,7 +34,7 @@ public class QueueTask extends TaskTicker {
                 if (qProfile1 == qProfile2) {
                     continue;
                 }
-                //Double check if the QueueProfile already found a match
+                
                 if (qProfile1.isFound() || qProfile2.isFound()) {
                     continue;
                 }
@@ -44,9 +44,9 @@ public class QueueTask extends TaskTicker {
                 if (qProfile1.getQueueType() != qProfile2.getQueueType()) {
                     continue;
                 }
-                //No need to check if qProfile2 is ranked again, because if qProfile1 is ranked, then qProfile2 will be ranked also
+                
                 if (qProfile1.getQueueType() == QueueType.RANKED) {
-                    //If one of the QueueProfile is not in the selected ELO range, then stop the loop
+                    
                     if (!qProfile1.isInRange(qProfile2.getElo()) || !qProfile2.isInRange(qProfile1.getElo())) {
                         continue;
                     }
@@ -67,14 +67,14 @@ public class QueueTask extends TaskTicker {
                     continue;
                 }
 
-                //Find arena
+                
                 Kit kit = qProfile1.getKit();
                 ArenaDetail arena = Arena.getAvailableArenaDetail(kit);
                 if (arena == null) {
-                    //Means no available arena
+                    
                     continue;
                 }
-                //This is to prevent player who's going to be in the same arena as before, to prevent see last match entities because of MatchResetTask in last match isn't triggered yet
+                
                 if (Match.getMatches().values().stream().filter(match -> match.getArenaDetail() == arena).anyMatch(match -> match.getTeamPlayer(player1) != null || match.getTeamPlayer(player2) != null)) {
                     continue;
                 }

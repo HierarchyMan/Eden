@@ -27,7 +27,7 @@ public class BukkitSerialization {
      * @throws IllegalStateException
      */
     public static String[] playerInventoryToBase64(PlayerInventory playerInventory) throws IllegalStateException {
-        //get the main content part, this doesn't return the armor
+        
         String content = toBase64(playerInventory);
         String armor = itemStackArrayToBase64(playerInventory.getArmorContents());
 
@@ -49,15 +49,15 @@ public class BukkitSerialization {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
 
-            // Write the size of the inventory
+            
             dataOutput.writeInt(items.length);
 
-            // Save every element in the list
+            
             for (int i = 0; i < items.length; i++) {
                 dataOutput.writeObject(items[i]);
             }
 
-            // Serialize that array
+            
             dataOutput.close();
             return Base64Coder.encodeLines(outputStream.toByteArray());
         } catch (Exception e) {
@@ -70,10 +70,10 @@ public class BukkitSerialization {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
 
-            // Save every element in the list
+            
             dataOutput.writeObject(item);
 
-            // Serialize that array
+            
             dataOutput.close();
             return Base64Coder.encodeLines(outputStream.toByteArray());
         } catch (Exception e) {
@@ -89,7 +89,7 @@ public class BukkitSerialization {
      * Special thanks to Comphenix in the Bukkit forums or also known
      * as aadnk on GitHub.
      *
-     * <a href="https://gist.github.com/aadnk/8138186">Original Source</a>
+     * <a href="https:
      *
      * @param inventory to serialize
      * @return Base64 string of the provided inventory
@@ -100,15 +100,15 @@ public class BukkitSerialization {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
 
-            // Write the size of the inventory
+            
             dataOutput.writeInt(inventory.getSize());
 
-            // Save every element in the list
+            
             for (int i = 0; i < inventory.getSize(); i++) {
                 dataOutput.writeObject(inventory.getItem(i));
             }
 
-            // Serialize that array
+            
             dataOutput.close();
             return Base64Coder.encodeLines(outputStream.toByteArray());
         } catch (Exception e) {
@@ -124,7 +124,7 @@ public class BukkitSerialization {
      * Special thanks to Comphenix in the Bukkit forums or also known
      * as aadnk on GitHub.
      *
-     * <a href="https://gist.github.com/aadnk/8138186">Original Source</a>
+     * <a href="https:
      *
      * @param data Base64 string of data containing an inventory.
      * @return Inventory created from the Base64 string.
@@ -136,7 +136,7 @@ public class BukkitSerialization {
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
             Inventory inventory = Bukkit.getServer().createInventory(null, dataInput.readInt());
 
-            // Read the serialized inventory
+            
             for (int i = 0; i < inventory.getSize(); i++) {
                 inventory.setItem(i, (ItemStack) dataInput.readObject());
             }
@@ -166,7 +166,7 @@ public class BukkitSerialization {
             BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
             ItemStack[] items = new ItemStack[dataInput.readInt()];
 
-            // Read the serialized inventory
+            
             for (int i = 0; i < items.length; i++) {
                 items[i] = (ItemStack) dataInput.readObject();
             }

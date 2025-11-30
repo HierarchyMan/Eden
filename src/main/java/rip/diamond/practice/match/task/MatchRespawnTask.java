@@ -59,7 +59,7 @@ public class MatchRespawnTask extends MatchTaskTicker {
             Util.teleport(player, match.getTeam(player).getSpawnLocation());
         }
 
-        // , 
+        
         player.setAllowFlight(true);
         player.setFlying(true);
 

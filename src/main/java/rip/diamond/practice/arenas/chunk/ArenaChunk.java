@@ -33,13 +33,23 @@ public class ArenaChunk extends Reflection implements IArenaChunk {
         }
     }
 
+    public ArenaChunk(World world, int x, int z, ArenaChunkSection[] data) {
+        this.world = world;
+        this.x = x;
+        this.z = z;
+        this.data = data;
+    }
+
+    public ArenaChunkSection[] getData() {
+        return data;
+    }
+
     @Override
     public void restore() {
         restore(world, x, z);
     }
 
     public void restore(World world, int x, int z) {
-        // Common.debug(" chunk (" + world.getName() + ":" + x + ":" + z + ")");
 
         CraftWorld craftWorld = (CraftWorld) world;
 

@@ -10,7 +10,7 @@ public enum MatchType {
     SOLO(Language.MATCH_MATCH_TYPE_SOLO.toString()),
     FFA(Language.MATCH_MATCH_TYPE_FFA.toString()),
     SPLIT(Language.MATCH_MATCH_TYPE_SPLIT.toString()),
-    SUMO_EVENT(Language.MATCH_MATCH_TYPE_SUMO_EVENT.toString()),
+
     ;
 
     private final String readable;

@@ -54,11 +54,11 @@ public class ChooseArenaMenu extends Menu {
         BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
         int itemsPerPage = MenuUtil.getItemsPerPage(config, "party-choose-arena-menu");
 
-        // Filler and Border
+
         MenuUtil.addFillerButtons(buttons, config, "party-choose-arena-menu", getSize());
         MenuUtil.addBorderButtons(buttons, config, "party-choose-arena-menu", getSize());
 
-        // Random Arena Button
+
         int randomSlot = config.getInt("party-choose-arena-menu.items.random-arena-button.slot");
         buttons.put(randomSlot, new Button() {
             @Override
@@ -84,7 +84,7 @@ public class ChooseArenaMenu extends Menu {
             }
         });
 
-        // Go Back Button
+
         if (config.getBoolean("party-choose-arena-menu.items.go-back.enabled")) {
             int goBackSlot = config.getInt("party-choose-arena-menu.items.go-back.slot");
             buttons.put(goBackSlot, new Button() {
@@ -105,7 +105,7 @@ public class ChooseArenaMenu extends Menu {
             });
         }
 
-        // Arenas
+
         List<Arena> allArenas = getFilteredArenas();
         int startIndex = (page - 1) * itemsPerPage;
         int endIndex = Math.min(startIndex + itemsPerPage, allArenas.size());
@@ -115,11 +115,11 @@ public class ChooseArenaMenu extends Menu {
         boolean hasBorder = config.getBoolean("party-choose-arena-menu.border.enabled");
         int arenaIndex = 0;
         for (int slot = 0; slot < getSize() && arenaIndex < arenasOnThisPage.size(); slot++) {
-            // Skip border slots and the random arena button slot
+
             if (hasBorder && (slot < 9 || slot >= getSize() - 9 || slot % 9 == 0 || slot % 9 == 8)) {
                 continue;
             }
-            // Skip if this slot is the random arena button
+
             if (slot == randomSlot) {
                 continue;
             }
@@ -144,7 +144,7 @@ public class ChooseArenaMenu extends Menu {
             arenaIndex++;
         }
 
-        // Pagination
+
         MenuUtil.addPreviousPageButton(buttons, config, "party-choose-arena-menu", page,
             p -> new ChooseArenaMenu(kitMatchType, kit, page - 1).openMenu(p));
         MenuUtil.addNextPageButton(buttons, config, "party-choose-arena-menu", endIndex < allArenas.size(),

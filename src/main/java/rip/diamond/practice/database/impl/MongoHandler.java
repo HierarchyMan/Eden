@@ -8,6 +8,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 import lombok.Getter;
 import org.bson.Document;
+
 import rip.diamond.practice.config.DatabaseConfig;
 import rip.diamond.practice.database.DatabaseHandler;
 import rip.diamond.practice.profile.PlayerProfile;
@@ -37,7 +38,8 @@ public class MongoHandler implements DatabaseHandler {
                 String password = DatabaseConfig.MONGODB_NORMAL_AUTH_PASSWORD.toString()
                         .replaceAll("%(?![0-9a-fA-F]{2})", "%25")
                         .replaceAll("\\+", "%2B");
-                uri = "mongodb://" + username + ":" + password + "@" + DatabaseConfig.MONGODB_NORMAL_HOST.toString() + ":"
+                uri = "mongodb://" + username + ":" + password + "@" + DatabaseConfig.MONGODB_NORMAL_HOST.toString()
+                        + ":"
                         + DatabaseConfig.MONGODB_NORMAL_PORT.toInteger();
             }
             this.client = MongoClients.create(uri);
@@ -70,11 +72,16 @@ public class MongoHandler implements DatabaseHandler {
     }
 
     @Override
-    public void saveProfile(PlayerProfile profile) {
-        Tasks.runAsync(() -> {
+    public void saveProfile(PlayerProfile profile, boolean async) {
+        if (async) {
+            Tasks.runAsync(() -> {
+                profiles.replaceOne(Filters.eq("uuid", profile.getUniqueId().toString()), profile.toBson(),
+                        new ReplaceOptions().upsert(true));
+            });
+        } else {
             profiles.replaceOne(Filters.eq("uuid", profile.getUniqueId().toString()), profile.toBson(),
                     new ReplaceOptions().upsert(true));
-        });
+        }
     }
 
     @Override

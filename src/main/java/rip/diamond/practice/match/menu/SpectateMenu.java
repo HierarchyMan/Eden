@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import rip.diamond.practice.config.Language;
-import rip.diamond.practice.events.EdenEvent;
 import rip.diamond.practice.match.Match;
 import rip.diamond.practice.match.MatchType;
 import rip.diamond.practice.match.impl.SoloMatch;
@@ -35,13 +34,15 @@ public class SpectateMenu extends PaginatedMenu {
             try {
                 String title;
                 if (match.getMatchType() == MatchType.SOLO) {
-                    title = Language.MATCH_SPECTATE_MENU_BUTTON_NAME_SOLO.toString(((SoloMatch) match).getPlayerA().getUsername(), ((SoloMatch) match).getPlayerB().getUsername());
+                    title = Language.MATCH_SPECTATE_MENU_BUTTON_NAME_SOLO.toString(
+                            ((SoloMatch) match).getPlayerA().getUsername(),
+                            ((SoloMatch) match).getPlayerB().getUsername());
                 } else if (match.getMatchType() == MatchType.SPLIT) {
-                    title = Language.MATCH_SPECTATE_MENU_BUTTON_NAME_SPLIT.toString(((TeamMatch) match).getTeamA().getLeader().getUsername(), ((TeamMatch) match).getTeamB().getLeader().getUsername());
+                    title = Language.MATCH_SPECTATE_MENU_BUTTON_NAME_SPLIT.toString(
+                            ((TeamMatch) match).getTeamA().getLeader().getUsername(),
+                            ((TeamMatch) match).getTeamB().getLeader().getUsername());
                 } else if (match.getMatchType() == MatchType.FFA) {
                     title = Language.MATCH_SPECTATE_MENU_BUTTON_NAME_FFA.toString(match.getTeamPlayers().size());
-                } else if (match.getMatchType() == MatchType.SUMO_EVENT && EdenEvent.getOnGoingEvent() != null) {
-                    title = Language.MATCH_SPECTATE_MENU_BUTTON_NAME_SUMO_EVENT.toString();
                 } else {
                     title = Language.MATCH_SPECTATE_MENU_BUTTON_NAME_ERROR.toString();
                 }
@@ -56,9 +57,9 @@ public class SpectateMenu extends PaginatedMenu {
                                         match.getKit().getDisplayName(),
                                         match.getArenaDetail().getArena().getDisplayName(),
                                         match.getQueueType().getReadable(),
-                                        match.getTeamPlayers().stream().map(TeamPlayer::getUsername).collect(Collectors.joining(CC.GRAY + ", " + CC.AQUA)),
-                                        match.getSpectators().size()
-                                ))
+                                        match.getTeamPlayers().stream().map(TeamPlayer::getUsername)
+                                                .collect(Collectors.joining(CC.GRAY + ", " + CC.AQUA)),
+                                        match.getSpectators().size()))
                                 .build();
                     }
 
@@ -75,7 +76,8 @@ public class SpectateMenu extends PaginatedMenu {
                     public ItemStack getButtonItem(Player player) {
                         return new ItemBuilder(Material.BEDROCK)
                                 .name(Language.MATCH_SPECTATE_MENU_ERROR_BUTTON_NAME.toString())
-                                .lore(Language.MATCH_SPECTATE_MENU_ERROR_BUTTON_LORE.toStringList(player, match.getUuid().toString()))
+                                .lore(Language.MATCH_SPECTATE_MENU_ERROR_BUTTON_LORE.toStringList(player,
+                                        match.getUuid().toString()))
                                 .build();
                     }
                 });

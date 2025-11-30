@@ -48,21 +48,21 @@ public class KitEditorMenu extends Menu {
         BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
         PlayerProfile profile = PlayerProfile.get(player);
 
-        // Filler and Border
+        
         MenuUtil.addFillerButtons(buttons, config, "kit-editor-menu", getSize());
         MenuUtil.addBorderButtons(buttons, config, "kit-editor-menu", getSize());
 
-        // Team Colorization Logic - Use consistent color per player session
+        
         final TeamColor teamColor;
         if (kit.getGameRules().isTeamProjectile()) {
-            // Use player UUID to determine consistent team color (prevents volatile color
-            // changes)
+            
+            
             teamColor = (player.getUniqueId().hashCode() % 2 == 0) ? TeamColor.RED : TeamColor.BLUE;
         } else {
             teamColor = null;
         }
 
-        // Armor
+        
         ItemStack[] armor = kit.getKitLoadout().getArmor();
         if (armor != null) {
             setArmorButton(buttons, config.getInt("kit-editor-menu.items.armor.helmet"), armor[3], teamColor);
@@ -71,14 +71,14 @@ public class KitEditorMenu extends Menu {
             setArmorButton(buttons, config.getInt("kit-editor-menu.items.armor.boots"), armor[0], teamColor);
         }
 
-        // Kit Slots
+        
         List<Integer> slotPositions = config.getConfiguration().getIntegerList("kit-editor-menu.items.kit-slots");
         int slotsPerPage = slotPositions.size();
         int startIndex = (page - 1) * slotsPerPage;
 
         for (int i = 0; i < slotsPerPage; i++) {
             int kitIndex = startIndex + i;
-            // Max 8 kits total as per request
+            
             if (kitIndex >= 8)
                 break;
 
@@ -86,12 +86,12 @@ public class KitEditorMenu extends Menu {
             KitLoadout loadout = profile.getKitData().get(kit.getName()).getLoadouts()[kitIndex];
             String loadoutName = (loadout == null) ? "Kit " + (kitIndex + 1) : loadout.getCustomName();
 
-            // Book Button (Book when empty, Book and Quill when saved)
+            
             buttons.put(slot, new Button() {
                 @Override
                 public ItemStack getButtonItem(Player player) {
                     if (loadout == null) {
-                        // Empty slot configuration
+                        
                         String emptyMaterial = config.getString("kit-editor-menu.items.book-button.empty.material");
                         int emptyData = config.getInt("kit-editor-menu.items.book-button.empty.data");
                         String emptyName = config.getString("kit-editor-menu.items.book-button.empty.name")
@@ -104,7 +104,7 @@ public class KitEditorMenu extends Menu {
                                 .lore(emptyLore)
                                 .build();
                     } else {
-                        // Saved kit configuration
+                        
                         String savedMaterial = config.getString("kit-editor-menu.items.book-button.saved.material");
                         int savedData = config.getInt("kit-editor-menu.items.book-button.saved.data");
                         String savedName = config.getString("kit-editor-menu.items.book-button.saved.name")
@@ -123,19 +123,19 @@ public class KitEditorMenu extends Menu {
                 @Override
                 public void clicked(Player player, ClickType clickType) {
                     if (loadout == null) {
-                        // Create new kit
+                        
                         KitLoadout newLoadout = new KitLoadout("Kit " + (kitIndex + 1), kit);
                         newLoadout.setContents(kit.getKitLoadout().getContents());
                         newLoadout.setArmor(kit.getKitLoadout().getArmor());
                         profile.getKitData().get(kit.getName()).replaceKit(kitIndex, newLoadout);
                         new KitEditorMenu(kit, page).openMenu(player);
                     } else {
-                        // Load kit into inventory
+                        
                         player.closeInventory();
-                        loadout.apply(kit, null, player); // Match is null, just applies to inventory
+                        loadout.apply(kit, null, player); 
                         colorize(player, teamColor);
                         player.sendMessage(CC.translate("&aKit loaded."));
-                        // Reopen menu after 1 tick delay to show updated inventory
+                        
                         Eden.INSTANCE.getServer().getScheduler().runTaskLater(Eden.INSTANCE, () -> {
                             new KitEditorMenu(kit, page).openMenu(player);
                         }, 1L);
@@ -143,9 +143,9 @@ public class KitEditorMenu extends Menu {
                 }
             });
 
-            // Action Buttons (Only if loadout exists)
+            
             if (loadout != null) {
-                // Save Button (formerly Load Button)
+                
                 if (config.getBoolean("kit-editor-menu.items.dynamic-buttons.save.enabled")) {
                     int loadSlot = slot + config.getInt("kit-editor-menu.items.dynamic-buttons.save.slot-offset");
                     buttons.put(loadSlot, new Button() {
@@ -162,7 +162,7 @@ public class KitEditorMenu extends Menu {
 
                         @Override
                         public void clicked(Player player, ClickType clickType) {
-                            // Save current inventory to this kit
+                            
                             loadout.setContents(player.getInventory().getContents());
                             loadout.setArmor(player.getInventory().getArmorContents());
                             profile.getKitData().get(kit.getName()).replaceKit(kitIndex, loadout);
@@ -172,7 +172,7 @@ public class KitEditorMenu extends Menu {
                     });
                 }
 
-                // Rename Button
+                
                 if (config.getBoolean("kit-editor-menu.items.dynamic-buttons.rename.enabled")) {
                     int renameSlot = slot + config.getInt("kit-editor-menu.items.dynamic-buttons.rename.slot-offset");
                     buttons.put(renameSlot, new Button() {
@@ -204,7 +204,7 @@ public class KitEditorMenu extends Menu {
                     });
                 }
 
-                // Reset Button
+                
                 if (config.getBoolean("kit-editor-menu.items.dynamic-buttons.reset.enabled")) {
                     int resetSlot = slot + config.getInt("kit-editor-menu.items.dynamic-buttons.reset.slot-offset");
                     buttons.put(resetSlot, new Button() {
@@ -225,7 +225,7 @@ public class KitEditorMenu extends Menu {
                             loadout.setArmor(kit.getKitLoadout().getArmor());
                             profile.getKitData().get(kit.getName()).replaceKit(kitIndex, loadout);
                             player.sendMessage(CC.translate("&aKit reset to default layout."));
-                            // Close menu, apply default kit to player, then reopen
+                            
                             player.closeInventory();
                             player.getInventory().setContents(kit.getKitLoadout().getContents());
                             player.getInventory().setArmorContents(kit.getKitLoadout().getArmor());
@@ -238,7 +238,7 @@ public class KitEditorMenu extends Menu {
                     });
                 }
 
-                // Delete Button
+                
                 if (config.getBoolean("kit-editor-menu.items.dynamic-buttons.delete.enabled")) {
                     int deleteSlot = slot + config.getInt("kit-editor-menu.items.dynamic-buttons.delete.slot-offset");
                     buttons.put(deleteSlot, new Button() {
@@ -263,7 +263,7 @@ public class KitEditorMenu extends Menu {
             }
         }
 
-        // Extra Items
+        
         if (!kit.getKitExtraItems().isEmpty()) {
             buttons.put(config.getInt("kit-editor-menu.items.extra-items.slot"), new Button() {
                 @Override
@@ -282,7 +282,7 @@ public class KitEditorMenu extends Menu {
             });
         }
 
-        // Pagination
+        
         if (page > 1) {
             buttons.put(config.getInt("kit-editor-menu.items.previous-page.slot"), new Button() {
                 @Override
@@ -300,11 +300,11 @@ public class KitEditorMenu extends Menu {
             });
         }
 
-        if (startIndex + slotsPerPage < 8) { // Max 8 kits
-            // Only show next page button if on page 1 and all kits 1-4 are saved
+        if (startIndex + slotsPerPage < 8) { 
+            
             boolean showNextPage = true;
             if (page == 1) {
-                // Check if all kits 1-4 are saved
+                
                 for (int i = 0; i < 4; i++) {
                     if (profile.getKitData().get(kit.getName()).getLoadouts()[i] == null) {
                         showNextPage = false;
@@ -331,7 +331,7 @@ public class KitEditorMenu extends Menu {
             }
         }
 
-        // Back Button
+        
         buttons.put(config.getInt("kit-editor-menu.items.back-button.slot"), new Button() {
             @Override
             public ItemStack getButtonItem(Player player) {
@@ -344,9 +344,9 @@ public class KitEditorMenu extends Menu {
 
             @Override
             public void clicked(Player player, ClickType clickType) {
-                // Exit editing mode and restore lobby items
+                
                 Eden.INSTANCE.getKitEditorManager().leaveKitEditor(player, true);
-                // Schedule opening the selector menu after lobby items are given
+                
                 Eden.INSTANCE.getServer().getScheduler().runTaskLater(Eden.INSTANCE, () -> {
                     new KitEditorSelectKitMenu().openMenu(player);
                 }, 2L);
@@ -399,16 +399,16 @@ public class KitEditorMenu extends Menu {
     private void setArmorButton(Map<Integer, Button> buttons, int slot, ItemStack item, TeamColor teamColor) {
         BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
 
-        // Handle empty armor slots with placeholder
+        
         if (item == null || item.getType() == Material.AIR) {
             String placeholderMaterial = config.getString("kit-editor-menu.items.armor.empty-placeholder.material");
 
-            // If material is empty string or not set, don't show placeholder
+            
             if (placeholderMaterial == null || placeholderMaterial.trim().isEmpty()) {
                 return;
             }
 
-            // Create placeholder item
+            
             ItemStack placeholder = new ItemBuilder(Material.valueOf(placeholderMaterial))
                     .durability(config.getInt("kit-editor-menu.items.armor.empty-placeholder.data"))
                     .name(config.getString("kit-editor-menu.items.armor.empty-placeholder.name"))
@@ -426,13 +426,13 @@ public class KitEditorMenu extends Menu {
 
         ItemStack finalItem = item.clone();
         if (teamColor != null) {
-            // Colorize leather armor
+            
             if (finalItem.getType().name().contains("LEATHER")) {
                 LeatherArmorMeta meta = (LeatherArmorMeta) finalItem.getItemMeta();
                 meta.setColor(Color.fromRGB(teamColor.getRgb()));
                 finalItem.setItemMeta(meta);
             }
-            // Colorize blocks (wool, stained glass pane, stained clay)
+            
             else if (finalItem.getType() == Material.WOOL ||
                     finalItem.getType() == Material.STAINED_GLASS_PANE ||
                     finalItem.getType() == Material.STAINED_CLAY) {

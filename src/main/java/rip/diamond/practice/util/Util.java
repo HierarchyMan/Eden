@@ -199,7 +199,7 @@ public class Util {
         return (ImmutableSet.copyOf(classes));
     }
 
-    //Credit: https://github.com/lulu2002/DatouNms/blob/master/src/main/java/me/lulu/datounms/v1_8_R3/CraftCommonNMS.java
+    
     public static void playDeathAnimation(Player player, List<Player> viewers) {
         MinecraftServer nmsServer = ((CraftServer) Bukkit.getServer()).getServer();
         WorldServer nmsWorld = (( CraftWorld ) player.getWorld()).getHandle();
@@ -235,8 +235,8 @@ public class Util {
         }, 2L);
     }
 
-    //Need a custom dropItemNaturally function, so I can modify the f value of EntityItem
-    //World#dropItemNaturally doesn't work in this case because dropItemNaturally will spawn the item before returning the item itself
+    
+    
     public static Item dropItemNaturally(Location loc, ItemStack item, Player player) {
         net.minecraft.server.v1_8_R3.World world = ((CraftWorld) loc.getWorld()).getHandle();
         double xs = world.random.nextFloat() * 0.7F - 0.35D;
@@ -352,8 +352,8 @@ public class Util {
 
     public static int getArrowSlot(Match match, Player player) {
         int slot = -1;
-        //No KitLoadout is received. This will be null when a player didn't select a kit
-        //Should not happen anymore because kitLoadout is now automatically applied, but just in-case
+        
+        
         if (match.getTeamPlayer(player).getKitLoadout() != null) {
             for (int i = 0; i < 36; i++) {
                 if (match.getTeamPlayer(player).getKitLoadout().getContents()[i] != null && match.getTeamPlayer(player).getKitLoadout().getContents()[i].getType() == Material.ARROW) slot = i;

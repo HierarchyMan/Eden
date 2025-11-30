@@ -53,7 +53,7 @@ public class ArenaGenerateTask extends TaskTicker {
                 ArenaDetail arenaDetail = new ArenaDetail(arena, a, b, spectator, min, max);
                 arena.getArenaDetails().add(arenaDetail);
 
-                // Cache chunks and save async to prevent main thread lag
+                
                 com.boydti.fawe.util.TaskManager.IMP.async(() -> {
                     arenaDetail.copyChunk();
                     arena.save();

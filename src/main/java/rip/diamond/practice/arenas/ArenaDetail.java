@@ -58,7 +58,7 @@ public class ArenaDetail {
 
     public void copyChunk() {
         if (Config.EXPERIMENT_DISABLE_ORIGINAL_ARENA.toBoolean()) {
-            // If this is a copy (not the first one), do not cache chunks
+
             if (arena.getArenaDetails().indexOf(this) > 0) {
                 return;
             }
@@ -68,6 +68,7 @@ public class ArenaDetail {
         Cuboid cuboid = new Cuboid(min, max);
         try {
             cuboid.getChunks().forEach(chunk -> cachedChunks.add(new ArenaChunk(chunk)));
+            rip.diamond.practice.arenas.chunk.ArenaChunkManager.saveChunks(this);
         } catch (Exception e) {
             Common.log(
                     "&c[Eden] An error occurred while trying to copy your arena. This will cause arena will not reset and strongly recommend to fix it ASAP. (min:"
@@ -90,10 +91,9 @@ public class ArenaDetail {
                 Location destMinLoc = this.getMin();
                 Location destMaxLoc = this.getMax();
 
-                // FAWE operations - fully async now
                 Runnable faweRunnable = () -> {
                     try {
-                        // Use proper min/max ordering for source
+
                         Vector sourceMin = new Vector(
                                 Math.min(origMinLoc.getBlockX(), origMaxLoc.getBlockX()),
                                 Math.min(origMinLoc.getBlockY(), origMaxLoc.getBlockY()),
@@ -103,8 +103,6 @@ public class ArenaDetail {
                                 Math.max(origMinLoc.getBlockY(), origMaxLoc.getBlockY()),
                                 Math.max(origMinLoc.getBlockZ(), origMaxLoc.getBlockZ()));
 
-                        // 1. Copy from Original using modern API (FAWE handles chunk loading
-                        // internally)
                         EditSession copySession = new EditSessionBuilder(origMinLoc.getWorld().getName())
                                 .fastmode(true)
                                 .allowedRegionsEverywhere()
@@ -121,7 +119,6 @@ public class ArenaDetail {
                                 copySession, sourceRegion, clipboard, sourceMin);
                         com.sk89q.worldedit.function.operation.Operations.complete(copy);
 
-                        // 2. Paste to Current location
                         EditSession pasteSession = new EditSessionBuilder(destMinLoc.getWorld().getName())
                                 .fastmode(true)
                                 .allowedRegionsEverywhere()
@@ -156,13 +153,13 @@ public class ArenaDetail {
                     faweRunnable.run();
                 }
             } else {
-                // Original arena - just release if needed
+
                 if (releaseArena) {
                     this.using = false;
                 }
             }
         } else {
-            // Legacy mode: use cached chunks (MUST run on main thread due to NMS)
+
             Runnable runnable = () -> {
                 try {
                     cachedChunks.forEach(IArenaChunk::restore);
@@ -177,7 +174,6 @@ public class ArenaDetail {
                 }
             };
 
-            // NMS chunk operations MUST run on main thread
             if (async) {
                 TaskManager.IMP.task(runnable);
             } else {

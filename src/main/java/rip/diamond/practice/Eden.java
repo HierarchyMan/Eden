@@ -12,6 +12,8 @@ import rip.diamond.practice.arenas.Arena;
 import rip.diamond.practice.arenas.command.ArenaCommand;
 import rip.diamond.practice.command.ReloadCommand;
 import rip.diamond.practice.config.Config;
+import rip.diamond.practice.config.ScoreboardFile;
+import rip.diamond.practice.config.EventLoadoutsFile;
 import rip.diamond.practice.config.MenusConfig;
 import rip.diamond.practice.database.DatabaseManager;
 import rip.diamond.practice.debug.TestCommand;
@@ -19,9 +21,6 @@ import rip.diamond.practice.debug.TestListener;
 import rip.diamond.practice.duel.DuelRequest;
 import rip.diamond.practice.duel.DuelRequestManager;
 import rip.diamond.practice.duel.command.DuelCommand;
-import rip.diamond.practice.events.command.EventCommand;
-import rip.diamond.practice.events.command.JoinEventCommand;
-import rip.diamond.practice.events.listener.EventListener;
 import rip.diamond.practice.hook.HookManager;
 import rip.diamond.practice.kiteditor.KitEditorListener;
 import rip.diamond.practice.kiteditor.KitEditorManager;
@@ -37,6 +36,10 @@ import rip.diamond.practice.leaderboard.LeaderboardManager;
 import rip.diamond.practice.leaderboard.command.ReloadLeaderboardCommand;
 import rip.diamond.practice.lobby.LobbyManager;
 import rip.diamond.practice.lobby.LobbyMovementHandler;
+import rip.diamond.practice.managers.EventManager;
+import rip.diamond.practice.managers.SpawnManager;
+import rip.diamond.practice.managers.chest.ChestManager;
+import rip.diamond.practice.managers.chunk.ChunkRestorationManager;
 import rip.diamond.practice.match.Match;
 import rip.diamond.practice.match.MatchMovementHandler;
 import rip.diamond.practice.match.command.*;
@@ -88,7 +91,11 @@ public class Eden extends JavaPlugin {
     private BasicConfigFile arenaFile;
     private BasicConfigFile kitFile;
     private BasicConfigFile soundFile;
+    private BasicConfigFile chestFile;
+    private ScoreboardFile scoreboardFile;
+    private EventLoadoutsFile eventLoadoutsFile;
     private MenusConfig menusConfig;
+    private BasicConfigFile leaderboardsConfig;
 
     private CommandManager commandManager;
     private DatabaseManager databaseManager;
@@ -99,6 +106,12 @@ public class Eden extends JavaPlugin {
     private LeaderboardManager leaderboardManager;
     private HookManager hookManager;
     private NameTagManager nameTagManager;
+    private SpawnManager spawnManager;
+    private EventManager eventManager;
+    private ChestManager chestManager;
+    private ChunkRestorationManager chunkRestorationManager;
+    private rip.diamond.practice.managers.chunk.ChunkManager chunkManager;
+    private rip.diamond.practice.leaderboard.hologram.HologramManager hologramManager;
 
     private SpigotAPI spigotAPI;
     private EntityHider entityHider;
@@ -124,28 +137,33 @@ public class Eden extends JavaPlugin {
         loadListeners();
         loadCommands();
         loadGeneral();
+        spawnManager.copyEventChunks();
     }
 
     @Override
     public void onDisable() {
-        // Stop all existing thread
+
         if (tabHandler != null)
             Eden.INSTANCE.getTabHandler().stop();
         if (databaseManager != null)
             databaseManager.shutdown();
-        // Clean up matches
+
         for (Match match : Match.getMatches().values()) {
             match.getArenaDetail().restoreChunk(false, false);
             match.getEntities().forEach(matchEntity -> matchEntity.getEntity().remove());
         }
-        // Save all kits
+
         Kit.getKits().forEach(Kit::autoSave);
-        // Save all arenas
+
         Arena.getArenas().forEach(Arena::autoSave);
-        // Save all profiles
+
         if (Config.PROFILE_SAVE_ON_SERVER_STOP.toBoolean()) {
             PlayerProfile.getProfiles().values().forEach(profile -> profile.save(false, (bool) -> {
             }));
+        }
+
+        if (hologramManager != null) {
+            hologramManager.getHolograms().forEach(rip.diamond.practice.leaderboard.hologram.PracticeHologram::stop);
         }
     }
 
@@ -158,7 +176,12 @@ public class Eden extends JavaPlugin {
         this.arenaFile = new BasicConfigFile(this, "arena.yml");
         this.kitFile = new BasicConfigFile(this, "kit.yml");
         this.soundFile = new BasicConfigFile(this, "sound.yml");
+        this.chestFile = new BasicConfigFile(this, "chest.yml");
+        this.scoreboardFile = new ScoreboardFile(this);
+        this.eventLoadoutsFile = new EventLoadoutsFile(this);
+        this.eventLoadoutsFile = new EventLoadoutsFile(this);
         this.menusConfig = new MenusConfig(this);
+        this.leaderboardsConfig = new BasicConfigFile(this, "leaderboards.yml");
 
         Config.loadDefault();
         rip.diamond.practice.config.DatabaseConfig.loadDefault();
@@ -168,14 +191,20 @@ public class Eden extends JavaPlugin {
         sender.sendMessage(CC.translate("&eReloading EdenPractice..."));
 
         this.configFile.load();
-        // NOTE: database.yml is NOT reloaded - requires server restart
+
         this.languageFile.load();
         this.locationFile.load();
+        this.leaderboardsConfig.load();
         this.itemFile.load();
+        this.itemFile.load();
+        EdenItems.reload();
         this.arenaFile.load();
         this.kitFile.load();
         this.soundFile.load();
         this.menusConfig.reload();
+        this.chestFile.load();
+        this.scoreboardFile.load();
+        this.eventLoadoutsFile.load();
 
         Config.invalidateCache();
         Config.loadDefault();
@@ -183,23 +212,27 @@ public class Eden extends JavaPlugin {
         Arena.reload();
         Kit.reload();
 
-        // Update all Kit references after Kit.reload() to prevent systemic issues
-        // This is critical because Kit.reload() creates new Kit instances, but many
-        // objects throughout the codebase hold references to the old Kit instances
         sender.sendMessage(CC.translate("&eUpdating kit references in active matches, queues, and editors..."));
 
-        // Update leaderboards (fixes leaderboard display issues)
         if (leaderboardManager != null) {
             leaderboardManager.rebuildLeaderboards();
         }
 
-        // Update active matches (fixes stats updates after matches)
+        if (spawnManager != null)
+            spawnManager.reload();
+        if (lobbyManager != null)
+            lobbyManager.reload();
+        if (kitEditorManager != null)
+            kitEditorManager.reload();
+        if (chestManager != null)
+            chestManager.reload();
+        if (hologramManager != null)
+            hologramManager.loadHolograms();
+
         rip.diamond.practice.match.Match.updateKitReferences();
 
-        // Update queue profiles (fixes queue matching after reload)
         rip.diamond.practice.queue.Queue.updateKitReferences();
 
-        // Update kit editor profiles (fixes kit editing after reload)
         if (kitEditorManager != null) {
             kitEditorManager.updateKitReferences();
         }
@@ -239,12 +272,18 @@ public class Eden extends JavaPlugin {
         this.leaderboardManager = new LeaderboardManager();
         this.hookManager = new HookManager(this);
         this.nameTagManager = new NameTagManager(this);
+        this.spawnManager = new SpawnManager();
+        this.chunkRestorationManager = new ChunkRestorationManager();
+        this.eventManager = new EventManager();
+        this.chestManager = new ChestManager(this);
+
+        this.chunkManager = new rip.diamond.practice.managers.chunk.ChunkManager();
+        this.hologramManager = new rip.diamond.practice.leaderboard.hologram.HologramManager();
     }
 
     private void loadListeners() {
         Arrays.asList(
                 new MenuListener(this),
-                new EventListener(this),
                 new KitListener(),
                 new MatchListener(this),
                 new ChatListener(this),
@@ -255,7 +294,8 @@ public class Eden extends JavaPlugin {
                 new PartyListener(),
                 new QueueListener(),
                 new SpectateListener(),
-                new rip.diamond.practice.match.listener.DynamicKitEditListener())
+                new rip.diamond.practice.match.listener.DynamicKitEditListener(),
+                new rip.diamond.practice.events.EventPlayerListener())
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
 
         if (Config.DEBUG.toBoolean()) {
@@ -277,8 +317,6 @@ public class Eden extends JavaPlugin {
         new OtherPartiesCommand();
         new PartyCommand();
         new DuelCommand();
-        new EventCommand();
-        new JoinEventCommand();
         new StatsCommand();
         new ForceEndCommand();
         new GiveUpCommand();
@@ -289,6 +327,7 @@ public class Eden extends JavaPlugin {
         new TeleporterCommand();
         new ViewInventoryCommand();
         new ReloadLeaderboardCommand();
+        new rip.diamond.practice.leaderboard.command.LeaderboardCommand();
         new SettingsCommand();
         new AfternoonCommand();
         new DayCommand();
@@ -303,6 +342,10 @@ public class Eden extends JavaPlugin {
         new ToggleSpectatorJoinLeaveMessageCommand();
         new ToggleSpectatorVisibilityCommand();
 
+        new rip.diamond.practice.events.command.EventCommand();
+        new rip.diamond.practice.events.command.JoinEventCommand();
+        new rip.diamond.practice.events.command.SpectateEventCommand();
+        new rip.diamond.practice.misc.commands.GotoEventCommand();
         new ReloadCommand();
 
         if (Config.DEBUG.toBoolean()) {

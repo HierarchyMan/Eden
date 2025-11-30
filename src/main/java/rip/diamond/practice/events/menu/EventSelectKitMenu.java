@@ -1,12 +1,10 @@
 package rip.diamond.practice.events.menu;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
-import rip.diamond.practice.config.Language;
 import rip.diamond.practice.kits.Kit;
-import rip.diamond.practice.kits.KitMatchType;
 import rip.diamond.practice.util.ItemBuilder;
 import rip.diamond.practice.util.menu.Button;
 import rip.diamond.practice.util.menu.Menu;
@@ -14,39 +12,61 @@ import rip.diamond.practice.util.menu.Menu;
 import java.util.HashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class EventSelectKitMenu extends Menu {
-    private final EventSettingsMenu backMenu;
+
+    private final EventSettingsMenu parent;
 
     @Override
     public String getTitle(Player player) {
-        return Language.EVENT_EVENT_SELECT_KIT_MENU_TITLE.toString(player);
+        return "&bSelect a Kit";
     }
 
     @Override
     public Map<Integer, Button> getButtons(Player player) {
-        final Map<Integer, Button> buttons = new HashMap<>();
+        Map<Integer, Button> buttons = new HashMap<>();
 
-        Kit.getKits().stream()
-                .filter(Kit::isEnabled)
-                .filter(kit -> kit.getKitMatchTypes().contains(KitMatchType.SOLO) && kit.getKitMatchTypes().contains(KitMatchType.SPLIT))
-                .forEach(kit -> buttons.put(buttons.size(), new Button() {
-                    @Override
-                    public ItemStack getButtonItem(Player player) {
-                        return new ItemBuilder(kit.getDisplayIcon().clone())
-                                .name(Language.EVENT_EVENT_SELECT_KIT_MENU_BUTTON_NAME.toString(player, kit.getDisplayName()))
-                                .lore(Language.EVENT_EVENT_SELECT_KIT_MENU_BUTTON_LORE.toStringList(player))
-                                .build();
-                    }
-
-                    @Override
-                    public void clicked(Player player, ClickType clickType) {
-                        player.closeInventory();
-                        backMenu.setKit(kit);
-                        backMenu.openMenu(player);
-                    }
-                }));
+        int index = 0;
+        for (Kit kit : Kit.getKits()) {
+            if (kit.isEnabled() && isKitAllowedForEvent(kit)) {
+                buttons.put(index++, new SelectKitButton(kit));
+            }
+        }
 
         return buttons;
+    }
+
+    private boolean isKitAllowedForEvent(Kit kit) {
+        
+        if (kit.getAllowedEvents() == null || kit.getAllowedEvents().isEmpty()) {
+            return true;
+        }
+
+        
+        
+        String eventName = parent.getEventName();
+        return kit.getAllowedEvents().stream()
+                .anyMatch(allowed -> allowed.equalsIgnoreCase(eventName));
+    }
+
+    @AllArgsConstructor
+    private class SelectKitButton extends Button {
+
+        private final Kit kit;
+
+        @Override
+        public ItemStack getButtonItem(Player player) {
+            return new ItemBuilder(kit.getDisplayIcon())
+                    .name("&b&l" + kit.getName())
+                    .lore("§7Click to select this kit.")
+                    .build();
+        }
+
+        @Override
+        public void clicked(Player player, int slot, ClickType clickType, int hotbarButton) {
+            parent.setKit(kit);
+            player.closeInventory();
+            parent.openMenu(player);
+        }
     }
 }

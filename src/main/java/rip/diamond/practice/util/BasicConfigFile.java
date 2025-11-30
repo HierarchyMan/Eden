@@ -55,8 +55,8 @@ public class BasicConfigFile {
             if (value == null) {
                 return path;
             }
-            // REMOVED ColorUtil.colorize here.
-            // If you need colors in raw config access, wrap the call in ColorUtil.colorize() in the calling class.
+            
+            
             return String.valueOf(value);
         }
         return path;
@@ -68,7 +68,7 @@ public class BasicConfigFile {
             List<String> strings = new ArrayList<>();
             for (Object entry : (List<?>) value) {
                 if (entry != null) {
-                    // REMOVED ColorUtil.colorize here too
+                    
                     strings.add(entry.toString());
                 }
             }

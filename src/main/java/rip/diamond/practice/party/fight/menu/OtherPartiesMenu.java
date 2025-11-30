@@ -55,11 +55,11 @@ public class OtherPartiesMenu extends Menu {
         BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
         int itemsPerPage = MenuUtil.getItemsPerPage(config, "party-other-parties-menu");
 
-        // Filler and Border
+        
         MenuUtil.addFillerButtons(buttons, config, "party-other-parties-menu", getSize());
         MenuUtil.addBorderButtons(buttons, config, "party-other-parties-menu", getSize());
 
-        // Party buttons with pagination
+        
         List<Party> allParties = Party.getParties().values().stream()
                 .filter(party -> party.getPrivacy() == PartyPrivacy.OPEN
                         && party.getAllPartyMembers().size() < party.getMaxSize())
@@ -70,10 +70,10 @@ public class OtherPartiesMenu extends Menu {
 
         List<Party> partiesOnThisPage = allParties.subList(startIndex, endIndex);
 
-        // Place parties in available slots (avoiding border)
+        
         int partyIndex = 0;
         for (int slot = 0; slot < getSize() && partyIndex < partiesOnThisPage.size(); slot++) {
-            // Skip border slots
+            
             if (buttons.containsKey(slot) && (slot < 9 || slot >= getSize() - 9 || slot % 9 == 0 || slot % 9 == 8)) {
                 continue;
             }
@@ -85,7 +85,7 @@ public class OtherPartiesMenu extends Menu {
             partyIndex++;
         }
 
-        // Pagination buttons
+        
         MenuUtil.addPreviousPageButton(buttons, config, "party-other-parties-menu", page,
             p -> new OtherPartiesMenu(page - 1).openMenu(p));
         MenuUtil.addNextPageButton(buttons, config, "party-other-parties-menu", endIndex < allParties.size(),
@@ -106,7 +106,7 @@ public class OtherPartiesMenu extends Menu {
             int members = party.getAllPartyMembers().size();
             int maxSize = party.getMaxSize();
 
-            // Build member list
+            
             String memberFormat = config.getString("party-other-parties-menu.items.party-button.member-format");
             List<String> memberList = party.getAllPartyMembers().stream()
                     .map(partyMember -> {
@@ -115,7 +115,7 @@ public class OtherPartiesMenu extends Menu {
                     })
                     .collect(Collectors.toList());
 
-            // Build lore with placeholders
+            
             List<String> lore = config.getStringList("party-other-parties-menu.items.party-button.lore");
             lore = lore.stream()
                     .map(line -> line.replace("{leader}", leaderName))
@@ -123,14 +123,14 @@ public class OtherPartiesMenu extends Menu {
                     .map(line -> line.replace("{max-size}", String.valueOf(maxSize)))
                     .map(line -> {
                         if (line.contains("{member-list}")) {
-                            // Replace with actual member list
-                            return null; // Mark for replacement
+                            
+                            return null; 
                         }
                         return line;
                     })
                     .collect(Collectors.toList());
 
-            // Insert member list where placeholder was
+            
             List<String> finalLore = lore.stream()
                     .flatMap(line -> {
                         if (line == null) {

@@ -36,8 +36,8 @@ public class StatsCommand extends Command {
             return;
         }
 
-        // If player isn't online...
-        // If player isn't online...
+        
+        
         Eden.INSTANCE.getDatabaseManager().getHandler().findProfileByName(username, (document) -> {
             if (document == null) {
                 Language.PROFILE_CANNOT_FIND_PLAYER.sendMessage(player);
@@ -47,7 +47,7 @@ public class StatsCommand extends Command {
             UUID targetUUID = UUID.fromString(document.getString("uuid"));
             String targetName = document.getString("username");
 
-            // The creation logic must run on main thread
+            
             Tasks.run(() -> {
                 PlayerProfile finalProfile = PlayerProfile.createPlayerProfile(targetUUID, targetName);
                 finalProfile.setTemporary(true);

@@ -15,12 +15,23 @@ public class LobbyManager {
 
     private final Eden plugin;
 
-    @Setter private Location spawnLocation = null;
+    @Setter
+    private Location spawnLocation = null;
 
     public LobbyManager(Eden plugin) {
         this.plugin = plugin;
         try {
-            this.spawnLocation = LocationSerialization.deserializeLocation(plugin.getLocationFile().getString("spawn-location"));
+            this.spawnLocation = LocationSerialization
+                    .deserializeLocation(plugin.getLocationFile().getString("spawn-location"));
+        } catch (Exception e) {
+            Common.log("Unable to deserialize spawn-location from location file.");
+        }
+    }
+
+    public void reload() {
+        try {
+            this.spawnLocation = LocationSerialization
+                    .deserializeLocation(plugin.getLocationFile().getString("spawn-location"));
         } catch (Exception e) {
             Common.log("Unable to deserialize spawn-location from location file.");
         }
@@ -28,8 +39,10 @@ public class LobbyManager {
 
     public void teleport(Player player) {
         if (spawnLocation == null) {
-            Common.sendMessage(player, CC.RED + "Unable to teleport you to a certain location. Please check if spawn location and editor location is setup correctly.");
-            Common.log(CC.RED + "Unable to teleport " + player.getName() + " to a certain location. Please check if spawn location and editor location is setup correctly.");
+            Common.sendMessage(player, CC.RED
+                    + "Unable to teleport you to a certain location. Please check if spawn location and editor location is setup correctly.");
+            Common.log(CC.RED + "Unable to teleport " + player.getName()
+                    + " to a certain location. Please check if spawn location and editor location is setup correctly.");
             return;
         }
         Util.teleport(player, spawnLocation);
@@ -51,10 +64,17 @@ public class LobbyManager {
     }
 
     public void sendToSpawnAndReset(Player player) {
-        Tasks.run(()-> {
+        Tasks.run(() -> {
             reset(player);
             teleport(player);
         });
+    }
+
+    public void resetPlayerOrSpawn(Player player, boolean teleportToSpawn) {
+        reset(player);
+        if (teleportToSpawn) {
+            teleport(player);
+        }
     }
 
 }

@@ -1,10 +1,10 @@
 package rip.diamond.practice.layout;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import rip.diamond.practice.Eden;
 import rip.diamond.practice.config.Config;
-import rip.diamond.practice.config.Language;
 import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.tablist.ImanityTabAdapter;
 import rip.diamond.practice.util.tablist.util.BufferedTabObject;
@@ -25,17 +25,23 @@ public class TabAdapter implements ImanityTabAdapter {
 
         int i = 0;
         int maxSlots = TablistUtil.getPossibleSlots(player);
-        List<Player> playerList = new ArrayList<Player>(Bukkit.getOnlinePlayers()).subList(0, Math.min(Bukkit.getOnlinePlayers().size(), maxSlots));
+        List<Player> playerList = new ArrayList<Player>(Bukkit.getOnlinePlayers()).subList(0,
+                Math.min(Bukkit.getOnlinePlayers().size(), maxSlots));
 
         for (Player target : playerList) {
-            int x = i / (maxSlots / 20) + 1; //Somehow ImanityTablist slot count starts at 1, so we have to start at 1 :shrug:
+            int x = i / (maxSlots / 20) + 1; 
+                                             
             int y = i % (maxSlots / 20);
 
-            // Replace placeholders BEFORE coloring
+            
             String format = Config.FANCY_TABLIST_FORMAT.toString().replace("{player-name}", target.getName());
-            // Apply Eden placeholders for the target player
+            
             format = Eden.INSTANCE.getPlaceholder().translate(target, format);
-            // Then colorize
+            
+            if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                format = PlaceholderAPI.setPlaceholders(target, format);
+            }
+            
             String text = CC.translate(format);
 
             objects.add(new BufferedTabObject()
@@ -43,8 +49,7 @@ public class TabAdapter implements ImanityTabAdapter {
                     .column(TabColumn.getFromOrdinal(y))
                     .text(text)
                     .ping(target.spigot().getPing())
-                    .skin(Skin.fromPlayer(target))
-            );
+                    .skin(Skin.fromPlayer(target)));
 
             i++;
         }
@@ -54,17 +59,59 @@ public class TabAdapter implements ImanityTabAdapter {
 
     @Override
     public String getHeader(Player player) {
-        if (Language.TABLIST_HEADER.toString().equals(Language.TABLIST_HEADER.getPath())) {
+        List<String> headerLines = Eden.INSTANCE.getLanguageFile().getConfiguration().getStringList("tablist.header");
+
+        
+        if (headerLines == null || headerLines.isEmpty()) {
             return null;
         }
-        return Language.TABLIST_HEADER.toString(player);
+
+        
+        StringBuilder header = new StringBuilder();
+        for (int i = 0; i < headerLines.size(); i++) {
+            String line = headerLines.get(i);
+            
+            line = Eden.INSTANCE.getPlaceholder().translate(player, line);
+            
+            if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                line = PlaceholderAPI.setPlaceholders(player, line);
+            }
+            
+            header.append(line);
+            if (i < headerLines.size() - 1) {
+                header.append("\n");
+            }
+        }
+
+        return header.toString();
     }
 
     @Override
     public String getFooter(Player player) {
-        if (Language.TABLIST_FOOTER.toString().equals(Language.TABLIST_FOOTER.getPath())) {
+        List<String> footerLines = Eden.INSTANCE.getLanguageFile().getConfiguration().getStringList("tablist.footer");
+
+        
+        if (footerLines == null || footerLines.isEmpty()) {
             return null;
         }
-        return Language.TABLIST_FOOTER.toString(player);
+
+        
+        StringBuilder footer = new StringBuilder();
+        for (int i = 0; i < footerLines.size(); i++) {
+            String line = footerLines.get(i);
+            
+            line = Eden.INSTANCE.getPlaceholder().translate(player, line);
+            
+            if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                line = PlaceholderAPI.setPlaceholders(player, line);
+            }
+            
+            footer.append(line);
+            if (i < footerLines.size() - 1) {
+                footer.append("\n");
+            }
+        }
+
+        return footer.toString();
     }
 }

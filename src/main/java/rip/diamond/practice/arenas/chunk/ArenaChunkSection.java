@@ -18,7 +18,7 @@ public class ArenaChunkSection extends Reflection {
     private char[] blockIds;
     private NibbleArray emittedLight;
     private NibbleArray skyLight;
-    private boolean isDirty; // PaperSpigot
+    private boolean isDirty;
 
     public ArenaChunkSection(ChunkSection section) {
         if (section == null) {
@@ -36,8 +36,20 @@ public class ArenaChunkSection extends Reflection {
         this.setup = true;
     }
 
+    public ArenaChunkSection(boolean setup, int yPos, int nonEmptyBlockCount, int tickingBlockCount, char[] blockIds,
+            NibbleArray emittedLight, NibbleArray skyLight, boolean isDirty) {
+        this.setup = setup;
+        this.yPos = yPos;
+        this.nonEmptyBlockCount = nonEmptyBlockCount;
+        this.tickingBlockCount = tickingBlockCount;
+        this.blockIds = blockIds;
+        this.emittedLight = emittedLight;
+        this.skyLight = skyLight;
+        this.isDirty = isDirty;
+    }
+
     public char[] getBlockIds() {
-        return blockIds.clone();
+        return blockIds == null ? null : blockIds.clone();
     }
 
     public NibbleArray getEmittedLight() {
@@ -49,6 +61,9 @@ public class ArenaChunkSection extends Reflection {
     }
 
     private NibbleArray clone(NibbleArray array) {
+        if (array == null) {
+            return null;
+        }
         return new NibbleArray(array.a().clone());
     }
 

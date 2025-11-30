@@ -63,8 +63,7 @@ public class ImanityTablist {
                     "0" + (i > 9 ? i : "0" + i) + "|Tab",
                     tabColumn,
                     tabColumn.getNumb(player, i),
-                    i
-            );
+                    i);
             if (TablistUtil.getProtocolVersion(player) == 4 || TablistUtil.getProtocolVersion(player) == 5) {
                 TablistUtil.sendTeam(
                         player,
@@ -72,8 +71,7 @@ public class ImanityTablist {
                         "",
                         "",
                         Collections.singleton(LegacyClientUtil.entry(i - 1)),
-                        0
-                );
+                        0);
             }
             currentEntries.add(tabEntry);
         }
@@ -93,10 +91,13 @@ public class ImanityTablist {
             TabEntry tabEntry = getEntry(scoreObject.getColumn(), scoreObject.getSlot());
             if (tabEntry != null) {
                 previous.remove(tabEntry);
-                Eden.INSTANCE.getTabHandler().getImplementation().updateFakeLatency(this, tabEntry, scoreObject.getPing());
+                Eden.INSTANCE.getTabHandler().getImplementation().updateFakeLatency(this, tabEntry,
+                        scoreObject.getPing());
                 Eden.INSTANCE.getTabHandler().getImplementation().updateFakeName(this, tabEntry, scoreObject.getText());
-                if (TablistUtil.getProtocolVersion(player) > 5 && !tabEntry.getTexture().toString().equals(scoreObject.getSkin().toString())) {
-                    Eden.INSTANCE.getTabHandler().getImplementation().updateFakeSkin(this, tabEntry, scoreObject.getSkin());
+                if (TablistUtil.getProtocolVersion(player) > 5
+                        && !tabEntry.getTexture().toString().equals(scoreObject.getSkin().toString())) {
+                    Eden.INSTANCE.getTabHandler().getImplementation().updateFakeSkin(this, tabEntry,
+                            scoreObject.getSkin());
                 }
             }
         }
@@ -118,14 +119,15 @@ public class ImanityTablist {
             if (!headerNow.equals(this.header) || !footerNow.equals(this.footer)) {
                 this.header = CC.translate(headerNow);
                 this.footer = CC.translate(footerNow);
-                Eden.INSTANCE.getTabHandler().getImplementation().updateHeaderAndFooter(this, headerNow, footerNow);
+                
+                Eden.INSTANCE.getTabHandler().getImplementation().updateHeaderAndFooter(this, this.header, this.footer);
             }
         }
     }
 
-    public TabEntry getEntry(TabColumn column, Integer slot){
-        for (TabEntry entry : currentEntries){
-            if (entry.getColumn().name().equalsIgnoreCase(column.name()) && entry.getSlot() == slot){
+    public TabEntry getEntry(TabColumn column, Integer slot) {
+        for (TabEntry entry : currentEntries) {
+            if (entry.getColumn().name().equalsIgnoreCase(column.name()) && entry.getSlot() == slot) {
                 return entry;
             }
         }
@@ -144,14 +146,15 @@ public class ImanityTablist {
                 prefix = prefix.substring(0, 14);
                 suffix = text.substring(14);
             } else {
-                suffix = ChatColor.getLastColors(rip.diamond.practice.util.ColorUtil.colorize(prefix)) + text.substring(16, text.length());
+                suffix = ChatColor.getLastColors(rip.diamond.practice.util.ColorUtil.colorize(prefix))
+                        + text.substring(16, text.length());
             }
 
             if (suffix.length() > 16) {
                 suffix = suffix.substring(0, 16);
             }
 
-            //Bukkit.broadcastMessage(prefix + " |||| " + suffix);
+            
             return new String[] {
                     prefix,
                     suffix

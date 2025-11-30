@@ -17,7 +17,7 @@ public class ProfileCooldownTask extends TaskTicker {
         for (PlayerProfile profile : PlayerProfile.getProfiles().values()) {
             for (Map.Entry<CooldownType, Cooldown> cooldownTypeCooldownEntry : profile.getCooldowns().entrySet()) {
                 Cooldown cooldown = cooldownTypeCooldownEntry.getValue();
-                //expire == 0 means the cooldown is cancelled by other stuff
+                
                 if (cooldown.getExpire() != 0) {
                     cooldown.run();
                 }

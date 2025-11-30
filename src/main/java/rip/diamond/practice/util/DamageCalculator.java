@@ -48,7 +48,7 @@ public class DamageCalculator {
         return damage;
     }
 
-    //Credit: Sentinel (https://github.com/mcmonkeyprojects/Sentinel/blob/master/src/main/java/org/mcmonkey/sentinel/SentinelTrait.java)
+
     public static double getEnchantedDamage(ItemStack weapon) {
         double enchantBoost = weapon.getEnchantmentLevel(Enchantment.DAMAGE_ALL) * 1.25;
         return getDamage(weapon) + enchantBoost;

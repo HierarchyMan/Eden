@@ -26,12 +26,18 @@ public class ArenaToggleButton extends ArenaButton {
 
     @Override
     public String getDescription() {
-        return Language.ARENA_EDIT_MENU_TOGGLE_DESCRIPTION.toString((!getArena().isFinishedSetup() ? CC.YELLOW + "需要注意" : getArena().isEdited() ? Language.ARENA_EDIT_MENU_TOGGLE_NEED_RESTART.toString() : getArena().isEnabled() ? CC.GREEN + Language.ENABLED.toString() : CC.RED + Language.DISABLED.toString()));
+        return Language.ARENA_EDIT_MENU_TOGGLE_DESCRIPTION.toString((!getArena().isFinishedSetup() ? CC.YELLOW + "需要注意"
+                : getArena().isEdited() ? CC.YELLOW + "有待處理的更改"
+                        : getArena().isEnabled() ? CC.GREEN + Language.ENABLED.toString()
+                                : CC.RED + Language.DISABLED.toString()));
     }
 
     @Override
     public String getActionDescription() {
-        return !getArena().isFinishedSetup() ? Language.ARENA_EDIT_MENU_TOGGLE_ACTION_DESCRIPTION_NOT_FINISHED_SETUP.toString() : getArena().isEdited() ? Language.ARENA_EDIT_MENU_TOGGLE_ACTION_DESCRIPTION_NEED_RESTART.toString() : Language.ARENA_EDIT_MENU_TOGGLE_ACTION_DESCRIPTION.toString();
+        return !getArena().isFinishedSetup()
+                ? Language.ARENA_EDIT_MENU_TOGGLE_ACTION_DESCRIPTION_NOT_FINISHED_SETUP.toString()
+                : getArena().isEdited() ? CC.YELLOW + "點擊以重新快取場地區塊並啟用"
+                        : Language.ARENA_EDIT_MENU_TOGGLE_ACTION_DESCRIPTION.toString();
     }
 
     @Override

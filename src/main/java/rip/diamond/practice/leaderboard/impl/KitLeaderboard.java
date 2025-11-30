@@ -66,22 +66,33 @@ public class KitLeaderboard extends Leaderboard {
         UUID uuid = UUID.fromString(document.getString("uuid"));
         int data = getStatsValue(document, path);
 
-        // Handle time-based winstreak leaderboards
-        if (getType() == LeaderboardType.WINSTREAK_DAILY) {
-            long date = getStatsValueLong(document, path.replace("dailyWinstreak", "lastDailyReset"));
-            if (!isSameDay(date, System.currentTimeMillis()))
-                data = 0;
-        } else if (getType() == LeaderboardType.WINSTREAK_WEEKLY) {
-            long date = getStatsValueLong(document, path.replace("weeklyWinstreak", "lastWeeklyReset"));
-            if (!isSameWeek(date, System.currentTimeMillis()))
-                data = 0;
-        } else if (getType() == LeaderboardType.WINSTREAK_MONTHLY) {
-            long date = getStatsValueLong(document, path.replace("monthlyWinstreak", "lastMonthlyReset"));
-            if (!isSameMonth(date, System.currentTimeMillis()))
-                data = 0;
+        if (getType().getTimePeriod() != LeaderboardType.TimePeriod.LIFETIME) {
+            String currentPath = getType().getPath(kit);
+            String parentPath = currentPath.substring(0, currentPath.lastIndexOf('.'));
+            String resetPath = "";
+
+            switch (getType().getTimePeriod()) {
+                case DAILY:
+                    resetPath = parentPath + ".lastDailyReset";
+                    long dailyDate = getStatsValueLong(document, resetPath);
+                    if (!isSameDay(dailyDate, System.currentTimeMillis()))
+                        data = 0;
+                    break;
+                case WEEKLY:
+                    resetPath = parentPath + ".lastWeeklyReset";
+                    long weeklyDate = getStatsValueLong(document, resetPath);
+                    if (!isSameWeek(weeklyDate, System.currentTimeMillis()))
+                        data = 0;
+                    break;
+                case MONTHLY:
+                    resetPath = parentPath + ".lastMonthlyReset";
+                    long monthlyDate = getStatsValueLong(document, resetPath);
+                    if (!isSameMonth(monthlyDate, System.currentTimeMillis()))
+                        data = 0;
+                    break;
+            }
         }
 
-        // Skip entries with 0 data (stale/expired from previous time periods)
         if (data == 0) {
             return null;
         }
@@ -97,11 +108,18 @@ public class KitLeaderboard extends Leaderboard {
         lock.writeLock().lock();
         try {
             LinkedHashMap<Integer, LeaderboardPlayerCache> board = getLeaderboard();
+
             LeaderboardPlayerCache existing = board.values().stream()
                     .filter(entry -> entry.getPlayerUUID().equals(uuid)).findFirst().orElse(null);
+
+            if (existing != null) {
+            } else {
+            }
+
             if (newData <= 0) {
                 if (existing != null) {
-                    board.values().remove(existing);
+                    // Find and remove the entry by iterating through the map
+                    board.entrySet().removeIf(entry -> entry.getValue().getPlayerUUID().equals(uuid));
                     rebuildPositions(board);
                 }
                 snapshot = new ArrayList<>(board.values());
@@ -192,7 +210,6 @@ public class KitLeaderboard extends Leaderboard {
         return 0L;
     }
 
-    // Helper to dig into nested BSON/JSON
     private int getStatsValue(Document document, String path) {
         try {
             String[] paths = path.split("\\.");
@@ -202,20 +219,19 @@ public class KitLeaderboard extends Leaderboard {
                 if (current instanceof Document) {
                     current = ((Document) current).get(paths[j]);
                 } else {
-                    return 0; // Path broken
+                    return 0;
                 }
 
                 if (current == null)
                     return 0;
             }
 
-            // Safe Number Casting
             if (current instanceof Number) {
                 return ((Number) current).intValue();
             }
 
         } catch (Exception e) {
-            // Suppress errors for missing keys
+
         }
         return 0;
     }

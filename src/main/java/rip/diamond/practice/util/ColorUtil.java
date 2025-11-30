@@ -15,7 +15,7 @@ public final class ColorUtil {
     private static final Pattern HEX_PATTERN = Pattern.compile("(?i)&#([0-9A-F]{6})");
     private static final Pattern GRADIENT_PATTERN = Pattern.compile("(?i)&<#([0-9A-F]{6}):#([0-9A-F]{6})>");
 
-    // Cache standard colors for distance calculation
+    
     private static final List<ColorSet> STANDARD_COLORS = Arrays.stream(ChatColor.values())
             .filter(ChatColor::isColor)
             .map(ColorSet::new)
@@ -26,22 +26,22 @@ public final class ColorUtil {
     public static String colorize(String input) {
         if (input == null) return null;
 
-        // 1. Process Gradients (Interpolate then Downsample)
+        
         String withGradients = applyGradients(input);
 
-        // 2. Process Hex Codes (Downsample to nearest legacy)
+        
         Matcher matcher = HEX_PATTERN.matcher(withGradients);
         StringBuffer buffer = new StringBuffer();
 
         while (matcher.find()) {
             String hex = matcher.group(1);
-            // Find nearest legacy color for 1.8
+            
             ChatColor nearest = getClosestColor(hex);
             matcher.appendReplacement(buffer, nearest.toString());
         }
         matcher.appendTail(buffer);
 
-        // 3. Translate standard legacy codes
+        
         return ChatColor.translateAlternateColorCodes('&', buffer.toString());
     }
 
@@ -87,36 +87,36 @@ public final class ColorUtil {
             String startHex = matcher.group(1);
             String endHex = matcher.group(2);
 
-            // Find content
+            
             String remaining = input.substring(matcher.end());
             int stopIndex = findGradientStopIndex(remaining);
             String textToGradient = remaining.substring(0, stopIndex);
 
-            // Apply gradient
+            
             String replacement = applyGradient(textToGradient, startHex, endHex);
 
-            // We manually handle appending because the length changes
+            
             matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
 
-            // Adjust the matcher region or input logic?
-            // Since standard regex replacement consumes the "textToGradient" in the group check,
-            // we need to be careful. The simplest way for this specific regex structure:
-            // Ideally, regex should capture the text group, but here we find it manually.
-            // To avoid duplicating text, we essentially skip the text in the main loop?
-            // A safer way for simple downsampling: Just treat gradients as the START color
-            // to avoid "rainbow soup" on 1.8 which looks messy.
-            // BUT, if you want the messy rainbow:
+            
+            
+            
+            
+            
+            
+            
+            
 
-            // Actually, for 1.8, full character-by-character gradients look very "spammy"
-            // because every character gets a color code (e.g. &4H&cE&6L&eL&aO).
-            // However, to strictly fix the code provided:
+            
+            
+            
         }
         matcher.appendTail(sb);
 
-        // Since the original gradient logic was complex and broken for 1.8,
-        // let's simplify the gradient step for 1.8:
-        // Just replace the gradient tag with the closest color of the START hex.
-        // This looks much cleaner on 1.8 than a blocky rainbow.
+        
+        
+        
+        
 
         matcher.reset();
         StringBuffer simpleSb = new StringBuffer();
@@ -128,8 +128,8 @@ public final class ColorUtil {
         return simpleSb.toString();
     }
 
-    // Helper to keep the standard gradient logic if you REALLY want it (commented out above)
-    // but strictly speaking, gradients don't exist in 1.8.
+    
+    
     private static int findGradientStopIndex(String text) {
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
@@ -141,8 +141,8 @@ public final class ColorUtil {
     }
 
     private static String applyGradient(String text, String startHex, String endHex) {
-        // For 1.8, simply return the text colored with the start color.
-        // True interpolation requires packets or looks very bad in chat.
+        
+        
         return getClosestColor(startHex) + text;
     }
 
@@ -152,7 +152,7 @@ public final class ColorUtil {
 
         public ColorSet(ChatColor chatColor) {
             this.chatColor = chatColor;
-            // Mapping Spigot ChatColors to RGB roughly
+            
             switch (chatColor) {
                 case BLACK: this.color = new Color(0, 0, 0); break;
                 case DARK_BLUE: this.color = new Color(0, 0, 170); break;

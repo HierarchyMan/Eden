@@ -221,6 +221,160 @@ event-create-menu:
         - ""
         - "&cYou don't have permission to host this event!"
 
+# Event Host Menu (Dynamic configurable event list)
+event-host-menu:
+  title: "&bHost an Event"
+  size: 36
+  border:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 7
+  filler:
+    enabled: true
+    material: STAINED_GLASS_PANE
+    data: 15
+  events:
+    sumo:
+      enabled: true
+      slot: 10
+      material: LEASH
+      name: "&b&lSumo"
+      lore:
+        - ""
+        - "&7Knock players off the platform!"
+        - ""
+        - "&e&nClick to host!"
+    oitc:
+      enabled: true
+      slot: 11
+      material: BOW
+      name: "&b&lOITC"
+      lore:
+        - ""
+        - "&7One shot, one kill!"
+        - ""
+        - "&e&nClick to host!"
+    tnttag:
+      enabled: true
+      slot: 12
+      material: TNT
+      name: "&b&lTNT Tag"
+      lore:
+        - ""
+        - "&7Pass the TNT before it explodes!"
+        - ""
+        - "&e&nClick to host!"
+    brackets:
+      enabled: true
+      slot: 13
+      material: IRON_SWORD
+      name: "&b&lBrackets"
+      lore:
+        - ""
+        - "&7Tournament-style 1v1 bracket!"
+        - ""
+        - "&e&nClick to host!"
+    lms:
+      enabled: true
+      slot: 14
+      material: DIAMOND_SWORD
+      name: "&b&lLMS"
+      lore:
+        - ""
+        - "&7Last man standing wins!"
+        - ""
+        - "&e&nClick to host!"
+    knockout:
+      enabled: true
+      slot: 15
+      material: STICK
+      name: "&b&lKnockout"
+      lore:
+        - ""
+        - "&7Knock everyone off the platform!"
+        - ""
+        - "&e&nClick to host!"
+    skywars:
+      enabled: true
+      slot: 16
+      material: GRASS
+      name: "&b&lSkyWars"
+      lore:
+        - ""
+        - "&7Fight on floating islands!"
+        - ""
+        - "&e&nClick to host!"
+    parkour:
+      enabled: true
+      slot: 19
+      material: DIAMOND_BOOTS
+      name: "&b&lParkour"
+      lore:
+        - ""
+        - "&7Race through the course!"
+        - ""
+        - "&e&nClick to host!"
+    gulag:
+      enabled: true
+      slot: 20
+      material: GOLD_SWORD
+      name: "&b&lGulag"
+      lore:
+        - ""
+        - "&71v1 elimination duels!"
+        - ""
+        - "&e&nClick to host!"
+    4corners:
+      enabled: true
+      slot: 21
+      material: REDSTONE_BLOCK
+      name: "&b&lFour Corners"
+      lore:
+        - ""
+        - "&7Choose the right corner!"
+        - ""
+        - "&e&nClick to host!"
+    thimble:
+      enabled: true
+      slot: 22
+      material: WATER_BUCKET
+      name: "&b&lThimble"
+      lore:
+        - ""
+        - "&7Land in the water!"
+        - ""
+        - "&e&nClick to host!"
+    dropper:
+      enabled: true
+      slot: 23
+      material: FEATHER
+      name: "&b&lDropper"
+      lore:
+        - ""
+        - "&7Navigate falling courses!"
+        - ""
+        - "&e&nClick to host!"
+    stoplight:
+      enabled: true
+      slot: 24
+      material: REDSTONE_TORCH_ON
+      name: "&b&lStop Light"
+      lore:
+        - ""
+        - "&7Move on green, freeze on red!"
+        - ""
+        - "&e&nClick to host!"
+    spleef:
+      enabled: true
+      slot: 25
+      material: DIAMOND_SPADE
+      name: "&b&lSpleef"
+      lore:
+        - ""
+        - "&7Break blocks beneath players!"
+        - ""
+        - "&e&nClick to host!"
+
 # Event Settings Menu
 event-settings-menu:
   title: "&bEvent Settings"
@@ -803,6 +957,7 @@ duel-choose-kit-menu:
       # Uses kit's display icon as material
       # Name uses kit's display name
       # Placeholders: {kit-name}
+      name: "&b{kit-name}"
       lore:
         - ""
         - "&e&nClick to select this kit!"
@@ -900,6 +1055,7 @@ party-choose-kit-menu:
       # Uses kit's display icon as material
       # Name uses kit's display name
       # Placeholders: {kit-name}
+      name: "&b{kit-name}"
       lore:
         - ""
         - "&e&nClick to select this kit!"

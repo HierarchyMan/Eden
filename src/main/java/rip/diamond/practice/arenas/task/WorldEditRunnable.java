@@ -48,10 +48,17 @@ public abstract class WorldEditRunnable extends BukkitRunnable {
         }
 
         TaskManager.IMP.async(() -> {
-            EditSession editSession = new EditSessionBuilder(this.world.getName()).fastmode(true).allowedRegionsEverywhere().autoQueue(false).limitUnlimited().build();
+            EditSession editSession = new EditSessionBuilder(this.world.getName()).fastmode(true)
+                    .allowedRegionsEverywhere().autoQueue(false).limitUnlimited().build();
             for (Map.Entry<Location, Block> entry : this.blocks.entrySet()) {
                 try {
-                    editSession.setBlock(new Vector(entry.getKey().getBlockX(), entry.getKey().getBlockY(), entry.getKey().getZ()), new BaseBlock(entry.getValue().getTypeId(), entry.getValue().getData()));
+                    @SuppressWarnings("deprecation")
+                    int typeId = entry.getValue().getTypeId();
+                    @SuppressWarnings("deprecation")
+                    byte data = entry.getValue().getData();
+                    editSession.setBlock(
+                            new Vector(entry.getKey().getBlockX(), entry.getKey().getBlockY(), entry.getKey().getZ()),
+                            new BaseBlock(typeId, data));
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }

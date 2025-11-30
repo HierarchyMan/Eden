@@ -19,44 +19,43 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@AllArgsConstructor
 public enum Language {
 
-    SCOREBOARD_TITLE("scoreboard.title"),
-    SCOREBOARD_BOXING_COUNTER_NO_COMBO("scoreboard.boxing-counter.no-combo"),
-    SCOREBOARD_BOXING_COUNTER_TEXT_SOLO("scoreboard.boxing-counter.text-solo"),
-    SCOREBOARD_BOXING_COUNTER_TEXT_TEAM("scoreboard.boxing-counter.text-team"),
-    SCOREBOARD_LOADING("scoreboard.loading"),
-    SCOREBOARD_IN_LOBBY("scoreboard.in-lobby"),
-    SCOREBOARD_IN_PARTY("scoreboard.in-party"),
-    SCOREBOARD_IN_EDIT("scoreboard.in-edit"),
-    SCOREBOARD_IN_EDIT_GUI("scoreboard.in-edit-gui"),
-    SCOREBOARD_IN_QUEUE_UNRANKED("scoreboard.in-queue-unranked"),
-    SCOREBOARD_IN_QUEUE_RANKED("scoreboard.in-queue-ranked"),
-    SCOREBOARD_IN_MATCH_SOLO_FIGHTING("scoreboard.in-match-solo.fighting"),
-    SCOREBOARD_IN_MATCH_SOLO_BOXING("scoreboard.in-match-solo.boxing"),
-    SCOREBOARD_IN_MATCH_SOLO_BED("scoreboard.in-match-solo.bed"),
-    SCOREBOARD_IN_MATCH_SOLO_POINT("scoreboard.in-match-solo.point"),
-    SCOREBOARD_IN_MATCH_SOLO_ENDING("scoreboard.in-match-solo.ending"),
-    SCOREBOARD_IN_MATCH_TEAMS_FIGHTING("scoreboard.in-match-teams.fighting"),
-    SCOREBOARD_IN_MATCH_TEAMS_BOXING("scoreboard.in-match-teams.boxing"),
-    SCOREBOARD_IN_MATCH_TEAMS_BED("scoreboard.in-match-teams.bed"),
-    SCOREBOARD_IN_MATCH_TEAMS_POINT("scoreboard.in-match-teams.point"),
-    SCOREBOARD_IN_MATCH_TEAMS_ENDING("scoreboard.in-match-teams.ending"),
-    SCOREBOARD_IN_MATCH_FFA_FIGHTING("scoreboard.in-match-ffa.fighting"),
-    SCOREBOARD_IN_MATCH_FFA_ENDING("scoreboard.in-match-ffa.ending"),
-    SCOREBOARD_IN_SPECTATE_SOLO_FIGHTING("scoreboard.in-spectate-solo.fighting"),
-    SCOREBOARD_IN_SPECTATE_SOLO_BOXING("scoreboard.in-spectate-solo.boxing"),
-    SCOREBOARD_IN_SPECTATE_SOLO_BED("scoreboard.in-spectate-solo.bed"),
-    SCOREBOARD_IN_SPECTATE_SOLO_POINT("scoreboard.in-spectate-solo.point"),
-    SCOREBOARD_IN_SPECTATE_SOLO_ENDING("scoreboard.in-spectate-solo.ending"),
-    SCOREBOARD_IN_SPECTATE_TEAMS_FIGHTING("scoreboard.in-spectate-teams.fighting"),
-    SCOREBOARD_IN_SPECTATE_TEAMS_BOXING("scoreboard.in-spectate-teams.boxing"),
-    SCOREBOARD_IN_SPECTATE_TEAMS_BED("scoreboard.in-spectate-teams.bed"),
-    SCOREBOARD_IN_SPECTATE_TEAMS_POINT("scoreboard.in-spectate-teams.point"),
-    SCOREBOARD_IN_SPECTATE_TEAMS_ENDING("scoreboard.in-spectate-teams.ending"),
-    SCOREBOARD_IN_SPECTATE_FFA_FIGHTING("scoreboard.in-spectate-ffa.fighting"),
-    SCOREBOARD_IN_SPECTATE_FFA_ENDING("scoreboard.in-spectate-ffa.ending"),
+    SCOREBOARD_TITLE("GENERAL.title", true),
+    SCOREBOARD_BOXING_COUNTER_NO_COMBO("GENERAL.boxing-counter.no-combo", true),
+    SCOREBOARD_BOXING_COUNTER_TEXT_SOLO("GENERAL.boxing-counter.text-solo", true),
+    SCOREBOARD_BOXING_COUNTER_TEXT_TEAM("GENERAL.boxing-counter.text-team", true),
+    SCOREBOARD_LOADING("GENERAL.loading", true),
+    SCOREBOARD_IN_LOBBY("GENERAL.in-lobby", true),
+    SCOREBOARD_IN_PARTY("GENERAL.in-party", true),
+    SCOREBOARD_IN_EDIT("GENERAL.in-edit", true),
+    SCOREBOARD_IN_EDIT_GUI("GENERAL.in-edit-gui", true),
+    SCOREBOARD_IN_QUEUE_UNRANKED("GENERAL.in-queue-unranked", true),
+    SCOREBOARD_IN_QUEUE_RANKED("GENERAL.in-queue-ranked", true),
+    SCOREBOARD_IN_MATCH_SOLO_FIGHTING("GENERAL.in-match-solo.fighting", true),
+    SCOREBOARD_IN_MATCH_SOLO_BOXING("GENERAL.in-match-solo.boxing", true),
+    SCOREBOARD_IN_MATCH_SOLO_BED("GENERAL.in-match-solo.bed", true),
+    SCOREBOARD_IN_MATCH_SOLO_POINT("GENERAL.in-match-solo.point", true),
+    SCOREBOARD_IN_MATCH_SOLO_ENDING("GENERAL.in-match-solo.ending", true),
+    SCOREBOARD_IN_MATCH_TEAMS_FIGHTING("GENERAL.in-match-teams.fighting", true),
+    SCOREBOARD_IN_MATCH_TEAMS_BOXING("GENERAL.in-match-teams.boxing", true),
+    SCOREBOARD_IN_MATCH_TEAMS_BED("GENERAL.in-match-teams.bed", true),
+    SCOREBOARD_IN_MATCH_TEAMS_POINT("GENERAL.in-match-teams.point", true),
+    SCOREBOARD_IN_MATCH_TEAMS_ENDING("GENERAL.in-match-teams.ending", true),
+    SCOREBOARD_IN_MATCH_FFA_FIGHTING("GENERAL.in-match-ffa.fighting", true),
+    SCOREBOARD_IN_MATCH_FFA_ENDING("GENERAL.in-match-ffa.ending", true),
+    SCOREBOARD_IN_SPECTATE_SOLO_FIGHTING("GENERAL.in-spectate-solo.fighting", true),
+    SCOREBOARD_IN_SPECTATE_SOLO_BOXING("GENERAL.in-spectate-solo.boxing", true),
+    SCOREBOARD_IN_SPECTATE_SOLO_BED("GENERAL.in-spectate-solo.bed", true),
+    SCOREBOARD_IN_SPECTATE_SOLO_POINT("GENERAL.in-spectate-solo.point", true),
+    SCOREBOARD_IN_SPECTATE_SOLO_ENDING("GENERAL.in-spectate-solo.ending", true),
+    SCOREBOARD_IN_SPECTATE_TEAMS_FIGHTING("GENERAL.in-spectate-teams.fighting", true),
+    SCOREBOARD_IN_SPECTATE_TEAMS_BOXING("GENERAL.in-spectate-teams.boxing", true),
+    SCOREBOARD_IN_SPECTATE_TEAMS_BED("GENERAL.in-spectate-teams.bed", true),
+    SCOREBOARD_IN_SPECTATE_TEAMS_POINT("GENERAL.in-spectate-teams.point", true),
+    SCOREBOARD_IN_SPECTATE_TEAMS_ENDING("GENERAL.in-spectate-teams.ending", true),
+    SCOREBOARD_IN_SPECTATE_FFA_FIGHTING("GENERAL.in-spectate-ffa.fighting", true),
+    SCOREBOARD_IN_SPECTATE_FFA_ENDING("GENERAL.in-spectate-ffa.ending", true),
     JOIN_MESSAGE("join-message"),
     LOADING_PROFILE("loading-profile"),
     INVALID_SYNTAX("invalid-syntax"),
@@ -692,6 +691,17 @@ public enum Language {
 
     @Getter
     private final String path;
+    private final boolean isScoreboard;
+
+    Language(String path) {
+        this.path = path;
+        this.isScoreboard = false;
+    }
+
+    Language(String path, boolean isScoreboard) {
+        this.path = path;
+        this.isScoreboard = isScoreboard;
+    }
 
     @Override
     public String toString() {
@@ -703,8 +713,9 @@ public enum Language {
     }
 
     public String toString(Player player, Object... replacements) {
-        // CHANGE: Use getStringRaw instead of getString to prevent early colorization
-        String str = Eden.INSTANCE.getLanguageFile().getStringRaw(path);
+        rip.diamond.practice.util.BasicConfigFile configFile = isScoreboard ? Eden.INSTANCE.getScoreboardFile()
+                : Eden.INSTANCE.getLanguageFile();
+        String str = configFile.getStringRaw(path);
 
         if (str == null || str.equalsIgnoreCase("null")) {
             return null;
@@ -713,25 +724,27 @@ public enum Language {
             return path;
         }
 
-        // 1. Replace argument placeholders {0}, {1} etc
         for (int i = 0; i < replacements.length; i++) {
             String replacement = convert(replacements[i]);
-            // Use literal replacement to avoid regex errors
+
             str = str.replace("{" + i + "}", replacement);
         }
 
-        // 2. Process Placeholders and Colors
         return translate(str, player);
     }
-
 
     public List<String> toStringList(Object... replacements) {
         return toStringList(null, replacements);
     }
 
     public List<String> toStringList(Player player, Object... replacements) {
-        // CHANGE: Use getRawStringList
-        List<String> rawList = Eden.INSTANCE.getLanguageFile().getRawStringList(path);
+        rip.diamond.practice.util.BasicConfigFile configFile;
+        if (isScoreboard) {
+            configFile = Eden.INSTANCE.getScoreboardFile();
+        } else {
+            configFile = Eden.INSTANCE.getLanguageFile();
+        }
+        List<String> rawList = configFile.getRawStringList(path);
 
         if (rawList == null || rawList.isEmpty()) {
             return Collections.singletonList(path);
@@ -740,15 +753,15 @@ public enum Language {
         List<String> strings = new ArrayList<>();
 
         for (String str : rawList) {
-            // 1. Argument replacements
+
             for (int i = 0; i < replacements.length; i++) {
                 String replacement = convert(replacements[i]);
                 str = str.replace("{" + i + "}", replacement);
             }
 
-            // 2. Placeholders and Colors
             String translated = translate(str, player);
-            if (translated == null) continue;
+            if (translated == null)
+                continue;
 
             List<String> toBeAdded = Arrays.asList(translated.split(EdenPlaceholder.NEW_LINE, -1));
             strings.addAll(toBeAdded);
@@ -795,7 +808,6 @@ public enum Language {
         if (player != null) {
             withPlaceholders = Eden.INSTANCE.getPlaceholder().translate(player, withPlaceholders);
 
-            // Check if placeholder translation returned null
             if (withPlaceholders == null) {
                 return null;
             }
@@ -803,7 +815,6 @@ public enum Language {
             if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
                 withPlaceholders = PlaceholderAPI.setPlaceholders(player, withPlaceholders);
 
-                // Check if PlaceholderAPI returned null
                 if (withPlaceholders == null) {
                     return null;
                 }

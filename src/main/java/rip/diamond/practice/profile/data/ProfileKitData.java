@@ -45,7 +45,6 @@ public class ProfileKitData {
 	@Setter
 	private int winstreak = 0;
 
-	// Time-based wins tracking
 	@Getter
 	@Setter
 	private int dailyWins = 0;
@@ -56,7 +55,6 @@ public class ProfileKitData {
 	@Setter
 	private int monthlyWins = 0;
 
-	// Time-based losses tracking
 	@Getter
 	@Setter
 	private int dailyLosses = 0;
@@ -67,7 +65,6 @@ public class ProfileKitData {
 	@Setter
 	private int monthlyLosses = 0;
 
-	// Time-based winstreak tracking
 	@Getter
 	@Setter
 	private int dailyWinstreak = 0;
@@ -78,7 +75,6 @@ public class ProfileKitData {
 	@Setter
 	private int monthlyWinstreak = 0;
 
-	// Reset timestamps
 	@Getter
 	@Setter
 	private long lastDailyReset = System.currentTimeMillis();
@@ -111,22 +107,18 @@ public class ProfileKitData {
 		bestWinstreak = document.getInteger("bestWinstreak");
 		winstreak = document.getInteger("winstreak");
 
-		// Time-based wins
 		dailyWins = document.containsKey("dailyWins") ? document.getInteger("dailyWins") : 0;
 		weeklyWins = document.containsKey("weeklyWins") ? document.getInteger("weeklyWins") : 0;
 		monthlyWins = document.containsKey("monthlyWins") ? document.getInteger("monthlyWins") : 0;
 
-		// Time-based losses
 		dailyLosses = document.containsKey("dailyLosses") ? document.getInteger("dailyLosses") : 0;
 		weeklyLosses = document.containsKey("weeklyLosses") ? document.getInteger("weeklyLosses") : 0;
 		monthlyLosses = document.containsKey("monthlyLosses") ? document.getInteger("monthlyLosses") : 0;
 
-		// Time-based winstreaks
 		dailyWinstreak = document.containsKey("dailyWinstreak") ? document.getInteger("dailyWinstreak") : 0;
 		weeklyWinstreak = document.containsKey("weeklyWinstreak") ? document.getInteger("weeklyWinstreak") : 0;
 		monthlyWinstreak = document.containsKey("monthlyWinstreak") ? document.getInteger("monthlyWinstreak") : 0;
 
-		// Reset timestamps
 		lastDailyReset = document.containsKey("lastDailyReset") ? document.getLong("lastDailyReset")
 				: System.currentTimeMillis();
 		lastWeeklyReset = document.containsKey("lastWeeklyReset") ? document.getLong("lastWeeklyReset")
@@ -152,22 +144,22 @@ public class ProfileKitData {
 				.append("unrankedLost", unrankedLost)
 				.append("rankedWon", rankedWon)
 				.append("rankedLost", rankedLost)
-				.append("won", getWon()) // Used for leaderboard display
+				.append("won", getWon())
 				.append("bestWinstreak", bestWinstreak)
 				.append("winstreak", winstreak)
-				// Time-based wins
+
 				.append("dailyWins", dailyWins)
 				.append("weeklyWins", weeklyWins)
 				.append("monthlyWins", monthlyWins)
-				// Time-based losses
+
 				.append("dailyLosses", dailyLosses)
 				.append("weeklyLosses", weeklyLosses)
 				.append("monthlyLosses", monthlyLosses)
-				// Time-based winstreaks
+
 				.append("dailyWinstreak", dailyWinstreak)
 				.append("weeklyWinstreak", weeklyWinstreak)
 				.append("monthlyWinstreak", monthlyWinstreak)
-				// Reset timestamps
+
 				.append("lastDailyReset", lastDailyReset)
 				.append("lastWeeklyReset", lastWeeklyReset)
 				.append("lastMonthlyReset", lastMonthlyReset)
@@ -178,6 +170,10 @@ public class ProfileKitData {
 		return unrankedWon + rankedWon;
 	}
 
+	public int getLost() {
+		return unrankedLost + rankedLost;
+	}
+
 	public void incrementWon(boolean ranked) {
 		if (ranked) {
 			this.rankedWon++;
@@ -185,10 +181,8 @@ public class ProfileKitData {
 			this.unrankedWon++;
 		}
 
-		// Check and reset time-based wins if needed
 		checkAndResetTimePeriods();
 
-		// Increment time-based wins
 		dailyWins++;
 		weeklyWins++;
 		monthlyWins++;
@@ -201,10 +195,8 @@ public class ProfileKitData {
 			this.unrankedLost++;
 		}
 
-		// Check and reset time-based losses if needed
 		checkAndResetTimePeriods();
 
-		// Increment time-based losses
 		dailyLosses++;
 		weeklyLosses++;
 		monthlyLosses++;
@@ -223,10 +215,8 @@ public class ProfileKitData {
 			if (bestWinstreak < winstreak)
 				bestWinstreak = winstreak;
 
-			// Check and reset time-based winstreaks if needed
 			checkAndResetTimePeriods();
 
-			// Increment time-based winstreaks
 			dailyWinstreak++;
 			weeklyWinstreak++;
 			monthlyWinstreak++;
@@ -244,7 +234,6 @@ public class ProfileKitData {
 	private void checkAndResetTimePeriods() {
 		long now = System.currentTimeMillis();
 
-		// Check daily reset
 		if (!isSameDay(lastDailyReset, now)) {
 			dailyWins = 0;
 			dailyLosses = 0;
@@ -252,7 +241,6 @@ public class ProfileKitData {
 			lastDailyReset = now;
 		}
 
-		// Check weekly reset
 		if (!isSameWeek(lastWeeklyReset, now)) {
 			weeklyWins = 0;
 			weeklyLosses = 0;
@@ -260,7 +248,6 @@ public class ProfileKitData {
 			lastWeeklyReset = now;
 		}
 
-		// Check monthly reset
 		if (!isSameMonth(lastMonthlyReset, now)) {
 			monthlyWins = 0;
 			monthlyLosses = 0;

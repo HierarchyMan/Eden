@@ -20,7 +20,7 @@ public class Common {
 
     public static void debug(String... str) {
         for (String string : str) {
-             debug(string);
+            debug(string);
         }
     }
 
@@ -107,9 +107,17 @@ public class Common {
         player.playSound(player.getLocation(), sound, v, v1);
     }
 
+    public static void playSound(Player player, org.bukkit.Location location, Sound sound, float v, float v1) {
+        if (player == null) {
+            return;
+        }
+        player.playSound(location, sound, v, v1);
+    }
+
     public static boolean hasPermission(CommandSender sender, List<String> permissions) {
         for (String permission : permissions) {
-            if (sender.hasPermission(permission)) return true;
+            if (sender.hasPermission(permission))
+                return true;
         }
         return false;
     }

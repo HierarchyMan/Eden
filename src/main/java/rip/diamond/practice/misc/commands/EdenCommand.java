@@ -89,6 +89,13 @@ public class EdenCommand extends Command {
                 }
                 handleEditItem((Player) sender, args);
                 return;
+            case LOCATION:
+                if (!(sender instanceof Player)) {
+                    Common.sendMessage(sender, CC.RED + "This command can only be executed by a player.");
+                    return;
+                }
+                LocationCommand.handle((Player) sender, args);
+                return;
         }
     }
 
@@ -98,10 +105,10 @@ public class EdenCommand extends Command {
             return;
         }
 
-        // Create new args array without the "goldenhead" subcommand
+
         String[] newArgs = args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[0];
 
-        // Call the GoldenHeadCommand logic directly
+
         new rip.diamond.practice.kits.command.GoldenHeadCommand().executeGoldenHead(player, newArgs);
     }
 
@@ -177,7 +184,7 @@ public class EdenCommand extends Command {
 
         Tasks.runAsync(() -> {
             try {
-                // Initialize source handler
+
                 Object sourceHandler = createHandler(source);
                 if (sourceHandler instanceof MongoHandler) {
                     ((MongoHandler) sourceHandler).init();
@@ -187,7 +194,7 @@ public class EdenCommand extends Command {
                     ((FlatFileHandler) sourceHandler).init();
                 }
 
-                // Get all profiles from source
+
                 List<Document> documents;
                 if (sourceHandler instanceof MongoHandler) {
                     documents = ((MongoHandler) sourceHandler).getAllProfiles();
@@ -197,7 +204,7 @@ public class EdenCommand extends Command {
                     documents = ((FlatFileHandler) sourceHandler).getAllProfiles();
                 }
 
-                // Initialize destination handler
+
                 Object destHandler = createHandler(destination);
                 if (destHandler instanceof MongoHandler) {
                     ((MongoHandler) destHandler).init();
@@ -207,7 +214,7 @@ public class EdenCommand extends Command {
                     ((FlatFileHandler) destHandler).init();
                 }
 
-                // Save all profiles to destination
+
                 int count = 0;
                 for (Document doc : documents) {
                     if (destHandler instanceof MongoHandler) {
@@ -220,7 +227,7 @@ public class EdenCommand extends Command {
                     count++;
                 }
 
-                // Shutdown handlers
+
                 if (sourceHandler instanceof MongoHandler) {
                     ((MongoHandler) sourceHandler).shutdown();
                 } else if (sourceHandler instanceof MySqlHandler) {
@@ -233,7 +240,8 @@ public class EdenCommand extends Command {
                     ((MySqlHandler) destHandler).shutdown();
                 }
 
-                Common.sendMessage(sender, CC.GREEN + "Successfully migrated " + count + " profiles from " + source + " to " + destination + ".");
+                Common.sendMessage(sender, CC.GREEN + "Successfully migrated " + count + " profiles from " + source
+                        + " to " + destination + ".");
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -273,23 +281,24 @@ public class EdenCommand extends Command {
         } else if (args.length == 2 && args[0].equalsIgnoreCase("edititem")) {
             return Arrays.asList("removeattributes", "setunbreakable", "enchant");
         } else if (args.length == 3 && args[0].equalsIgnoreCase("edititem") && args[1].equalsIgnoreCase("enchant")) {
-            // List all enchantments
+
             return Arrays.asList(
-                "PROTECTION", "FIRE_PROTECTION", "FEATHER_FALLING", "BLAST_PROTECTION",
-                "PROJECTILE_PROTECTION", "RESPIRATION", "AQUA_AFFINITY", "THORNS",
-                "DEPTH_STRIDER", "SHARPNESS", "SMITE", "BANE_OF_ARTHROPODS",
-                "KNOCKBACK", "FIRE_ASPECT", "LOOTING", "EFFICIENCY", "SILK_TOUCH",
-                "UNBREAKING", "FORTUNE", "POWER", "PUNCH", "FLAME", "INFINITY",
-                "LUCK_OF_THE_SEA", "LURE"
-            );
+                    "PROTECTION", "FIRE_PROTECTION", "FEATHER_FALLING", "BLAST_PROTECTION",
+                    "PROJECTILE_PROTECTION", "RESPIRATION", "AQUA_AFFINITY", "THORNS",
+                    "DEPTH_STRIDER", "SHARPNESS", "SMITE", "BANE_OF_ARTHROPODS",
+                    "KNOCKBACK", "FIRE_ASPECT", "LOOTING", "EFFICIENCY", "SILK_TOUCH",
+                    "UNBREAKING", "FORTUNE", "POWER", "PUNCH", "FLAME", "INFINITY",
+                    "LUCK_OF_THE_SEA", "LURE");
         } else if (args.length == 4 && args[0].equalsIgnoreCase("edititem") && args[1].equalsIgnoreCase("enchant")) {
             return Arrays.asList("1", "2", "3", "4", "5", "10");
+        } else if (args.length >= 2 && args[0].equalsIgnoreCase("location")) {
+            return LocationCommand.getTabComplete(args);
         }
 
         return Arrays.stream(Action.values()).map(Action::name).collect(Collectors.toList());
     }
 
     enum Action {
-        RELOAD, DEBUG, SPIGOT, MIGRATE, GOLDENHEAD, EDITITEM
+        RELOAD, DEBUG, SPIGOT, MIGRATE, GOLDENHEAD, EDITITEM, LOCATION
     }
 }

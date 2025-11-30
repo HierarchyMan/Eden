@@ -32,13 +32,6 @@ public class ArenaCommand extends Command {
             if (args[0].equalsIgnoreCase("list")) {
                 new ArenasMenu().openMenu(player);
                 return;
-            } else if (args[0].equalsIgnoreCase("saveall")) {
-                plugin.getArenaFile().getConfiguration().set("arenas", null);
-                plugin.getArenaFile().save();
-
-                Arena.getArenas().forEach(Arena::save);
-                Language.ARENA_SAVED_ALL.sendMessage(player);
-                return;
             }
         } else if (args.length == 2) {
             if (args[0].equalsIgnoreCase("create")) {
@@ -64,6 +57,14 @@ public class ArenaCommand extends Command {
                 return;
             } else if (args[0].equalsIgnoreCase("save")) {
                 String name = args[1];
+                if (name.equals("*")) {
+                    plugin.getArenaFile().getConfiguration().set("arenas", null);
+                    plugin.getArenaFile().save();
+
+                    Arena.getArenas().forEach(Arena::save);
+                    Language.ARENA_SAVED_ALL.sendMessage(player);
+                    return;
+                }
                 Arena arena = Arena.getArena(name);
                 if (arena == null) {
                     Language.ARENA_NOT_EXISTS.sendMessage(player, name);
@@ -72,8 +73,8 @@ public class ArenaCommand extends Command {
                 arena.save();
                 Language.ARENA_SAVED.sendMessage(player, arena.getName());
                 return;
-            } else if (args[0].equalsIgnoreCase("storearena")) {
-                if (!player.hasPermission("eden.command.storearena")) {
+            } else if (args[0].equalsIgnoreCase("updatechunks")) {
+                if (!player.hasPermission("eden.command.updatechunks")) {
                     Language.NO_PERMISSION.sendMessage(player);
                     return;
                 }
@@ -97,15 +98,9 @@ public class ArenaCommand extends Command {
                     if (arena.getArenaDetails().isEmpty())
                         continue;
 
-                    // Get original detail (index 0)
-                    ArenaDetail originalDetail = arena.getArenaDetails().get(0);
-
-                    // If disable-original-arena is enabled, we only care about the original arena's
-                    // chunks
-                    // Copies don't need storage as they copy from original on reset
-
-                    // Force update the cached chunks for the original arena
-                    originalDetail.copyChunk();
+                    for (ArenaDetail detail : arena.getArenaDetails()) {
+                        detail.copyChunk();
+                    }
                     count++;
                 }
 
@@ -253,6 +248,6 @@ public class ArenaCommand extends Command {
 
     @Override
     public List<String> getDefaultTabComplete(CommandArguments command) {
-        return Arrays.asList("list", "create", "edit", "setup", "save", "saveall");
+        return Arrays.asList("list", "create", "edit", "setup", "save", "updatechunks");
     }
 }

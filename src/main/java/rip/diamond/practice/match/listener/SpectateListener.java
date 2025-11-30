@@ -157,7 +157,7 @@ public class SpectateListener implements Listener {
 
     /**
      * Try to fix player fly state when player changes world
-     * A fix for <a href="https://github.com/diamond-rip/Eden/issues/374">#374</a>
+     * A fix for <a href="https:
      */
     @EventHandler
     public void onChangedWorld(PlayerChangedWorldEvent event) {

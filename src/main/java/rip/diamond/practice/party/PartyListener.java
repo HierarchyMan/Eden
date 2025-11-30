@@ -12,7 +12,7 @@ import rip.diamond.practice.profile.PlayerProfile;
 
 public class PartyListener implements Listener {
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true) //ignoreCancelled because if someone is muted, this event will not perform
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true) 
     public void onChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         String message = event.getMessage();
@@ -37,7 +37,7 @@ public class PartyListener implements Listener {
         Player player = event.getPlayer();
         PlayerProfile profile = PlayerProfile.get(player);
 
-        //Profile will be null if the profile is not loaded in PlayerJoinEvent
+        
         if (profile == null) {
             return;
         }

@@ -79,7 +79,8 @@ public abstract class Match {
     /**
      * Update Kit references in active Matches after kit reload
      * This is critical for ensuring leaderboard updates work correctly after reload
-     * Note: Only updates the kit reference if the kit name matches - does not reload match rules mid-game
+     * Note: Only updates the kit reference if the kit name matches - does not
+     * reload match rules mid-game
      */
     public static void updateKitReferences() {
         for (Match match : matches.values()) {
@@ -89,7 +90,6 @@ public abstract class Match {
                     .findFirst()
                     .orElse(null);
 
-            // Use reflection to update the final kit field
             if (newKit != null && newKit != oldKit) {
                 try {
                     java.lang.reflect.Field kitField = Match.class.getDeclaredField("kit");
@@ -116,10 +116,6 @@ public abstract class Match {
     public void start() {
         setupTeamSpawnLocation();
 
-        // Arena setup logic
-
-        // Check if the kit allows block building and breaking. If yes, we set the
-        // ArenaDetail to using to prevent player using the same arena
         if (kit.getGameRules().isBuild() || kit.getGameRules().isSpleef()) {
             if (Match.getMatches().values().stream().filter(match -> match != this).anyMatch(
                     match -> (match.getKit().getGameRules().isBuild() || match.getKit().getGameRules().isSpleef())
@@ -130,7 +126,6 @@ public abstract class Match {
             arenaDetail.setUsing(true);
         }
 
-        // Setup player logic
         for (Player player : getMatchPlayers()) {
             PlayerProfile profile = PlayerProfile.get(player);
             profile.setMatch(this);
@@ -182,20 +177,16 @@ public abstract class Match {
             }
             player.updateInventory();
 
-            // Create the health display under NameTag, if needed
             if (kit.getGameRules().isShowHealth()) {
                 plugin.getScoreboardHandler().getScoreboard(player).registerHealthObjective();
-                player.setHealth(player.getMaxHealth() - 0.001); // Fix for health display as 0 - #379
+                player.setHealth(player.getMaxHealth() - 0.001);
             }
 
-            // Set up the knockback
             plugin.getSpigotAPI().getKnockback().applyKnockback(player, kit.getGameRules().getKnockbackName());
         }
 
-        // Teleport players into their team spawn
         teams.forEach(team -> team.teleport(team.getSpawnLocation()));
 
-        // Set team's color
         if (getMatchType() != MatchType.FFA) {
             for (int i = 0; i < teams.size(); i++) {
                 Team team = teams.get(i);
@@ -207,7 +198,12 @@ public abstract class Match {
         MatchStartEvent event = new MatchStartEvent(this);
         event.call();
 
+        showStartingHolograms();
+
         new MatchNewRoundTask(this, null, false);
+        new MatchBuildHeightDamageTask(this);
+
+        rip.diamond.practice.arenas.ActiveArenaTracker.add(arenaDetail);
     }
 
     /**
@@ -243,9 +239,7 @@ public abstract class Match {
         PlayerProfile profile = PlayerProfile.get(deadPlayer);
         Team team = getTeam(deadPlayer);
 
-        teamPlayer.setDisconnected(disconnected); // Set the disconnect state here, so player who already die, do
-                                                  // /giveup, and do /spec to join back the match will not have
-                                                  // duplicate messages
+        teamPlayer.setDisconnected(disconnected);
 
         if (!teamPlayer.isAlive()) {
             return;
@@ -254,23 +248,21 @@ public abstract class Match {
         teamPlayer.setAlive(false);
         getMatchPlayers().forEach(VisibilityController::updateVisibility);
 
-        // Setup Post-Match Inventory
         PostMatchInventory postMatchInventory = new PostMatchInventory(teamPlayer);
         postMatchInventories.put(teamPlayer.getUuid(), postMatchInventory);
 
         displayDeathMessage(teamPlayer, deadPlayer);
 
-        // Play lightning effect and death animation
         MatchPlayerDeathEvent event = new MatchPlayerDeathEvent(this, deadPlayer);
         event.call();
         if (event.isPlayLightningEffect() && Config.MATCH_DEATH_LIGHTNING.toBoolean()) {
             EntityLightning lightning = new EntityLightning(((CraftPlayer) deadPlayer).getHandle().getWorld(),
                     deadPlayer.getLocation().getX(), deadPlayer.getLocation().getY(), deadPlayer.getLocation().getZ(),
-                    true, false);
+                    true, true);
             for (Player player : getPlayersAndSpectators()) {
                 ((CraftPlayer) player).getHandle().playerConnection
                         .sendPacket(new PacketPlayOutSpawnEntityWeather(lightning));
-                player.playSound(deadPlayer.getLocation(), Sound.AMBIENCE_THUNDER, 1.0F, 1.0F);
+                EdenSound.FINAL_DEATH_SOUND.play(player);
             }
         }
         if (event.isPlayDeathEffect() && Config.MATCH_DEATH_ANIMATION.toBoolean()) {
@@ -278,7 +270,6 @@ public abstract class Match {
                     .filter(player -> player != deadPlayer).collect(Collectors.toList()));
         }
 
-        // Check if there's only one team survives. If yes, end the match
         if (canEnd()) {
             end();
         } else if (!disconnected) {
@@ -299,7 +290,7 @@ public abstract class Match {
         getMatchPlayers().forEach(VisibilityController::updateVisibility);
 
         PlayerProfile profile = PlayerProfile.get(player);
-        // So arrow will not be duplicated if GiveBackArrow is on
+
         profile.getCooldowns().get(CooldownType.ARROW).cancelCountdown();
 
         player.setExp(0);
@@ -352,7 +343,7 @@ public abstract class Match {
         if (forced) {
             broadcastMessage(Language.MATCH_FORCE_END_MESSAGE.toString(reason));
         } else {
-            // Setup Post-Match Inventories
+
             for (TeamPlayer teamPlayer : getWinningPlayers()) {
                 PostMatchInventory postMatchInventory = new PostMatchInventory(teamPlayer);
                 postMatchInventories.put(teamPlayer.getUuid(), postMatchInventory);
@@ -369,10 +360,11 @@ public abstract class Match {
             calculateMatchStats();
         }
 
-        // #442 - Teleport back to spawn location to prevent stuck in the portal
         if (kit.getGameRules().isPortalGoal()) {
             getTeams().forEach(t -> t.teleport(t.getSpawnLocation()));
         }
+
+        removeStartingHolograms();
 
         new MatchResetTask(this);
     }
@@ -383,8 +375,7 @@ public abstract class Match {
         spectators.add(player.getUniqueId());
 
         getPlayersAndSpectators().forEach(other -> {
-            // We do not want to send useless stuff to NPC. 'other' might be null because
-            // the NPC might be already destroyed because it is dead
+
             if (other != null && !Util.isNPC(other)) {
                 PlayerProfile otherProfile = PlayerProfile.get(other);
                 if (otherProfile.getSettings().get(ProfileSettings.SPECTATOR_JOIN_LEAVE_MESSAGE).isEnabled()) {
@@ -400,7 +391,6 @@ public abstract class Match {
 
         Util.teleport(player, getArenaDetail().getSpectator());
 
-        // Create the health display under NameTag, if needed
         if (kit.getGameRules().isShowHealth()) {
             plugin.getScoreboardHandler().getScoreboard(player).registerHealthObjective();
         }
@@ -410,8 +400,7 @@ public abstract class Match {
         spectators.remove(player.getUniqueId());
 
         getPlayersAndSpectators().forEach(other -> {
-            // We do not want to send useless stuff to NPC. 'other' might be null because
-            // the NPC might be already destroyed because it is dead
+
             if (other != null && !Util.isNPC(other)) {
                 PlayerProfile otherProfile = PlayerProfile.get(other);
                 if (otherProfile.getSettings().get(ProfileSettings.SPECTATOR_JOIN_LEAVE_MESSAGE).isEnabled()) {
@@ -460,9 +449,8 @@ public abstract class Match {
     }
 
     public boolean isProtected(Location location, boolean isPlacing, Block block) {
-        if (block != null && block.getType() == Material.TNT && Config.MATCH_TNT_ENABLED.toBoolean()) { // Allow TNT
-                                                                                                        // placing above
-                                                                                                        // build limit
+        if (block != null && block.getType() == Material.TNT && Config.MATCH_TNT_ENABLED.toBoolean()) {
+
             return false;
         }
         if (location.getBlockY() >= arenaDetail.getArena().getBuildMax()
@@ -482,6 +470,8 @@ public abstract class Match {
                 case WOOD:
                 case ENDER_STONE:
                     return false;
+                default:
+                    break;
             }
         }
         if (kit.getGameRules().isBreakGoal() && location.getBlock().getType() == Material.BED_BLOCK) {
@@ -533,12 +523,11 @@ public abstract class Match {
     public List<Player> getMatchPlayers() {
         List<Player> players = new ArrayList<>();
         teams.forEach(team -> players.addAll(team.getTeamPlayers().stream()
-                // Filter all players who are already disconnected
+
                 .filter(tP -> !tP.isDisconnected())
-                // Convert all TeamPlayer to Player
+
                 .map(TeamPlayer::getPlayer)
-                // TeamPlayer#isDisconnected will be false if the player is already dead, and
-                // disconnected afterwards. This is why we have to filter nonNull objects
+
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList())));
         return players;
@@ -656,7 +645,7 @@ public abstract class Match {
     }
 
     public void broadcastSound(EdenSound sound) {
-        getPlayersAndSpectators().forEach(sound::play);
+        getPlayersAndSpectators().forEach(player -> sound.play(player, player.getLocation()));
     }
 
     public void broadcastSound(Team team, Sound sound) {
@@ -665,7 +654,8 @@ public abstract class Match {
     }
 
     public void broadcastSound(Team team, EdenSound sound) {
-        team.getTeamPlayers().stream().map(TeamPlayer::getPlayer).filter(Objects::nonNull).forEach(sound::play);
+        team.getTeamPlayers().stream().map(TeamPlayer::getPlayer).filter(Objects::nonNull)
+                .forEach(player -> sound.play(player, player.getLocation()));
     }
 
     public void broadcastSpectatorsSound(Sound sound) {
@@ -697,4 +687,70 @@ public abstract class Match {
     public abstract List<String> getMatchScoreboard(Player player);
 
     public abstract List<String> getSpectateScoreboard(Player player);
+
+    private final List<rip.diamond.practice.leaderboard.hologram.PracticeHologram> startingHolograms = new ArrayList<>();
+
+    public void showStartingHolograms() {
+        System.out.println("MatchStartingHologram: showStartingHolograms called for match " + uuid);
+        if (!kit.getGameRules().isShowMatchStartScoreboard()) {
+            System.out.println("MatchStartingHologram: Rule disabled for kit " + kit.getName());
+            return;
+        }
+        System.out.println("MatchStartingHologram: Showing holograms for match " + uuid);
+        for (Team team : getTeams()) {
+            createStartingHologram(team, "left");
+            createStartingHologram(team, "right");
+        }
+    }
+
+    private void createStartingHologram(Team team, String side) {
+        rip.diamond.practice.util.file.ConfigCursor config = new rip.diamond.practice.util.file.ConfigCursor(
+                Eden.INSTANCE.getLeaderboardsConfig(), "match-starting-holograms." + side);
+        if (!config.exists("type")) {
+            System.out.println("MatchStartingHologram: Config type not found for side " + side);
+            return;
+        }
+
+        rip.diamond.practice.leaderboard.LeaderboardType type;
+        try {
+            type = rip.diamond.practice.leaderboard.LeaderboardType.valueOf(config.getString("type"));
+        } catch (IllegalArgumentException e) {
+            System.out.println("MatchStartingHologram: Invalid type " + config.getString("type"));
+            return;
+        }
+
+        double rightOffset = config.getDouble("offset.right");
+        double frontOffset = config.getDouble("offset.front");
+        double upOffset = config.getDouble("offset.up");
+
+        Location loc = team.getSpawnLocation();
+
+        System.out.println("MatchStartingHologram: Team " + team.getTeamColor() + " spawn location: " +
+                loc.getX() + ", " + loc.getY() + ", " + loc.getZ() +
+                " (yaw: " + loc.getYaw() + ", pitch: " + loc.getPitch() + ") in world " + loc.getWorld().getName());
+
+        org.bukkit.util.Vector dir = loc.getDirection().setY(0).normalize();
+        System.out.println(
+                "MatchStartingHologram: Direction vector: " + dir.getX() + ", " + dir.getY() + ", " + dir.getZ());
+
+        org.bukkit.util.Vector right = dir.clone().crossProduct(new org.bukkit.util.Vector(0, 1, 0)).normalize();
+
+        Location hologramLoc = loc.clone()
+                .add(dir.multiply(frontOffset))
+                .add(right.multiply(rightOffset))
+                .add(0, upOffset, 0);
+
+        System.out.println("MatchStartingHologram: Calculated hologram location: " +
+                hologramLoc.getX() + ", " + hologramLoc.getY() + ", " + hologramLoc.getZ());
+
+        rip.diamond.practice.leaderboard.hologram.impl.MatchStartingHologram hologram = new rip.diamond.practice.leaderboard.hologram.impl.MatchStartingHologram(
+                hologramLoc, 20, type, type.getTimePeriod(), getKit(), team, side);
+        hologram.start();
+        startingHolograms.add(hologram);
+    }
+
+    public void removeStartingHolograms() {
+        startingHolograms.forEach(rip.diamond.practice.leaderboard.hologram.PracticeHologram::stop);
+        startingHolograms.clear();
+    }
 }

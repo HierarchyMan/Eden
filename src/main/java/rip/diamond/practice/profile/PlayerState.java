@@ -11,7 +11,8 @@ public enum PlayerState {
     IN_EDIT(true),
     IN_QUEUE(false),
     IN_MATCH(true),
-    IN_SPECTATING(false);
+    IN_SPECTATING(false),
+    IN_EVENT(true);
 
     private final boolean ableToMoveItemInInventory;
 }

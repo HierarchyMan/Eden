@@ -14,7 +14,7 @@ public enum SpigotType {
 
     SPIGOT("org.spigotmc.SpigotConfig", rip.diamond.practice.spigot.spigotapi.knockback.impl.DefaultKnockback.class, DefaultMovementHandler.class),
     CARBON_SPIGOT("xyz.refinedev.spigot.knockback.KnockbackProfile", CarbonSpigotKnockback.class, CarbonSpigotMovementHandler.class),
-    WIND_SPIGOT("ga.windpvp.windspigot.WindSpigot", rip.diamond.practice.spigot.spigotapi.knockback.impl.WindSpigotKnockback.class, DefaultMovementHandler.class), //Although WindSpigot has MovementHandler (In WindSpigot it is called MovementListener), it is not implement in the latest version of release, so we have to use default
+    WIND_SPIGOT("ga.windpvp.windspigot.WindSpigot", rip.diamond.practice.spigot.spigotapi.knockback.impl.WindSpigotKnockback.class, DefaultMovementHandler.class),
     ;
 
     private final String package_;

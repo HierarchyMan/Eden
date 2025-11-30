@@ -4,9 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.entity.Player;
 import rip.diamond.practice.config.Language;
-import rip.diamond.practice.events.EdenEvent;
-import rip.diamond.practice.events.EventType;
-import rip.diamond.practice.events.impl.SumoEvent;
 import rip.diamond.practice.match.Match;
 import rip.diamond.practice.match.MatchState;
 import rip.diamond.practice.match.impl.FFAMatch;
@@ -36,7 +33,7 @@ public class EdenPlaceholder {
         public static final String NEW_LINE = "<new-line>";
 
         public String translate(Player player, String str) {
-                // Add null check at the start
+
                 if (str == null) {
                         return null;
                 }
@@ -51,33 +48,12 @@ public class EdenPlaceholder {
                         Party party = Party.getByPlayer(player);
                         QueueProfile qProfile = Queue.getPlayers().get(player.getUniqueId());
                         Match match = profile.getMatch();
-                        EdenEvent event = EdenEvent.getOnGoingEvent();
-
-                        // Check if the string has {event-information}, otherwise it will cause infinite
-                        // loop
-                        if (str.contains("{event-information}")) {
-                                str = str
-                                                .replace("{event-information}",
-                                                                event != null ? StringUtils.join(
-                                                                                event.getLobbyScoreboard(player),
-                                                                                NEW_LINE)
-                                                                                : SKIP_LINE);
-                        }
 
                         if (party != null) {
                                 str = str
                                                 .replace("{party-leader}", party.getLeader().getUsername())
                                                 .replace("{party-members}", party.getAllPartyMembers().size() + "")
                                                 .replace("{party-max}", party.getMaxSize() + "");
-                        }
-
-                        if (event != null) {
-                                str = str
-                                                .replace("{event-uncolored-name}", event.getUncoloredEventName())
-                                                .replace("{event-total-players}", event.getTotalPlayers().size() + "")
-                                                .replace("{event-max-players}", event.getMaxPlayers() + "")
-                                                .replace("{event-countdown}", event.getCountdown() == null ? "0.0"
-                                                                : event.getCountdown().getMilliSecondsLeft(false) + "");
                         }
 
                         if (profile.getPlayerState() == PlayerState.IN_QUEUE && qProfile != null) {
@@ -289,23 +265,6 @@ public class EdenPlaceholder {
                                                                                                                                 .collect(Collectors
                                                                                                                                                 .joining(",")));
                                                 break;
-                                        case SUMO_EVENT:
-                                                EdenEvent edenEvent = EdenEvent.getOnGoingEvent();
-                                                if (edenEvent.getEventType() != EventType.SUMO_EVENT) {
-                                                        throw new PracticeUnexpectedException(
-                                                                        "MatchType is SUMO_EVENT but EventType isn't SUMO_EVENT");
-                                                }
-                                                SumoEvent sumoEvent = (SumoEvent) edenEvent;
-                                                str = str
-                                                                .replace("{match-event-type}",
-                                                                                sumoEvent.getUncoloredEventName())
-                                                                .replace("{match-event-round}",
-                                                                                sumoEvent.getRound() + "")
-                                                                .replace("{match-event-winner}",
-                                                                                match.getState() == MatchState.ENDING
-                                                                                                ? sumoEvent.getTeamName(
-                                                                                                                match.getWinningTeam())
-                                                                                                : "");
                                         default:
                                                 break;
                                 }
@@ -456,9 +415,14 @@ public class EdenPlaceholder {
                         return null;
                 } else {
                         return str
+                                        .replace("{server-ip}", plugin.getLanguageFile().getStringRaw("server-ip"))
+                                        .replace("{scoreboard.title}",
+                                                        plugin.getLanguageFile().getStringRaw("scoreboard.title"))
                                         .replace("{online-players}", plugin.getCache().getPlayersSize() + "")
                                         .replace("{queue-players}", plugin.getCache().getQueuePlayersSize() + "")
-                                        .replace("{match-players}", plugin.getCache().getMatchPlayersSize() + "");
+                                        .replace("{match-players}", plugin.getCache().getMatchPlayersSize() + "")
+                                        .replace("{event-wins}", PlayerProfile.get(player).getEventWins() + "")
+                                        .replace("{events-played}", PlayerProfile.get(player).getEventsPlayed() + "");
                 }
         }
 

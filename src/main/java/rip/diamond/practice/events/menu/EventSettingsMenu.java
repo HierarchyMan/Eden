@@ -1,208 +1,166 @@
 package rip.diamond.practice.events.menu;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import rip.diamond.practice.Eden;
-import rip.diamond.practice.events.EdenEvent;
-import rip.diamond.practice.events.EventType;
-import rip.diamond.practice.events.impl.SumoEvent;
-import rip.diamond.practice.events.impl.Tournament;
+import rip.diamond.practice.events.PracticeEvent;
 import rip.diamond.practice.kits.Kit;
-import rip.diamond.practice.util.BasicConfigFile;
 import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.ItemBuilder;
-import rip.diamond.practice.util.exception.PracticeUnexpectedException;
 import rip.diamond.practice.util.menu.Button;
 import rip.diamond.practice.util.menu.Menu;
-import rip.diamond.practice.util.menu.MenuUtil;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class EventSettingsMenu extends Menu {
-    private final EventType eventType;
-    private int maxPlayers;
-    private int minPlayers;
-    private int teamSize = 1;
-    @Setter
-    private Kit kit = Kit.getKits().get(0);
 
-    public EventSettingsMenu(EventType eventType) {
-        this.eventType = eventType;
-        this.maxPlayers = eventType.getDefaultMaxPlayers();
-        this.minPlayers = eventType.getDefaultMinPlayers();
+    private final Eden plugin = Eden.INSTANCE;
+    @Getter
+    private final String eventName;
+    @Getter
+    @Setter
+    private Kit kit;
+    @Getter
+    @Setter
+    private int maxPlayers = 30;
+    @Getter
+    @Setter
+    private int teamSize = 1;
+
+    public EventSettingsMenu(String eventName) {
+        this.eventName = eventName;
+        
+        
     }
 
     @Override
     public String getTitle(Player player) {
-        BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
-        return CC.translate(config.getString("event-settings-menu.title"));
-    }
-
-    @Override
-    public int getSize() {
-        BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
-        return config.getInt("event-settings-menu.size");
+        return "&bHost " + eventName;
     }
 
     @Override
     public Map<Integer, Button> getButtons(Player player) {
-        final Map<Integer, Button> buttons = new HashMap<>();
-        BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
+        Map<Integer, Button> buttons = new HashMap<>();
 
-        // Filler and Border
-        MenuUtil.addFillerButtons(buttons, config, "event-settings-menu", getSize());
-        MenuUtil.addBorderButtons(buttons, config, "event-settings-menu", getSize());
-
-        // Max Players Button
-        buttons.put(config.getInt("event-settings-menu.items.max-players-button.slot"), new Button() {
-            @Override
-            public ItemStack getButtonItem(Player player) {
-                List<String> lore = config.getStringList("event-settings-menu.items.max-players-button.lore")
-                        .stream()
-                        .map(line -> line.replace("{max-players}", String.valueOf(maxPlayers)))
-                        .collect(Collectors.toList());
-
-                return new ItemBuilder(
-                        Material.valueOf(config.getString("event-settings-menu.items.max-players-button.material")))
-                        .name(config.getString("event-settings-menu.items.max-players-button.name"))
-                        .lore(lore)
-                        .build();
-            }
-
-            @Override
-            public void clicked(Player player, ClickType clickType) {
-                switch (clickType) {
-                    case LEFT:
-                        maxPlayers += 1;
-                        break;
-                    case SHIFT_LEFT:
-                        maxPlayers += 10;
-                        break;
-                    case RIGHT:
-                        maxPlayers -= 1;
-                        break;
-                    case SHIFT_RIGHT:
-                        maxPlayers -= 10;
-                        break;
-                }
-                if (maxPlayers < 2) {
-                    maxPlayers = 2;
-                }
-                openMenu(player);
-            }
-        });
-
-        // Party Size Button (only if event allows teams)
-        if (eventType.isAllowTeams()) {
-            buttons.put(config.getInt("event-settings-menu.items.party-size-button.slot"), new Button() {
-                @Override
-                public ItemStack getButtonItem(Player player) {
-                    List<String> lore = config.getStringList("event-settings-menu.items.party-size-button.lore")
-                            .stream()
-                            .map(line -> line.replace("{team-size}", String.valueOf(teamSize)))
-                            .collect(Collectors.toList());
-
-                    return new ItemBuilder(
-                            Material.valueOf(config.getString("event-settings-menu.items.party-size-button.material")))
-                            .durability(config.getInt("event-settings-menu.items.party-size-button.data"))
-                            .name(config.getString("event-settings-menu.items.party-size-button.name"))
-                            .lore(lore)
-                            .build();
-                }
-
-                @Override
-                public void clicked(Player player, ClickType clickType) {
-                    switch (clickType) {
-                        case LEFT:
-                            teamSize += 1;
-                            break;
-                        case RIGHT:
-                            teamSize -= 1;
-                            break;
-                    }
-                    if (teamSize < 1) {
-                        teamSize = 1;
-                    }
-                    openMenu(player);
-                }
-            });
+        
+        
+        if (needsKit(eventName)) {
+            buttons.put(11, new EventKitButton());
         }
 
-        // Kit Button (only if event requires a kit)
-        if (eventType.isKit()) {
-            buttons.put(config.getInt("event-settings-menu.items.kit-button.slot"), new Button() {
-                @Override
-                public ItemStack getButtonItem(Player player) {
-                    List<String> lore = config.getStringList("event-settings-menu.items.kit-button.lore")
-                            .stream()
-                            .map(line -> line.replace("{kit-name}", kit.getDisplayName()))
-                            .collect(Collectors.toList());
-
-                    return new ItemBuilder(
-                            Material.valueOf(config.getString("event-settings-menu.items.kit-button.material")))
-                            .name(config.getString("event-settings-menu.items.kit-button.name"))
-                            .lore(lore)
-                            .build();
-                }
-
-                @Override
-                public void clicked(Player player, ClickType clickType) {
-                    new EventSelectKitMenu(EventSettingsMenu.this).openMenu(player);
-                }
-            });
+        
+        if (isTournamentEvent(eventName)) {
+            buttons.put(12, new rip.diamond.practice.events.menu.button.EventTeamSizeButton(this));
         }
 
-        // Start Button
-        buttons.put(config.getInt("event-settings-menu.items.start-button.slot"), new Button() {
-            @Override
-            public ItemStack getButtonItem(Player player) {
-                List<String> lore = config.getStringList("event-settings-menu.items.start-button.lore")
-                        .stream()
-                        .map(line -> line.replace("{event-name}", eventType.getName()))
-                        .map(line -> line.replace("{min-players}", String.valueOf(minPlayers)))
-                        .map(line -> line.replace("{max-players}", String.valueOf(maxPlayers)))
-                        .collect(Collectors.toList());
+        
+        buttons.put(13, new EventMaxPlayersButton());
 
-                return new ItemBuilder(
-                        Material.valueOf(config.getString("event-settings-menu.items.start-button.material")))
-                        .durability(config.getInt("event-settings-menu.items.start-button.data"))
-                        .name(config.getString("event-settings-menu.items.start-button.name"))
-                        .lore(lore)
-                        .build();
-            }
-
-            @Override
-            public void clicked(Player player, ClickType clickType) {
-                player.closeInventory();
-
-                EdenEvent event = EdenEvent.getOnGoingEvent();
-                if (event != null) {
-                    player.sendMessage(CC.translate("&cThere's already an active event!"));
-                    return;
-                }
-
-                switch (eventType) {
-                    case TOURNAMENT:
-                        Tournament tournament = new Tournament(player.getName(), minPlayers, maxPlayers, kit, teamSize);
-                        tournament.create();
-                        return;
-                    case SUMO_EVENT:
-                        SumoEvent sumoEvent = new SumoEvent(player.getName(), minPlayers, maxPlayers, teamSize);
-                        sumoEvent.create();
-                        return;
-                    default:
-                        throw new PracticeUnexpectedException(
-                                "Event type " + eventType.getName() + " is not initialized yet");
-                }
-            }
-        });
+        
+        buttons.put(15, new EventStartButton());
 
         return buttons;
+    }
+
+    private boolean needsKit(String eventName) {
+        return eventName.equalsIgnoreCase("Brackets") ||
+                eventName.equalsIgnoreCase("LMS") ||
+                eventName.equalsIgnoreCase("SkyWars") ||
+                eventName.equalsIgnoreCase("Knockout");
+    }
+
+    private boolean isTournamentEvent(String eventName) {
+        return eventName.equalsIgnoreCase("Brackets");
+    }
+
+    private class EventKitButton extends Button {
+        @Override
+        public ItemStack getButtonItem(Player player) {
+            return new ItemBuilder(Material.DIAMOND_SWORD)
+                    .name("&b&lSelect Kit")
+                    .lore("&7Current: &f" + (kit != null ? kit.getName() : "None"), "&7Click to change kit.")
+                    .build();
+        }
+
+        @Override
+        public void clicked(Player player, int slot, ClickType clickType, int hotbarButton) {
+            new EventSelectKitMenu(EventSettingsMenu.this).openMenu(player);
+            
+        }
+    }
+
+    private class EventMaxPlayersButton extends Button {
+        @Override
+        public ItemStack getButtonItem(Player player) {
+            return new ItemBuilder(Material.PAPER)
+                    .name("&b&lMax Players")
+                    .lore("&7Current: &f" + maxPlayers, "&7Left-Click to increase.", "&7Right-Click to decrease.")
+                    .build();
+        }
+
+        @Override
+        public void clicked(Player player, int slot, ClickType clickType, int hotbarButton) {
+            if (clickType.isLeftClick()) {
+                maxPlayers += 5;
+            } else if (clickType.isRightClick()) {
+                maxPlayers -= 5;
+            }
+            if (maxPlayers < 2)
+                maxPlayers = 2;
+            if (maxPlayers > 100)
+                maxPlayers = 100;
+
+            
+        }
+
+        @Override
+        public boolean shouldUpdate(Player player, ClickType clickType) {
+            return true;
+        }
+    }
+
+    private class EventStartButton extends Button {
+        @Override
+        public ItemStack getButtonItem(Player player) {
+            return new ItemBuilder(Material.EMERALD_BLOCK)
+                    .name("&a&lStart Event")
+                    .lore("&7Click to start the event.")
+                    .build();
+        }
+
+        @Override
+        public void clicked(Player player, int slot, ClickType clickType, int hotbarButton) {
+            player.closeInventory();
+            PracticeEvent<?> event = plugin.getEventManager().getByName(eventName);
+            if (event == null) {
+                player.sendMessage(CC.RED + "Event not found.");
+                return;
+            }
+
+            if (event.getState() != rip.diamond.practice.events.EventState.UNANNOUNCED) {
+                player.sendMessage(CC.RED + "Event is already running or waiting.");
+                return;
+            }
+
+            if (needsKit(eventName) && kit == null) {
+                player.sendMessage(CC.RED + "You must select a kit.");
+                return;
+            }
+
+            if (needsKit(eventName)) {
+                plugin.getEventManager().hostEvent(event, kit, maxPlayers, player);
+            } else {
+                plugin.getEventManager().hostEvent(event, player);
+                event.setLimit(maxPlayers); 
+            }
+
+            player.sendMessage(CC.GREEN + "Started " + eventName + " event!");
+        }
     }
 }

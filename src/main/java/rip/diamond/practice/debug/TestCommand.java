@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import rip.diamond.practice.Eden;
-import rip.diamond.practice.events.EdenEvent;
+
 import rip.diamond.practice.profile.PlayerProfile;
 import rip.diamond.practice.util.Common;
 import rip.diamond.practice.util.command.Command;
@@ -37,7 +37,6 @@ public class TestCommand extends Command {
             Bukkit.getPlayer("DragonL").performCommand("party join GoodestEnglish");
             return;
         }
-
 
     }
 }

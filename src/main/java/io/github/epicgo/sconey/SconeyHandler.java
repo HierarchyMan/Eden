@@ -38,7 +38,7 @@ public class SconeyHandler {
      */
     public void stopThread() {
         if (this.sconeyThread != null) {
-            this.sconeyThread.stop();
+            this.sconeyThread.shutdown();
             this.sconeyThread = null;
         }
     }

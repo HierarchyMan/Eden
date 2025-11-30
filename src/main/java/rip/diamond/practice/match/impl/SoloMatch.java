@@ -100,12 +100,12 @@ public class SoloMatch extends Match {
         TeamPlayer tWinner = getWinningPlayers().get(0);
         TeamPlayer tLoser = getOpponent(getWinningPlayers().get(0));
 
-        // Set Post-Match Inventories swtichTo
+        
         getPostMatchInventories().get(tWinner.getUuid()).setSwitchTo(tLoser.getUsername(), tLoser.getUuid());
         getPostMatchInventories().get(tLoser.getUuid()).setSwitchTo(tWinner.getUsername(), tWinner.getUuid());
 
-        // Because this is a duel match, we don't increase win/lose in player statistics
-        // and don't calculate the elo afterwards
+        
+        
         if (isDuel()) {
             return;
         }
@@ -156,7 +156,7 @@ public class SoloMatch extends Match {
             }
         }
 
-        // Instantly update leaderboards for both players
+        
         rip.diamond.practice.Eden.INSTANCE.getLeaderboardManager().updatePlayerStats(
                 pWinner.getUniqueId(), pWinner.getUsername(), getKit(), kWinner);
         rip.diamond.practice.Eden.INSTANCE.getLeaderboardManager().updatePlayerStats(

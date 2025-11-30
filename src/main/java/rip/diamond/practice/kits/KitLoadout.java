@@ -81,19 +81,19 @@ public class KitLoadout {
 		player.getInventory().setArmorContents(null);
 		player.getInventory().clear();
 
-		// Always use default kit armor (not custom loadout armor)
-		// This ensures proper team colorization and consistent armor
+		
+		
 		if (kit != null) {
 			player.getInventory().setArmorContents(kit.getKitLoadout().getArmor());
 		} else {
-			// Fallback to custom armor if kit is null (shouldn't happen in normal gameplay)
+			
 			player.getInventory().setArmorContents(getArmor());
 		}
 
-		// Use custom loadout contents
+		
 		player.getInventory().setContents(getContents());
 
-		// Only set kit loadout if match exists (not in editor mode)
+		
 		if (match != null) {
 			match.getTeamPlayer(player).setKitLoadout(this);
 		}

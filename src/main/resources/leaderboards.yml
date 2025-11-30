@@ -1,0 +1,86 @@
+holograms:
+  wins:
+    update-time: 10
+    lines:
+      - "&e&l{kit}"
+      - "&7Your {lb-type}: &f{lb-amount} &7({lb-position})"
+      - ""
+      - "{entries}"
+      - ""
+      - "&7Next update in {update}s"
+    format: "&b#{number} &f{name} &7- &b{value}"
+  elo:
+    update-time: 10
+    lines:
+      - "&e&l{kit}"
+      - "&7Your {lb-type}: &f{lb-amount} &7({lb-position})"
+      - ""
+      - "{entries}"
+      - ""
+      - "&7Next update in {update}s"
+    format: "&b#{number} &f{name} &7- &b{value}"
+  winstreak:
+    update-time: 10
+    lines:
+      - "&e&l{kit}"
+      - "&7Your {lb-type}: &f{lb-amount} &7({lb-position})"
+      - ""
+      - "{entries}"
+      - ""
+      - "&7Next update in {update}s"
+    format: "&b#{number} &f{name} &7- &b{value}"
+  losses:
+    update-time: 10
+    lines:
+      - "&e&l{kit}"
+      - "&7Your {lb-type}: &f{lb-amount} &7({lb-position})"
+      - ""
+      - "{entries}"
+      - ""
+      - "&7Next update in {update}s"
+    format: "&c#{number} &f{name} &7- &c{value}"
+  global_wins:
+    update-time: 60
+    lines:
+      - "&b&l{lb-type}"
+      - "&7Your Wins: &f{lb-amount} &7({lb-position})"
+      - ""
+      - "{entries}"
+      - ""
+      - "&7Next update in {update}s"
+    format: "&b#{number} &f{name} &7- &b{value}"
+  global_elo:
+    update-time: 60
+    lines:
+      - "&b&l{lb-type}"
+      - "&7Your Elo: &f{lb-amount} &7({lb-position})"
+      - ""
+      - "{entries}"
+      - ""
+      - "&7Next update in {update}s"
+    format: "&b#{number} &f{name} &7- &b{value}"
+match-starting-holograms:
+  left:
+    type: WINS_MONTHLY
+    offset:
+      right: -3.0
+      front: 2.0
+      up: 2.0
+    lines:
+      - "&b&lMonthly Wins"
+      - "&e{kit}"
+      - ""
+      - "{entries}"
+    format: "&b#{number} &f{name} &7- &b{value}"
+  right:
+    type: WINSTREAK_DAILY
+    offset:
+      right: 3.0
+      front: 2.0
+      up: 2.0
+    lines:
+      - "&b&lDaily Winstreak"
+      - "&e{kit}"
+      - ""
+      - "{entries}"
+    format: "&b#{number} &f{name} &7- &b{value}"

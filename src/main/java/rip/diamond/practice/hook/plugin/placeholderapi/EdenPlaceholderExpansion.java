@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import rip.diamond.practice.Eden;
-import rip.diamond.practice.config.Config;
 import rip.diamond.practice.config.Language;
 import rip.diamond.practice.kits.Kit;
-import rip.diamond.practice.leaderboard.Leaderboard;
 import rip.diamond.practice.leaderboard.LeaderboardManager;
 import rip.diamond.practice.leaderboard.LeaderboardPlayerCache;
 import rip.diamond.practice.match.Match;
@@ -18,7 +16,6 @@ import rip.diamond.practice.queue.Queue;
 import rip.diamond.practice.queue.QueueType;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 @RequiredArgsConstructor
 public class EdenPlaceholderExpansion extends PlaceholderExpansion {
@@ -53,7 +50,19 @@ public class EdenPlaceholderExpansion extends PlaceholderExpansion {
         String[] args = param.split("_");
         PlayerProfile profile = PlayerProfile.get(player);
 
-        // Requested in #228
+        if (param.equalsIgnoreCase("online_players")) {
+            return Eden.INSTANCE.getCache().getPlayersSize() + "";
+        }
+        if (param.equalsIgnoreCase("queue_players")) {
+            return Eden.INSTANCE.getCache().getQueuePlayersSize() + "";
+        }
+        if (param.equalsIgnoreCase("match_players")) {
+            return Eden.INSTANCE.getCache().getMatchPlayersSize() + "";
+        }
+        if (param.equalsIgnoreCase("fighting")) {
+            return Eden.INSTANCE.getCache().getMatchPlayersSize() + "";
+        }
+
         if (param.startsWith("kit_status")) {
             String kitName = args[2];
             Kit kit = Kit.getByName(kitName);
@@ -125,14 +134,14 @@ public class EdenPlaceholderExpansion extends PlaceholderExpansion {
             if (match == null) {
                 return "Player isn't in a match";
             }
-            // Requested in #467
+
             if (param.equalsIgnoreCase("match_match_type")) {
                 return match.getMatchType().getReadable();
             }
             if (param.equalsIgnoreCase("match_queue_type")) {
                 return match.getQueueType().getReadable();
             }
-            // Requested in #445
+
             if (param.equalsIgnoreCase("match_player_team_color")) {
                 return match.getTeam(player).getTeamColor().getColor();
             }
@@ -212,8 +221,7 @@ public class EdenPlaceholderExpansion extends PlaceholderExpansion {
             }
         }
         if (args[0].equalsIgnoreCase("leaderboard")) {
-            // If database is disabled, there will be no leaderboard data. So we are going
-            // to return "Database not enabled"
+
             if (Eden.INSTANCE.getDatabaseManager().getHandler() == null) {
                 return "Database isn't enabled";
             }
@@ -286,9 +294,201 @@ public class EdenPlaceholderExpansion extends PlaceholderExpansion {
                 }
                 return leaderboard.get(position).getData() + "";
             }
+
+            // Daily Wins
+            if (param.startsWith("leaderboard_dailyWins_player_")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getWinsDailyLeaderboard().get(kit)
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                return leaderboard.get(position).getPlayerName();
+            }
+            if (param.startsWith("leaderboard_dailyWins_value_")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getWinsDailyLeaderboard().get(kit)
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                return leaderboard.get(position).getData() + "";
+            }
+
+            // Weekly Wins
+            if (param.startsWith("leaderboard_weeklyWins_player_")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getWinsWeeklyLeaderboard().get(kit)
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                return leaderboard.get(position).getPlayerName();
+            }
+            if (param.startsWith("leaderboard_weeklyWins_value_")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getWinsWeeklyLeaderboard().get(kit)
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                return leaderboard.get(position).getData() + "";
+            }
+
+            // Monthly Wins
+            if (param.startsWith("leaderboard_monthlyWins_player_")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getWinsMonthlyLeaderboard()
+                        .get(kit)
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                return leaderboard.get(position).getPlayerName();
+            }
+            if (param.startsWith("leaderboard_monthlyWins_value_")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getWinsMonthlyLeaderboard()
+                        .get(kit)
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                return leaderboard.get(position).getData() + "";
+            }
+
+            // Daily Winstreak
+            if (param.startsWith("leaderboard_dailyWinstreak_player_")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getWinstreakDailyLeaderboard()
+                        .get(kit)
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                return leaderboard.get(position).getPlayerName();
+            }
+            if (param.startsWith("leaderboard_dailyWinstreak_value_")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getWinstreakDailyLeaderboard()
+                        .get(kit)
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                return leaderboard.get(position).getData() + "";
+            }
+
+            // Weekly Winstreak
+            if (param.startsWith("leaderboard_weeklyWinstreak_player_")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getWinstreakWeeklyLeaderboard()
+                        .get(kit)
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                return leaderboard.get(position).getPlayerName();
+            }
+            if (param.startsWith("leaderboard_weeklyWinstreak_value_")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getWinstreakWeeklyLeaderboard()
+                        .get(kit)
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                return leaderboard.get(position).getData() + "";
+            }
+
+            // Monthly Winstreak
+            if (param.startsWith("leaderboard_monthlyWinstreak_player_")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getWinstreakMonthlyLeaderboard()
+                        .get(kit)
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                return leaderboard.get(position).getPlayerName();
+            }
+            if (param.startsWith("leaderboard_monthlyWinstreak_value_")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getWinstreakMonthlyLeaderboard()
+                        .get(kit)
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                return leaderboard.get(position).getData() + "";
+            }
         }
 
-        return null; // Placeholder is unknown by the Expansion
+        // Global Leaderboards (No Kit argument)
+        if (args[0].equalsIgnoreCase("globalleaderboard")) {
+            // usage: %eden_globalleaderboard_wins_player_1%
+            String type = args[1];
+            String subType = args[2]; // player or value
+            int position = Integer.parseInt(args[3]);
+            LeaderboardManager manager = Eden.INSTANCE.getLeaderboardManager();
+
+            if (type.equalsIgnoreCase("wins")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getGlobalWinsLeaderboard()
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                if (subType.equalsIgnoreCase("player"))
+                    return leaderboard.get(position).getPlayerName();
+                if (subType.equalsIgnoreCase("value"))
+                    return leaderboard.get(position).getData() + "";
+            }
+            if (type.equalsIgnoreCase("elo")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getGlobalEloLeaderboard()
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                if (subType.equalsIgnoreCase("player"))
+                    return leaderboard.get(position).getPlayerName();
+                if (subType.equalsIgnoreCase("value"))
+                    return leaderboard.get(position).getData() + "";
+            }
+
+            if (type.equalsIgnoreCase("eventwins")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getEventWinsLeaderboard()
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                if (subType.equalsIgnoreCase("player"))
+                    return leaderboard.get(position).getPlayerName();
+                if (subType.equalsIgnoreCase("value"))
+                    return leaderboard.get(position).getData() + "";
+            }
+            if (type.equalsIgnoreCase("eventsplayed")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getEventsPlayedLeaderboard()
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                if (subType.equalsIgnoreCase("player"))
+                    return leaderboard.get(position).getPlayerName();
+                if (subType.equalsIgnoreCase("value"))
+                    return leaderboard.get(position).getData() + "";
+            }
+
+            // Daily Event Wins
+            if (type.equalsIgnoreCase("eventwinsdaily")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getEventWinsDailyLeaderboard()
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                if (subType.equalsIgnoreCase("player"))
+                    return leaderboard.get(position).getPlayerName();
+                if (subType.equalsIgnoreCase("value"))
+                    return leaderboard.get(position).getData() + "";
+            }
+
+            // Weekly Event Wins
+            if (type.equalsIgnoreCase("eventwinsweekly")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getEventWinsWeeklyLeaderboard()
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                if (subType.equalsIgnoreCase("player"))
+                    return leaderboard.get(position).getPlayerName();
+                if (subType.equalsIgnoreCase("value"))
+                    return leaderboard.get(position).getData() + "";
+            }
+
+            // Monthly Event Wins
+            if (type.equalsIgnoreCase("eventwinsmonthly")) {
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getEventWinsMonthlyLeaderboard()
+                        .getLeaderboard();
+                if (leaderboard.size() < position)
+                    return "-";
+                if (subType.equalsIgnoreCase("player"))
+                    return leaderboard.get(position).getPlayerName();
+                if (subType.equalsIgnoreCase("value"))
+                    return leaderboard.get(position).getData() + "";
+            }
+
+        }
+
+        return null;
     }
 
 }

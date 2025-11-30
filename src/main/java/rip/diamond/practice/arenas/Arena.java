@@ -93,7 +93,6 @@ public class Arena {
             });
         }
 
-        // Process existing arenas
         List<Arena> toRemove = new ArrayList<>();
         for (Arena currentArena : new ArrayList<>(arenas)) {
             Arena newVersion = loadedArenas.stream().filter(a -> a.getName().equals(currentArena.getName())).findFirst()
@@ -101,25 +100,40 @@ public class Arena {
 
             if (currentArena.isUsing()) {
                 currentArena.setPendingReload(true);
-                currentArena.setNextVersion(newVersion); // newVersion is null if deleted
+                currentArena.setNextVersion(newVersion);
                 Common.log("&cArena " + currentArena.getName() + " is in use. Queued for reload.");
             } else {
-                // Not in use, safe to update immediately
+
                 toRemove.add(currentArena);
             }
         }
 
         arenas.removeAll(toRemove);
 
-        // Add new/updated arenas (that weren't in use)
         for (Arena loadedArena : loadedArenas) {
-            // Check if this arena is already in the list (meaning it was in use and kept)
+
             if (arenas.stream().noneMatch(a -> a.getName().equals(loadedArena.getName()))) {
                 arenas.add(loadedArena);
             }
         }
 
         Common.log("&aReloaded arenas. " + arenas.size() + " arenas loaded.");
+    }
+
+    public static void processPendingReload(Arena arena) {
+        if (arena.isPendingReload()) {
+            if (arena.isUsing()) {
+                return;
+            }
+
+            arenas.remove(arena);
+            if (arena.getNextVersion() != null) {
+                arenas.add(arena.getNextVersion());
+                Common.log("&aArena " + arena.getName() + " has been reloaded (was pending).");
+            } else {
+                Common.log("&aArena " + arena.getName() + " has been removed (was pending).");
+            }
+        }
     }
 
     public static Arena getArena(String name) {
@@ -188,8 +202,6 @@ public class Arena {
         return enabled && isFinishedSetup() && !edited;
     }
 
-    // If an arena is locked, which means the arena can only be accessible by
-    // special cases, like event
     public boolean isLocked() {
         return Config.EVENT_SUMO_EVENT_ARENAS.toStringList().contains(name);
     }
@@ -245,6 +257,7 @@ public class Arena {
     }
 
     public static void init() {
+        arenas.clear();
         FileConfiguration fileConfig = Eden.INSTANCE.getArenaFile().getConfiguration();
         ConfigurationSection arenaSection = fileConfig.getConfigurationSection("arenas");
         if (arenaSection == null) {
@@ -252,9 +265,8 @@ public class Arena {
         }
 
         arenaSection.getKeys(false).forEach(name -> {
-            String displayName = arenaSection.getString(name + ".display-name", name); // Add default value if
-                                                                                       // display-name not found for
-                                                                                       // backwards compatibility
+            String displayName = arenaSection.getString(name + ".display-name", name);
+
             ItemStack icon = BukkitSerialization.itemStackFromBase64(arenaSection.getString(name + ".icon"));
             int yLimit = arenaSection.getInt(name + ".y-limit");
             int buildMax = arenaSection.getInt(name + ".build-max");
@@ -271,7 +283,6 @@ public class Arena {
             arena.setAllowedKits(allowedKits);
             arena.setEnabled(enabled);
 
-            // 
             ConfigurationSection details = arenaSection.getConfigurationSection(name + ".details");
             if (details != null) {
                 details.getKeys(false).forEach(id -> {
@@ -292,13 +303,53 @@ public class Arena {
             arenas.add(arena);
             Common.log("Loaded " + arena.getArenaDetails().size() + " " + arena.getName() + " arenas");
         });
+
+        ActiveArenaTracker.init();
+
+        for (Arena arena : arenas) {
+            for (ArenaDetail detail : arena.getArenaDetails()) {
+                boolean wasActive = ActiveArenaTracker.wasActive(detail);
+                boolean disableOriginal = Config.EXPERIMENT_DISABLE_ORIGINAL_ARENA.toBoolean();
+
+                if (disableOriginal) {
+                    // If disable original is on, we don't use cached chunks for index 0 (or any
+                    // index really, based on copyChunk logic)
+                    // But wait, copyChunk logic says: if index > 0 return. So only index 0 has
+                    // chunks?
+                    // No, "if index > 0 return" means ONLY index 0 is copied.
+                    // So if disableOriginal is true, only index 0 has cached chunks.
+
+                    if (wasActive) {
+                        Common.log("&eArena " + arena.getName() + " (Detail " + arena.getArenaDetails().indexOf(detail)
+                                + ") was active. Resetting via FAWE...");
+                        detail.restoreChunk(false, true);
+                        ActiveArenaTracker.remove(detail);
+                    }
+                } else {
+                    // Normal mode: Try to load chunks from disk
+                    boolean loaded = rip.diamond.practice.arenas.chunk.ArenaChunkManager.loadChunks(detail);
+
+                    if (loaded) {
+                        if (wasActive) {
+                            Common.log("&eArena " + arena.getName() + " (Detail "
+                                    + arena.getArenaDetails().indexOf(detail) + ") was active. Resetting from disk...");
+                            detail.restoreChunk(false, true);
+                            ActiveArenaTracker.remove(detail);
+                        }
+                    } else {
+                        // If not loaded (file missing), copy from world and save
+                        detail.copyChunk();
+                    }
+                }
+            }
+        }
     }
 
     public void save() {
         FileConfiguration fileConfig = Eden.INSTANCE.getArenaFile().getConfiguration();
         String arenaRoot = "arenas." + name;
-        fileConfig.set(arenaRoot, null); // Remove everything related to that arena first, then add the details one by
-                                         // one
+        fileConfig.set(arenaRoot, null);
+
         fileConfig.set(arenaRoot + ".display-name", displayName);
         fileConfig.set(arenaRoot + ".icon", BukkitSerialization.itemStackToBase64(icon));
         fileConfig.set(arenaRoot + ".y-limit", yLimit);
@@ -323,6 +374,21 @@ public class Arena {
         }
 
         Eden.INSTANCE.getArenaFile().save();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        Arena arena = (Arena) o;
+        return java.util.Objects.equals(name, arena.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(name);
     }
 
 }

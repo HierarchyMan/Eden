@@ -1,7 +1,6 @@
 package rip.diamond.practice.kiteditor;
 
 import lombok.RequiredArgsConstructor;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,11 +20,7 @@ import rip.diamond.practice.kiteditor.menu.KitEditorExtraItemsMenu;
 import rip.diamond.practice.kiteditor.menu.KitEditorSaveMenu;
 import rip.diamond.practice.kiteditor.menu.KitEditorSelectKitMenu;
 import rip.diamond.practice.kits.Kit;
-import rip.diamond.practice.profile.PlayerProfile;
-import rip.diamond.practice.util.CC;
-import rip.diamond.practice.util.Common;
-
-import java.util.stream.Collectors;
+import rip.diamond.practice.profile.procedure.Procedure;
 
 @RequiredArgsConstructor
 public class KitEditorListener implements Listener {
@@ -44,7 +39,7 @@ public class KitEditorListener implements Listener {
     public void onInventoryClose(InventoryCloseEvent event) {
         Player player = (Player) event.getPlayer();
 
-        // Only handle if in GUI mode and editing
+        
         if (!plugin.getConfigFile().getString("kit-editor-mode").equalsIgnoreCase("GUI")) {
             return;
         }
@@ -53,14 +48,19 @@ public class KitEditorListener implements Listener {
             return;
         }
 
-        // Check if inventory was closed without opening another menu (escape key)
-        // We'll use a delayed check to see if they're still in editor mode without a
-        // menu open
+        
+        if (Procedure.getProcedures().containsKey(player.getUniqueId())) {
+            return;
+        }
+
+        
+        
+        
         plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
             if (plugin.getKitEditorManager().isEditing(player)) {
                 InventoryType type = player.getOpenInventory().getType();
                 if (type == InventoryType.CRAFTING || type == InventoryType.CREATIVE) {
-                    // Player pressed escape without opening another menu - exit editor mode
+                    
                     plugin.getKitEditorManager().leaveKitEditor(player, true);
                     plugin.getServer().getScheduler().runTaskLater(plugin,
                             () -> new KitEditorSelectKitMenu().openMenu(player), 3L);
@@ -81,13 +81,12 @@ public class KitEditorListener implements Listener {
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        PlayerProfile profile = PlayerProfile.get(player);
 
         if (!plugin.getKitEditorManager().isEditing(player)) {
             return;
         }
 
-        // Cancel the event to prevent player uses potion, pearl, rod, bow, etc
+        
         event.setCancelled(true);
 
         Action action = event.getAction();
@@ -114,6 +113,8 @@ public class KitEditorListener implements Listener {
             case SIGN_POST:
                 plugin.getKitEditorManager().leaveKitEditor(player, true);
                 break;
+            default:
+                break;
         }
     }
 
@@ -133,7 +134,7 @@ public class KitEditorListener implements Listener {
         }
     }
 
-    // 
+    
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
         Player player = (Player) event.getWhoClicked();

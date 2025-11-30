@@ -16,4 +16,13 @@ public abstract class Leaderboard {
 
     public abstract void update(List<Document> profilesSnapshot);
 
+    public int getPlayerRank(java.util.UUID uuid) {
+        for (java.util.Map.Entry<Integer, LeaderboardPlayerCache> entry : leaderboard.entrySet()) {
+            if (entry.getValue().getPlayerUUID().equals(uuid)) {
+                return entry.getKey();
+            }
+        }
+        return -1;
+    }
+
 }

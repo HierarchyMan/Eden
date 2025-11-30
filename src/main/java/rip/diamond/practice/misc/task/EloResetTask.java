@@ -74,7 +74,7 @@ public class EloResetTask extends TaskTicker {
         profile.setTemporary(true);
         profile.load(document, (success) -> {
             if (success) {
-                profile.setPlayerState(PlayerState.IN_LOBBY); //Have to set the player state in here, otherwise PlayerProfile.save will not actually save because data won't be saved when player state is LOADING.
+                profile.setPlayerState(PlayerState.IN_LOBBY); 
                 profile.getKitData().forEach((s, kitData) -> {
                     kitData.setElo(Config.PROFILE_DEFAULT_ELO.toInteger());
                     kitData.setPeakElo(Config.PROFILE_DEFAULT_ELO.toInteger());

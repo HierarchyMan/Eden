@@ -45,7 +45,7 @@ party:
   announce-cooldown: 10
 lobby:
   ## Should player allow to see other players?
-  display-players: false
+  display-players: true
 queue:
   ## How many wins should a player have to have access to queue ranked matches?
   ranked-required-wins: 10
@@ -55,16 +55,25 @@ match:
   ## This option will give a 'Play Again' item to match players when a match is ended, like Minemen Club
   allow-requeue: true
   ## When player is outside the cuboid (which uses arena min/max), should player receive a instant death damage?
-  outside-cuboid-instant-death: true
+  outside-cuboid-instant-death: false
+  ## Settings for damage when player is above build height
+  above-buildheight-damage:
+    enabled: true
+    ## How many seconds should the player be above the build height before taking damage?
+    threshold: 6
+    ## How often (in ticks) should the damage be applied?
+    delay: 40
+    ## How much damage should be applied?
+    amount: 4.0
   ## Should Eden remove cactus and sugar cane's physics?
   ## If true, when player places a block near cactus and sugar cane, cactus won't be destroyed
   remove-cactus-sugar-cane-physics: true
   death-lightning: true
   death-animation: true
   ## When a player dies, should Eden teleport the player 2 blocks up?
-  tp-2-blocks-up-when-die: true
+  tp-2-blocks-up-when-die: false
   ## When player dies and if the kit allows respawn, should Eden teleport the player to their spawn?
-  respawn-teleport-to-spawn-when-die: true
+  respawn-teleport-to-spawn-when-die: false
   ## Command when the player wins. Only trigger when the player is playing unranked/ranked matches and not a custom duel match.
   ## You can use {player} as the placeholder for the winner's name, and {loser-player} as the placeholder for the loser's name.
   ## Example:
@@ -193,6 +202,8 @@ event:
     ## Which kit you want to be used in this event?
     ## You should not change this unless your sumo kit has a different kit ID
     kit: "sumo"
+  ## Default Knockback Profile for events if no kit is selected or kit doesn't have specific KB
+  default-event-kb: "default"
 ## Simple chat format
 chat-format:
   ## Set this to true if you want to enable chat format

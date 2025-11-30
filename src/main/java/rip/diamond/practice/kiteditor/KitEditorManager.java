@@ -40,10 +40,18 @@ public class KitEditorManager {
         }
     }
 
+    public void reload() {
+        try {
+            this.editorLocation = LocationSerialization
+                    .deserializeLocation(plugin.getLocationFile().getString("editor-location"));
+        } catch (Exception e) {
+            Common.log("Unable to deserialize editor-location from location file.");
+        }
+    }
+
     public boolean isEditing(Player player) {
         PlayerProfile profile = PlayerProfile.get(player);
-        // Check if PracticePlayer is null, this usually be null when player quit the
-        // server instantly when they join
+
         if (profile == null) {
             return false;
         }
@@ -66,7 +74,6 @@ public class KitEditorManager {
                     .findFirst()
                     .orElse(null);
 
-            // Use reflection to update the final kit field
             if (newKit != null && newKit != oldKit) {
                 try {
                     java.lang.reflect.Field kitField = KitEditProfile.class.getDeclaredField("kit");
@@ -82,16 +89,15 @@ public class KitEditorManager {
     public void addKitEditor(Player player, Kit kit) {
         PlayerProfile profile = PlayerProfile.get(player);
 
-        // Get the kit contents to use - check if player has saved kit 1, otherwise use default
         ItemStack[] contentsToUse;
         rip.diamond.practice.profile.data.ProfileKitData kitData = profile.getKitData().get(kit.getName());
         rip.diamond.practice.kits.KitLoadout savedLoadout = (kitData != null) ? kitData.getLoadout(0) : null;
 
         if (savedLoadout != null) {
-            // Use saved kit 1
+
             contentsToUse = savedLoadout.getContents();
         } else {
-            // Use default kit
+
             contentsToUse = kit.getKitLoadout().getContents();
         }
 
@@ -129,12 +135,11 @@ public class KitEditorManager {
     public void leaveKitEditor(Player player, boolean sendToSpawnAndReset) {
         editing.remove(player.getUniqueId());
         if (sendToSpawnAndReset) {
-            // In GUI mode, don't teleport to spawn - just reset player state and give lobby
-            // items
+
             if (Eden.INSTANCE.getConfigFile().getString("kit-editor-mode").equalsIgnoreCase("GUI")) {
                 plugin.getLobbyManager().reset(player);
             } else {
-                // In legacy mode, teleport to spawn and reset
+
                 plugin.getLobbyManager().sendToSpawnAndReset(player);
             }
         }

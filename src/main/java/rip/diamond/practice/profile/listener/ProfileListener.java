@@ -53,7 +53,7 @@ public class ProfileListener implements Listener {
         }
         PlayerProfile profile = PlayerProfile.createPlayerProfile(player);
 
-        //Reset their inventory and their location, to prevent player stuck in other places or contains illegal items
+        
         PlayerUtil.reset(player);
         plugin.getLobbyManager().teleport(player);
 
@@ -78,7 +78,7 @@ public class ProfileListener implements Listener {
         Player player = event.getPlayer();
         PlayerProfile profile = PlayerProfile.get(player);
 
-        if (profile == null) { // PlayerJoinEvent , profile  null
+        if (profile == null) { 
             Common.log(player.getName() + "'s profile is not saved due to the profile is null");
             return;
         }
@@ -92,15 +92,15 @@ public class ProfileListener implements Listener {
         });
     }
 
-    //This event is only to prevent players to open block's inventory. We still allow plugins to run all PlayerInteractEvent
+    
     @EventHandler(priority = EventPriority.LOW)
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         PlayerProfile profile = PlayerProfile.get(player);
 
-        if (profile.getPlayerState() != PlayerState.IN_MATCH) {
+        if (profile.getPlayerState() != PlayerState.IN_MATCH && profile.getPlayerState() != PlayerState.IN_EVENT) {
             event.setCancelled(player.getGameMode() != GameMode.CREATIVE);
-            //We don't stop the process here, continue the check
+            
         }
 
         ItemStack item = event.getItem();
@@ -152,7 +152,7 @@ public class ProfileListener implements Listener {
     public void onPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         PlayerProfile profile = PlayerProfile.get(player);
-        if (profile.getPlayerState() != PlayerState.IN_MATCH) {
+        if (profile.getPlayerState() != PlayerState.IN_MATCH && profile.getPlayerState() != PlayerState.IN_EVENT) {
             event.setCancelled(event.getPlayer().getGameMode() != GameMode.CREATIVE);
         }
     }
@@ -182,7 +182,7 @@ public class ProfileListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        //
+        
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
             PlayerProfile profile = PlayerProfile.get(player);
@@ -228,6 +228,13 @@ public class ProfileListener implements Listener {
             }
             VisibilityController.updateVisibility(player);
             profile.setupItems();
+        }
+
+        
+        if (settings == ProfileSettings.MATCH_SCOREBOARD) {
+            
+            
+            
         }
     }
 

@@ -35,7 +35,14 @@ public class EdenItems {
     public static EdenItem SPECTATE_TELEPORTER = loadItem("items.spectate.teleporter");
     public static EdenItem SPECTATE_TOGGLE_VISIBILITY_OFF = loadItem("items.spectate.toggle-visibility-off");
     public static EdenItem SPECTATE_TOGGLE_VISIBILITY_ON = loadItem("items.spectate.toggle-visibility-on");
-    public static EdenItem INVALID = new EdenItem(true, new ItemBuilder(Material.BARRIER).name(CC.RED + "Invalid data!").build(), 0, "");
+    public static EdenItem EVENT_LEAVE = loadItem("items.event.leave-event");
+    public static EdenItem PARKOUR_HIDE_PLAYERS = loadItem("items.parkour.hide-players");
+    public static EdenItem PARKOUR_SHOW_PLAYERS = loadItem("items.parkour.show-players");
+    public static EdenItem PARKOUR_CHECKPOINT = loadItem("items.parkour.checkpoint");
+    public static EdenItem PARKOUR_RESET = loadItem("items.parkour.reset");
+    public static EdenItem HOST_MANAGE_EVENT = loadItem("items.host.manage-event");
+    public static EdenItem INVALID = new EdenItem(true,
+            new ItemBuilder(Material.BARRIER).name(CC.RED + "Invalid data!").build(), 0, "");
 
     public static void giveItem(Player player, EdenItem item) {
         if (!item.isEnabled()) {
@@ -58,15 +65,44 @@ public class EdenItems {
     private static EdenItem loadItem(String path) {
         BasicConfigFile file = Eden.INSTANCE.getItemFile();
         try {
-            ItemStack itemStack =  new ItemBuilder(Material.valueOf(file.getString(path + ".material")))
+            ItemStack itemStack = new ItemBuilder(Material.valueOf(file.getString(path + ".material")))
                     .durability(file.getInt(path + ".durability"))
                     .name(file.getString(path + ".name"))
                     .lore(file.getStringList(path + ".lore"))
                     .build();
-            return new EdenItem(file.getBoolean(path + ".enabled"), itemStack, file.getInt(path + ".slot"), file.getString(path + ".command"));
+            return new EdenItem(file.getBoolean(path + ".enabled"), itemStack, file.getInt(path + ".slot"),
+                    file.getString(path + ".command"));
         } catch (Exception e) {
             return INVALID;
         }
+    }
+
+    public static void reload() {
+        LOBBY_UNRANKED_QUEUE = loadItem("items.lobby.unranked-queue");
+        LOBBY_RANKED_QUEUE = loadItem("items.lobby.ranked-queue");
+        LOBBY_CREATE_EVENT = loadItem("items.lobby.create-event");
+        LOBBY_JOIN_EVENT = loadItem("items.lobby.join-event");
+        LOBBY_PARTY_OPEN = loadItem("items.lobby.party-open");
+        LOBBY_LEADERBOARD = loadItem("items.lobby.leaderboard");
+        LOBBY_SETTINGS = loadItem("items.lobby.settings");
+        LOBBY_EDITOR = loadItem("items.lobby.editor");
+        PARTY_PARTY_LIST = loadItem("items.party.party-list");
+        PARTY_PARTY_FIGHT = loadItem("items.party.party-fight");
+        PARTY_OTHER_PARTIES = loadItem("items.party.other-parties");
+        PARTY_EDITOR = loadItem("items.party.editor");
+        PARTY_PARTY_LEAVE = loadItem("items.party.party-leave");
+        QUEUE_LEAVE_QUEUE = loadItem("items.queue.leave-queue");
+        MATCH_REQUEUE = loadItem("items.match.requeue");
+        SPECTATE_LEAVE_SPECTATE = loadItem("items.spectate.leave-spectate");
+        SPECTATE_TELEPORTER = loadItem("items.spectate.teleporter");
+        SPECTATE_TOGGLE_VISIBILITY_OFF = loadItem("items.spectate.toggle-visibility-off");
+        SPECTATE_TOGGLE_VISIBILITY_ON = loadItem("items.spectate.toggle-visibility-on");
+        EVENT_LEAVE = loadItem("items.event.leave-event");
+        PARKOUR_HIDE_PLAYERS = loadItem("items.parkour.hide-players");
+        PARKOUR_SHOW_PLAYERS = loadItem("items.parkour.show-players");
+        PARKOUR_CHECKPOINT = loadItem("items.parkour.checkpoint");
+        PARKOUR_RESET = loadItem("items.parkour.reset");
+        HOST_MANAGE_EVENT = loadItem("items.host.manage-event");
     }
 
     @Getter

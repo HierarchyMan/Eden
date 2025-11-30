@@ -53,7 +53,7 @@ public abstract class Menu {
 
 	public void openMenu(final Player player) {
 		try {
-			//Eden Start - Recoded how menu opens. Might contain bugs
+			
 			Menu previousMenu = Menu.currentlyOpenedMenus.get(player.getUniqueId());
 			if (previousMenu != null) {
 				previousMenu.onClose(player);
@@ -93,7 +93,7 @@ public abstract class Menu {
 			Menu.currentlyOpenedMenus.put(player.getUniqueId(), this);
 			this.onOpen(player);
 			this.setClosedByMenu(false);
-			//Eden End
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			player.closeInventory();

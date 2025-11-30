@@ -1,9 +1,7 @@
 package rip.diamond.practice.database.impl;
 
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
-import org.bukkit.Bukkit;
 import rip.diamond.practice.Eden;
 import rip.diamond.practice.database.DatabaseHandler;
 import rip.diamond.practice.profile.PlayerProfile;
@@ -23,7 +21,7 @@ import java.util.stream.Collectors;
 public class FlatFileHandler implements DatabaseHandler {
 
     private final File folder;
-    // Cache name to UUID mappings to make offline lookups fast
+
     private final Map<String, UUID> nameIndex = new ConcurrentHashMap<>();
 
     public FlatFileHandler() {
@@ -36,19 +34,16 @@ public class FlatFileHandler implements DatabaseHandler {
             folder.mkdirs();
         }
 
-        // Build name index asynchronously on startup
         Tasks.runAsync(() -> {
             long start = System.currentTimeMillis();
             File[] files = folder.listFiles((dir, name) -> name.endsWith(".json"));
             if (files != null) {
                 for (File file : files) {
                     try {
-                        // We assume file name is UUID
+
                         String uuidStr = file.getName().replace(".json", "");
                         UUID uuid = UUID.fromString(uuidStr);
 
-                        // We have to peek inside the file to get the name, or rely on file structure
-                        // For performance, let's just read it.
                         Document doc = readDocument(file);
                         if (doc != null && doc.containsKey("lowerCaseUsername")) {
                             nameIndex.put(doc.getString("lowerCaseUsername"), uuid);
@@ -63,7 +58,7 @@ public class FlatFileHandler implements DatabaseHandler {
 
     @Override
     public void shutdown() {
-        // Nothing to close for flat files
+
     }
 
     @Override
@@ -125,7 +120,7 @@ public class FlatFileHandler implements DatabaseHandler {
                         Common.log("&a[FlatFile] Repair succeeded for " + file.getName());
                         return repairedDoc;
                     } catch (Exception ignore) {
-                        // fallthrough to quarantine
+
                     }
                 }
                 quarantineFile(file, content);
@@ -141,7 +136,8 @@ public class FlatFileHandler implements DatabaseHandler {
         File tempFile = new File(target.getParentFile(), target.getName() + ".tmp");
         try {
             Files.write(tempFile.toPath(), json.getBytes(StandardCharsets.UTF_8));
-            Files.move(tempFile.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+            Files.move(tempFile.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING,
+                    StandardCopyOption.ATOMIC_MOVE);
         } catch (IOException ioe) {
             ioe.printStackTrace();
             tempFile.delete();
@@ -149,7 +145,7 @@ public class FlatFileHandler implements DatabaseHandler {
     }
 
     private String tryRepairJson(String content) {
-        // Basic repair to close an unterminated string or document
+
         StringBuilder builder = new StringBuilder(content);
         boolean needsClosingQuote = builder.chars().filter(ch -> ch == '\"').count() % 2 != 0;
         if (needsClosingQuote) {
@@ -162,7 +158,7 @@ public class FlatFileHandler implements DatabaseHandler {
             closeBraces++;
         }
         String repaired = builder.toString();
-        // Guard against unreasonable growth
+
         if (repaired.length() > content.length() + 10) {
             return null;
         }
@@ -181,15 +177,20 @@ public class FlatFileHandler implements DatabaseHandler {
     }
 
     @Override
-    public void saveProfile(PlayerProfile profile) {
+    public void saveProfile(PlayerProfile profile, boolean async) {
         Document document = profile.toBson();
         String json = document.toJson();
         nameIndex.put(profile.getUsername().toLowerCase(), profile.getUniqueId());
 
-        Tasks.runAsync(() -> {
+        if (async) {
+            Tasks.runAsync(() -> {
+                File file = new File(folder, profile.getUniqueId().toString() + ".json");
+                writeJsonAtomically(file, json);
+            });
+        } else {
             File file = new File(folder, profile.getUniqueId().toString() + ".json");
             writeJsonAtomically(file, json);
-        });
+        }
     }
 
     @Override
@@ -198,7 +199,6 @@ public class FlatFileHandler implements DatabaseHandler {
         if (files == null)
             return new ArrayList<>();
 
-        // Parallel stream for faster reading of many files
         return Arrays.stream(files)
                 .parallel()
                 .map(this::readDocument)

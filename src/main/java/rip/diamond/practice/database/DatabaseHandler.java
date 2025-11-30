@@ -19,7 +19,7 @@ public interface DatabaseHandler {
     void findProfileByName(String name, Consumer<Document> callback);
 
     // Save a profile
-    void saveProfile(PlayerProfile profile);
+    void saveProfile(PlayerProfile profile, boolean async);
 
     // Get all documents (For leaderboards/resets) - Heavy operation
     List<Document> getAllProfiles();

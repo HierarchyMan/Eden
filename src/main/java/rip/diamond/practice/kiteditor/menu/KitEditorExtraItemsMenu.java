@@ -38,7 +38,7 @@ public class KitEditorExtraItemsMenu extends PaginatedMenu {
     public Map<Integer, Button> getGlobalButtons(Player player) {
         Map<Integer, Button> buttons = new HashMap<>();
 
-        // Add back button in center (slot 4)
+        
         if (backMenu != null) {
             buttons.put(4, new Button() {
                 @Override
@@ -80,13 +80,13 @@ public class KitEditorExtraItemsMenu extends PaginatedMenu {
 
                 @Override
                 public void clicked(Player player, ClickType clickType) {
-                    // Only allow taking items to cursor
+                    
                     player.setItemOnCursor(builder.build());
                 }
 
                 @Override
                 public boolean shouldCancel(Player player, ClickType clickType) {
-                    // Prevent placing items in menu
+                    
                     return true;
                 }
             });
@@ -97,7 +97,7 @@ public class KitEditorExtraItemsMenu extends PaginatedMenu {
     @Override
     public void onClose(Player player) {
         if (backMenu != null) {
-            // Use a delay to prevent inventory closing issues
+            
             rip.diamond.practice.Eden.INSTANCE.getServer().getScheduler()
                     .runTaskLater(rip.diamond.practice.Eden.INSTANCE, () -> {
                         backMenu.openMenu(player);

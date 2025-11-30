@@ -123,7 +123,7 @@ public class EntityHider {
     protected boolean setVisibility(Player observer, int entityID, boolean visible) {
         switch (policy) {
             case BLACKLIST:
-                // Non-membership means they are visible
+                
                 return !setMembership(observer, entityID, !visible);
             case WHITELIST:
                 return setMembership(observer, entityID, visible);
@@ -141,7 +141,7 @@ public class EntityHider {
      *                 otherwise.
      * @return TRUE if they already were present, FALSE otherwise.
      */
-    // Helper method
+    
     protected boolean setMembership(Player observer, int entityID, boolean member) {
         if (member) {
             return observerEntityMap.put(observer.getEntityId(), entityID, true) != null;
@@ -169,8 +169,8 @@ public class EntityHider {
      * @return TRUE if the entity is visible, FALSE otherwise.
      */
     protected boolean isVisible(Player observer, int entityID) {
-        // If we are using a whitelist, presence means visibility - if not, the opposite
-        // is the case
+        
+        
 
         boolean presence = getMembership(observer, entityID);
 
@@ -196,7 +196,7 @@ public class EntityHider {
      * @param player - the player that used logged out.
      */
     protected void removePlayer(Player player) {
-        // Cleanup
+        
         observerEntityMap.rowMap().remove(player.getEntityId());
     }
 
@@ -263,7 +263,7 @@ public class EntityHider {
 
                 int entityID = event.getPacket().getIntegers().read(0);
 
-                // See if this packet should be cancelled
+                
                 if (!isVisible(event.getPlayer(), entityID)) {
                     event.setCancelled(true);
                     return;
@@ -315,7 +315,7 @@ public class EntityHider {
                         int y = event.getPacket().getIntegers().read(1);
                         int z = event.getPacket().getIntegers().read(2);
 
-                        // Credit: Array Practice
+                        
                         boolean hasAnyPlayable = false;
                         boolean hasAtleastOneMatch = false;
 
@@ -437,7 +437,7 @@ public class EntityHider {
         validate(observer, entity);
         boolean hiddenBefore = !setVisibility(observer, entity.getEntityId(), true);
 
-        // Resend packets
+        
         if (manager != null && hiddenBefore) {
             manager.updateEntity(entity, Collections.singletonList(observer));
         }
@@ -456,7 +456,7 @@ public class EntityHider {
         boolean visibleBefore = setVisibility(observer, entity.getEntityId(), false);
 
         if (visibleBefore) {
-            // Make the entity disappear
+            
             try {
                 destroy(observer, entity.getEntityId());
             } catch (Exception e) {
@@ -486,7 +486,7 @@ public class EntityHider {
         return isVisible(observer, entity.getEntityId());
     }
 
-    // For validating the input parameters
+    
     private void validate(Player observer, Entity entity) {
         Preconditions.checkNotNull(observer, "observer cannot be NULL.");
         Preconditions.checkNotNull(entity, "entity cannot be NULL.");

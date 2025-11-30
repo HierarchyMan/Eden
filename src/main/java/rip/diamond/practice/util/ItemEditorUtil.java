@@ -31,7 +31,7 @@ public class ItemEditorUtil {
             return false;
         }
 
-        // Add all item flags to hide attributes
+        
         for (ItemFlag flag : ItemFlag.values()) {
             meta.addItemFlags(flag);
         }
@@ -59,7 +59,7 @@ public class ItemEditorUtil {
         }
 
         try {
-            // Use Spigot API for 1.8.8
+            
             meta.spigot().setUnbreakable(true);
             item.setItemMeta(meta);
             Common.sendMessage(player, CC.GREEN + "Successfully made your item unbreakable!");

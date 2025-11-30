@@ -9,7 +9,7 @@ import rip.diamond.practice.util.command.CommandArgs;
 import rip.diamond.practice.util.command.argument.CommandArguments;
 
 public class GiveUpCommand extends Command {
-    @CommandArgs(name = "giveup", aliases = {"leave", "l"})
+    @CommandArgs(name = "giveup", aliases = { "leave", "l" })
     public void execute(CommandArguments command) {
         Player player = command.getPlayer();
         PlayerProfile profile = PlayerProfile.get(player);
@@ -19,6 +19,16 @@ public class GiveUpCommand extends Command {
             match.die(player, true);
             plugin.getScoreboardHandler().getScoreboard(player).unregisterHealthObjective();
             plugin.getLobbyManager().sendToSpawnAndReset(player);
+            return;
+        }
+
+        if (profile.getPlayerState() == PlayerState.IN_EVENT) {
+            rip.diamond.practice.events.PracticeEvent<?> event = plugin.getEventManager().getEventPlaying(player);
+            if (event != null) {
+                event.leave(player);
+                player.sendMessage(rip.diamond.practice.util.CC.GREEN + "You have left the event.");
+            }
+            return;
         }
     }
 }

@@ -33,7 +33,7 @@ public class QueueMenu extends Menu {
     public String getTitle(Player player) {
         BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
         String title = config.getString("queue-menu.title");
-        // Replace {queue-type} placeholder
+
         title = title.replace("{queue-type}", queueType.getReadable());
         return CC.translate(title);
     }
@@ -52,21 +52,18 @@ public class QueueMenu extends Menu {
         BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
         int itemsPerPage = MenuUtil.getItemsPerPage(config, "queue-menu");
 
-        // Filler and Border
         MenuUtil.addFillerButtons(buttons, config, "queue-menu", getSize());
         MenuUtil.addBorderButtons(buttons, config, "queue-menu", getSize());
 
-        // Kit buttons with pagination
         List<Kit> allKits = getFilteredKits();
         int startIndex = (page - 1) * itemsPerPage;
         int endIndex = Math.min(startIndex + itemsPerPage, allKits.size());
 
         List<Kit> kitsOnThisPage = allKits.subList(startIndex, endIndex);
 
-        // Place kits in available slots (avoiding border)
         int kitIndex = 0;
         for (int slot = 0; slot < getSize() && kitIndex < kitsOnThisPage.size(); slot++) {
-            // Skip border slots
+
             if (buttons.containsKey(slot) && (slot < 9 || slot >= getSize() - 9 || slot % 9 == 0 || slot % 9 == 8)) {
                 continue;
             }
@@ -76,15 +73,13 @@ public class QueueMenu extends Menu {
             kitIndex++;
         }
 
-        // Pagination buttons
         MenuUtil.addPreviousPageButton(buttons, config, "queue-menu", page,
-            p -> new QueueMenu(queueType, page - 1).openMenu(p));
+                p -> new QueueMenu(queueType, page - 1).openMenu(p));
         MenuUtil.addNextPageButton(buttons, config, "queue-menu", endIndex < allKits.size(),
-            p -> new QueueMenu(queueType, page + 1).openMenu(p));
+                p -> new QueueMenu(queueType, page + 1).openMenu(p));
 
         return buttons;
     }
-
 
     private List<Kit> getFilteredKits() {
         return Kit.getKits().stream()
@@ -101,7 +96,7 @@ public class QueueMenu extends Menu {
 
         @Override
         public ItemStack getButtonItem(Player player) {
-            // Get counts for placeholders
+
             long queueCount = Queue.getPlayers().values().stream()
                     .filter(profile -> profile.getKit() == kit && profile.getQueueType() == queueType)
                     .count();
@@ -110,7 +105,6 @@ public class QueueMenu extends Menu {
                     .mapToInt(match -> match.getMatchPlayers().size())
                     .sum();
 
-            // Build lore with placeholders
             List<String> lore = config.getStringList("queue-menu.items.kit-button.lore");
             List<String> newLore = new ArrayList<>();
 
@@ -128,7 +122,7 @@ public class QueueMenu extends Menu {
 
                 if (line.contains("{top3_")) {
                     rip.diamond.practice.leaderboard.impl.KitLeaderboard leaderboard = Eden.INSTANCE
-                            .getLeaderboardManager().getDailyWinstreakLeaderboard().get(kit);
+                            .getLeaderboardManager().getWinstreakDailyLeaderboard().get(kit);
 
                     if (leaderboard != null) {
                         for (int i = 1; i <= 3; i++) {
@@ -151,7 +145,6 @@ public class QueueMenu extends Menu {
                 newLore.add(line);
             }
 
-            // Assign newLore to lore for final building (or just use newLore in builder)
             return new ItemBuilder(kit.getDisplayIcon().clone())
                     .name(kit.getDisplayName())
                     .lore(newLore)

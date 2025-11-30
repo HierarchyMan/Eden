@@ -28,7 +28,7 @@ public class DynamicKitManager {
         UUID uuid = player.getUniqueId();
         activeSessions.put(uuid, new KitSession(match, kit, appliedLoadout));
 
-        // Schedule removal after 20 seconds
+
         Bukkit.getScheduler().runTaskLater(Eden.INSTANCE, () -> {
             activeSessions.remove(uuid);
         }, 20 * 20L);
@@ -40,17 +40,17 @@ public class DynamicKitManager {
             return;
         }
 
-        // Check if inventory was changed
+
         if (validateInventory(player.getInventory(), session.kit)) {
             if (isExactMatch(player.getInventory(), session.appliedLoadout)) {
-                // No changes made - keep session active for remaining time
+
                 return;
             }
-            // Changes detected - save and remove session
+
             activeSessions.remove(player.getUniqueId());
             saveKit(player, session.kit);
         } else {
-            // Invalid inventory - remove session to prevent exploits
+
             activeSessions.remove(player.getUniqueId());
         }
     }
@@ -81,7 +81,7 @@ public class DynamicKitManager {
     }
 
     private boolean validateInventory(PlayerInventory inventory, Kit kit) {
-        // 1. Validate Armor (Strict Type Check, Ignore Data/Color)
+
         ItemStack[] playerArmor = inventory.getArmorContents();
         ItemStack[] kitArmor = kit.getKitLoadout().getArmor();
 
@@ -100,7 +100,7 @@ public class DynamicKitManager {
                 return false;
         }
 
-        // 2. Validate Contents (Fuzzy Count Check)
+
         Map<Material, Integer> playerCounts = countItems(inventory.getContents());
         Map<Material, Integer> kitCounts = countItems(kit.getKitLoadout().getContents());
 
@@ -136,18 +136,18 @@ public class DynamicKitManager {
         if (kitData == null)
             return;
 
-        // Always save to slot 0 (Kit 1)
+
         KitLoadout loadout = kitData.getLoadout(0);
         if (loadout == null) {
             loadout = new KitLoadout("Kit 1");
             kitData.replaceKit(0, loadout);
         }
 
-        // Update loadout with current inventory
+
         loadout.setArmor(player.getInventory().getArmorContents());
         loadout.setContents(player.getInventory().getContents());
 
-        // Save profile asynchronously
+
         profile.save(true, (success) -> {
         });
 

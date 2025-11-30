@@ -50,7 +50,6 @@ public abstract class LeaderboardMenu extends PaginatedMenu {
 
         HashMap<Integer, Button> buttons = new HashMap<>();
 
-        // Add filler and border first
         MenuUtil.addFillerButtons(buttons, config, "leaderboard-menu", getSize());
         MenuUtil.addBorderButtons(buttons, config, "leaderboard-menu", getSize());
 
@@ -79,7 +78,6 @@ public abstract class LeaderboardMenu extends PaginatedMenu {
             buttons.putAll(global);
         }
 
-
         return buttons;
     }
 
@@ -88,74 +86,62 @@ public abstract class LeaderboardMenu extends PaginatedMenu {
         BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
         Map<Integer, Button> buttons = new HashMap<>();
 
-        // Wins button
         if (config.getConfiguration().contains("leaderboard-menu.items.switch-buttons.wins")) {
             buttons.put(
-                config.getInt("leaderboard-menu.items.switch-buttons.wins.slot"),
-                new SwitchLeaderboardButton(
-                    Material.valueOf(config.getString("leaderboard-menu.items.switch-buttons.wins.material")),
-                    config.getInt("leaderboard-menu.items.switch-buttons.wins.data"),
-                    config.getString("leaderboard-menu.items.switch-buttons.wins.name"),
-                    config.getStringList("leaderboard-menu.items.switch-buttons.wins.lore"),
-                    WinsLeaderboardMenu.class
-                )
-            );
+                    config.getInt("leaderboard-menu.items.switch-buttons.wins.slot"),
+                    new SwitchLeaderboardButton(
+                            Material.valueOf(config.getString("leaderboard-menu.items.switch-buttons.wins.material")),
+                            config.getInt("leaderboard-menu.items.switch-buttons.wins.data"),
+                            config.getString("leaderboard-menu.items.switch-buttons.wins.name"),
+                            config.getStringList("leaderboard-menu.items.switch-buttons.wins.lore"),
+                            WinsLeaderboardMenu.class));
         }
 
-        // ELO button
         if (config.getConfiguration().contains("leaderboard-menu.items.switch-buttons.elo")) {
             buttons.put(
-                config.getInt("leaderboard-menu.items.switch-buttons.elo.slot"),
-                new SwitchLeaderboardButton(
-                    Material.valueOf(config.getString("leaderboard-menu.items.switch-buttons.elo.material")),
-                    config.getInt("leaderboard-menu.items.switch-buttons.elo.data"),
-                    config.getString("leaderboard-menu.items.switch-buttons.elo.name"),
-                    config.getStringList("leaderboard-menu.items.switch-buttons.elo.lore"),
-                    EloLeaderboardMenu.class
-                )
-            );
+                    config.getInt("leaderboard-menu.items.switch-buttons.elo.slot"),
+                    new SwitchLeaderboardButton(
+                            Material.valueOf(config.getString("leaderboard-menu.items.switch-buttons.elo.material")),
+                            config.getInt("leaderboard-menu.items.switch-buttons.elo.data"),
+                            config.getString("leaderboard-menu.items.switch-buttons.elo.name"),
+                            config.getStringList("leaderboard-menu.items.switch-buttons.elo.lore"),
+                            EloLeaderboardMenu.class));
         }
 
-        // View Stats button
         if (config.getConfiguration().contains("leaderboard-menu.items.switch-buttons.view-stats")) {
             buttons.put(
-                config.getInt("leaderboard-menu.items.switch-buttons.view-stats.slot"),
-                new SwitchLeaderboardButton(
-                    Material.valueOf(config.getString("leaderboard-menu.items.switch-buttons.view-stats.material")),
-                    config.getInt("leaderboard-menu.items.switch-buttons.view-stats.data"),
-                    config.getString("leaderboard-menu.items.switch-buttons.view-stats.name"),
-                    config.getStringList("leaderboard-menu.items.switch-buttons.view-stats.lore"),
-                    KitStatsMenu.class
-                )
-            );
+                    config.getInt("leaderboard-menu.items.switch-buttons.view-stats.slot"),
+                    new SwitchLeaderboardButton(
+                            Material.valueOf(
+                                    config.getString("leaderboard-menu.items.switch-buttons.view-stats.material")),
+                            config.getInt("leaderboard-menu.items.switch-buttons.view-stats.data"),
+                            config.getString("leaderboard-menu.items.switch-buttons.view-stats.name"),
+                            config.getStringList("leaderboard-menu.items.switch-buttons.view-stats.lore"),
+                            KitStatsMenu.class));
         }
 
-        // Winstreak button
         if (config.getConfiguration().contains("leaderboard-menu.items.switch-buttons.winstreak")) {
             buttons.put(
-                config.getInt("leaderboard-menu.items.switch-buttons.winstreak.slot"),
-                new SwitchLeaderboardButton(
-                    Material.valueOf(config.getString("leaderboard-menu.items.switch-buttons.winstreak.material")),
-                    config.getInt("leaderboard-menu.items.switch-buttons.winstreak.data"),
-                    config.getString("leaderboard-menu.items.switch-buttons.winstreak.name"),
-                    config.getStringList("leaderboard-menu.items.switch-buttons.winstreak.lore"),
-                    WinstreakLeaderboardMenu.class
-                )
-            );
+                    config.getInt("leaderboard-menu.items.switch-buttons.winstreak.slot"),
+                    new SwitchLeaderboardButton(
+                            Material.valueOf(
+                                    config.getString("leaderboard-menu.items.switch-buttons.winstreak.material")),
+                            config.getInt("leaderboard-menu.items.switch-buttons.winstreak.data"),
+                            config.getString("leaderboard-menu.items.switch-buttons.winstreak.name"),
+                            config.getStringList("leaderboard-menu.items.switch-buttons.winstreak.lore"),
+                            WinstreakLeaderboardMenu.class));
         }
 
-        // Best Winstreak button
         if (config.getConfiguration().contains("leaderboard-menu.items.switch-buttons.best-winstreak")) {
             buttons.put(
-                config.getInt("leaderboard-menu.items.switch-buttons.best-winstreak.slot"),
-                new SwitchLeaderboardButton(
-                    Material.valueOf(config.getString("leaderboard-menu.items.switch-buttons.best-winstreak.material")),
-                    config.getInt("leaderboard-menu.items.switch-buttons.best-winstreak.data"),
-                    config.getString("leaderboard-menu.items.switch-buttons.best-winstreak.name"),
-                    config.getStringList("leaderboard-menu.items.switch-buttons.best-winstreak.lore"),
-                    BestWinstreakLeaderboardMenu.class
-                )
-            );
+                    config.getInt("leaderboard-menu.items.switch-buttons.best-winstreak.slot"),
+                    new SwitchLeaderboardButton(
+                            Material.valueOf(
+                                    config.getString("leaderboard-menu.items.switch-buttons.best-winstreak.material")),
+                            config.getInt("leaderboard-menu.items.switch-buttons.best-winstreak.data"),
+                            config.getString("leaderboard-menu.items.switch-buttons.best-winstreak.name"),
+                            config.getStringList("leaderboard-menu.items.switch-buttons.best-winstreak.lore"),
+                            BestWinstreakLeaderboardMenu.class));
         }
 
         return buttons;

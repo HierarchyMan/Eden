@@ -36,7 +36,6 @@ public class PlayerUtil {
 
 		clearArrow(player);
 
-		//Since Player#sendTitle only reset the title, not subtitle, so we do some tricky stuff here
 		TitleSender.sendTitle(player, "&r", PacketPlayOutTitle.EnumTitleAction.TITLE, 1, 10, 1);
 		TitleSender.sendTitle(player, "&r", PacketPlayOutTitle.EnumTitleAction.SUBTITLE, 1, 10, 1);
 
@@ -54,6 +53,7 @@ public class PlayerUtil {
 		player.setAllowFlight(true);
 		player.setFlying(true);
 
+		
 		player.setAllowFlight(true);
 		player.setFlying(true);
 		player.spigot().setCollidesWithEntities(false);
@@ -63,5 +63,18 @@ public class PlayerUtil {
 
 	public static void clearArrow(Player player) {
 		((CraftPlayer) player).getHandle().getDataWatcher().watch(9, (byte) 0);
+	}
+
+	public static void hideOrShowPlayer(Player viewer, Player target, boolean show) {
+		if (show) {
+			viewer.showPlayer(target);
+		} else {
+			viewer.hidePlayer(target);
+		}
+	}
+
+	public static boolean isStandingOnLiquid(Player player) {
+		return player.getLocation().getBlock().isLiquid() ||
+				player.getLocation().clone().subtract(0, 1, 0).getBlock().isLiquid();
 	}
 }

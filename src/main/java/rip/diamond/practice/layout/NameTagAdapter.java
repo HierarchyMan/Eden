@@ -23,10 +23,10 @@ public class NameTagAdapter extends NameTagProvider {
     public NameTagInfo fetchNameTag(Player target, Player viewer) {
         String prefix = getPrefix(target, viewer);
 
-        // 1. Placeholders first
+        
         prefix = Eden.INSTANCE.getPlaceholder().translate(target, prefix);
 
-        // 2. Colors last (Handles hex downsampling and legacy codes)
+        
         prefix = CC.translate(prefix);
 
         int length = prefix.length();
@@ -44,14 +44,14 @@ public class NameTagAdapter extends NameTagProvider {
             Match match = profile.getMatch();
             Team team = match.getTeam(target);
 
-            //Means it is a spectator
+            
             if (team == null) {
                 return Config.NAMETAG_PREFIX_SPECTATOR.toString();
             }
 
             return match.getRelationColor(viewer, target);
         }
-        //Means the player is not in a match
+        
         else {
             return Config.NAMETAG_PREFIX_LOBBY.toString();
         }

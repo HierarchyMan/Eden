@@ -5,7 +5,7 @@ import rip.diamond.practice.Eden;
 import rip.diamond.practice.EdenItems;
 import rip.diamond.practice.config.Config;
 import rip.diamond.practice.event.MatchResetEvent;
-import rip.diamond.practice.events.EdenEvent;
+import rip.diamond.practice.kits.Kit;
 import rip.diamond.practice.match.Match;
 import rip.diamond.practice.match.MatchTaskTicker;
 import rip.diamond.practice.match.MatchType;
@@ -36,33 +36,31 @@ public class MatchResetTask extends MatchTaskTicker {
 
             match.clearEntities(true);
             match.getMatchPlayers().stream().filter(player -> Objects.nonNull(player) && player.isOnline())
-                    .filter(player -> PlayerProfile.get(player).getMatch() == match) // This is to prevent player is in
-                                                                                     // another match because of the
-                                                                                     // requeue item
+                    .filter(player -> PlayerProfile.get(player).getMatch() == match)
+
                     .forEach(player -> plugin.getLobbyManager().sendToSpawnAndReset(player));
             match.getSpectators().forEach(match::leaveSpectate);
             match.getTasks().forEach(BukkitRunnable::cancel);
             match.getArenaDetail().restoreChunk(true, true);
+            rip.diamond.practice.arenas.ActiveArenaTracker.remove(match.getArenaDetail());
             Match.getMatches().remove(match.getUuid());
+            Kit.processPendingReload(match.getKit());
         }
     }
 
     @Override
     public void preRun() {
-        // Cancel MatchClearBlockTask first, to save performance
+
         match.getTasks().stream().filter(taskTicker -> taskTicker instanceof MatchClearBlockTask)
                 .forEach(BukkitRunnable::cancel);
 
-        // Give 'Play Again' item like Minemen Club
         if (Config.MATCH_ALLOW_REQUEUE.toBoolean() && match instanceof SoloMatch) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     match.getMatchPlayers().stream()
-                            .filter(Objects::nonNull) // If match players contains citizens NPC, because of it is
-                                                      // already destroyed, it will be null
-                            .filter(player -> !EdenEvent.isInEvent(player)) // Do not give player 'Play Again' item if
-                                                                            // they are in an event
+                            .filter(Objects::nonNull)
+
                             .forEach(player -> {
                                 PlayerProfile profile = PlayerProfile.get(player);
                                 if (profile.getMatch() == match) {

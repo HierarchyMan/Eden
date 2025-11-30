@@ -15,16 +15,25 @@ public class SconeyThread extends Thread {
         this.setDaemon(true);
     }
 
+    private volatile boolean running = true;
+
     @Override
     public void run() {
-        while (true) {
+        while (this.running) {
             this.tick();
             try {
                 Thread.sleep(50L);
+            } catch (InterruptedException e) {
+                this.running = false;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void shutdown() {
+        this.running = false;
+        this.interrupt();
     }
 
     /**
@@ -34,7 +43,8 @@ public class SconeyThread extends Thread {
         for (final Player player : Util.getOnlinePlayers()) {
             try {
                 final SconeyPlayer sconeyPlayer = this.sconeyHandler.getScoreboard(player);
-                if (sconeyPlayer == null) return;
+                if (sconeyPlayer == null)
+                    return;
 
                 sconeyPlayer.handleUpdate();
             } catch (Exception e) {

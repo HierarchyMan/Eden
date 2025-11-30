@@ -43,13 +43,13 @@ public abstract class DuplicateArenaRunnable extends BukkitRunnable {
 
     @Override
     public void run() {
-        // Step 1: Copy the arena if not already copied
+        
         if (this.clipboard == null) {
             ArenaDetail originalDetail = copiedArena.getArenaDetails().get(0);
             Location minLoc = originalDetail.getMin();
             Location maxLoc = originalDetail.getMax();
 
-            // Ensure chunks are loaded at source
+            
             int minChunkX = minLoc.getBlockX() >> 4;
             int minChunkZ = minLoc.getBlockZ() >> 4;
             int maxChunkX = maxLoc.getBlockX() >> 4;
@@ -63,7 +63,7 @@ public abstract class DuplicateArenaRunnable extends BukkitRunnable {
                 }
             }
 
-            // Use proper min/max ordering
+            
             Vector min = new Vector(
                     Math.min(minLoc.getBlockX(), maxLoc.getBlockX()),
                     Math.min(minLoc.getBlockY(), maxLoc.getBlockY()),
@@ -93,12 +93,12 @@ public abstract class DuplicateArenaRunnable extends BukkitRunnable {
                 return;
             }
 
-            // Wait for next tick to start searching
+            
             return;
         }
 
-        // Step 2: Find a safe spot
-        // We check if the proposed location overlaps with any existing arena
+        
+        
         ArenaDetail originalDetail = copiedArena.getArenaDetails().get(0);
         Location minLoc = originalDetail.getMin();
         Location maxLoc = originalDetail.getMax();
@@ -110,13 +110,13 @@ public abstract class DuplicateArenaRunnable extends BukkitRunnable {
 
         boolean safe = true;
 
-        // Check collision with all other arenas
+        
         for (Arena arena : Arena.getArenas()) {
             for (ArenaDetail detail : arena.getArenaDetails()) {
-                // Simple AABB collision check
-                // We only care about X and Z overlap, Y is usually same or irrelevant if we
-                // assume flat world
-                // But let's check X and Z strictly
+                
+                
+                
+                
 
                 double otherMinX = Math.min(detail.getMin().getX(), detail.getMax().getX());
                 double otherMaxX = Math.max(detail.getMin().getX(), detail.getMax().getX());
@@ -146,7 +146,7 @@ public abstract class DuplicateArenaRunnable extends BukkitRunnable {
             return;
         }
 
-        // Step 3: Paste
+        
         this.cancel();
 
         final int finalOffsetX = this.offsetX;
@@ -175,7 +175,7 @@ public abstract class DuplicateArenaRunnable extends BukkitRunnable {
                 Operations.complete(paste);
                 pasteSession.flushQueue();
 
-                // Callback to main thread
+                
                 TaskManager.IMP.task(this::onComplete);
             } catch (Exception e) {
                 e.printStackTrace();

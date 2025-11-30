@@ -41,6 +41,7 @@ import rip.diamond.practice.config.Config;
 import rip.diamond.practice.util.Checker;
 import rip.diamond.practice.util.Common;
 import rip.diamond.practice.util.tablist.util.IImanityTabImpl;
+import rip.diamond.practice.util.tablist.util.TabEntry;
 import rip.diamond.practice.util.tablist.util.impl.ProtocolLibTabImpl;
 import rip.diamond.practice.util.tablist.util.packet.WrapperPlayServerLogin;
 
@@ -62,7 +63,7 @@ public class ImanityTabHandler {
 
     private PacketAdapter protocolListener;
 
-    //Tablist Ticks
+    
     private final long ticks;
 
     public ImanityTabHandler(ImanityTabAdapter adapter) {
@@ -88,17 +89,26 @@ public class ImanityTabHandler {
     }
 
     public void removePlayerTablist(Player player) {
+        ImanityTablist tablist = tablists.get(player.getUniqueId());
+        if (tablist != null) {
+            
+            for (TabEntry entry : tablist.getCurrentEntries()) {
+                implementation.updateFakeName(tablist, entry, "");
+                implementation.updateFakeLatency(tablist, entry, 0);
+            }
+            tablist.getCurrentEntries().clear();
+        }
         tablists.remove(player.getUniqueId());
     }
 
     private void setup() {
-        //Ensure that the thread has stopped running
+        
         if (this.thread != null) {
             this.thread.shutdown();
             this.thread = null;
         }
 
-        // To ensure client will display 60 slots on 1.7
+        
         if (Bukkit.getMaxPlayers() < 60) {
             protocolListener = new PacketAdapter(Eden.INSTANCE, PacketType.Play.Server.LOGIN) {
                 @Override
@@ -122,7 +132,7 @@ public class ImanityTabHandler {
             }
         }, Eden.INSTANCE);
 
-        //Start Thread
+        
         this.thread = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder()
                 .setNameFormat("Imanity-Tablist-Thread")
                 .setDaemon(true)

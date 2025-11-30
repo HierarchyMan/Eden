@@ -122,15 +122,15 @@ public class MySqlHandler implements DatabaseHandler {
         Tasks.runAsync(() -> {
             String sql = "SELECT json FROM " + table;
             try (Connection c = dataSource.getConnection();
-                 PreparedStatement ps = c.prepareStatement(sql);
-                 ResultSet rs = ps.executeQuery()) {
+                    PreparedStatement ps = c.prepareStatement(sql);
+                    ResultSet rs = ps.executeQuery()) {
 
                 while (rs.next()) {
                     try {
                         String json = rs.getString(1);
                         Document document = Document.parse(json);
                         if (document.containsKey("lowerCaseUsername") &&
-                            document.getString("lowerCaseUsername").equalsIgnoreCase(name.toLowerCase())) {
+                                document.getString("lowerCaseUsername").equalsIgnoreCase(name.toLowerCase())) {
                             callback.accept(document);
                             return;
                         }
@@ -147,12 +147,23 @@ public class MySqlHandler implements DatabaseHandler {
     }
 
     @Override
-    public void saveProfile(PlayerProfile profile) {
-        Tasks.runAsync(() -> {
-            Document document = profile.toBson();
-            String json = document.toJson();
-            String sql = "INSERT INTO " + table + " (uuid, json) VALUES (?, ?) ON DUPLICATE KEY UPDATE json=VALUES(json)";
+    public void saveProfile(PlayerProfile profile, boolean async) {
+        Document document = profile.toBson();
+        String json = document.toJson();
+        String sql = "INSERT INTO " + table + " (uuid, json) VALUES (?, ?) ON DUPLICATE KEY UPDATE json=VALUES(json)";
 
+        if (async) {
+            Tasks.runAsync(() -> {
+                try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+                    ps.setString(1, profile.getUniqueId().toString());
+                    ps.setString(2, json);
+                    ps.executeUpdate();
+                } catch (Exception e) {
+                    Eden.INSTANCE.getLogger().log(Level.SEVERE, "Failed to save profile for " + profile.getUniqueId(),
+                            e);
+                }
+            });
+        } else {
             try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
                 ps.setString(1, profile.getUniqueId().toString());
                 ps.setString(2, json);
@@ -160,7 +171,7 @@ public class MySqlHandler implements DatabaseHandler {
             } catch (Exception e) {
                 Eden.INSTANCE.getLogger().log(Level.SEVERE, "Failed to save profile for " + profile.getUniqueId(), e);
             }
-        });
+        }
     }
 
     @Override
@@ -169,8 +180,8 @@ public class MySqlHandler implements DatabaseHandler {
         String sql = "SELECT json FROM " + table;
 
         try (Connection c = dataSource.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+                PreparedStatement ps = c.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 try {
@@ -203,4 +214,3 @@ public class MySqlHandler implements DatabaseHandler {
         }
     }
 }
-

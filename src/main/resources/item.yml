@@ -175,3 +175,60 @@ items:
       durability: 0
       slot: 5
       command: "eden:togglespectatorvisibility"
+  event:
+    leave-event:
+      enabled: true
+      name: "&cLeave Event &7(Right-Click)"
+      lore:
+        - ""
+      material: INK_SACK
+      durability: 1
+      slot: 8
+      command: "eden:leaveevent"
+  parkour:
+    hide-players:
+      enabled: true
+      name: "&bHide Players &7(Right-Click)"
+      lore:
+        - ""
+      material: INK_SACK
+      durability: 10
+      slot: 0
+      command: "eden:parkour hide"
+    show-players:
+      enabled: true
+      name: "&bShow Players &7(Right-Click)"
+      lore:
+        - ""
+      material: INK_SACK
+      durability: 8
+      slot: 0
+      command: "eden:parkour show"
+    checkpoint:
+      enabled: true
+      name: "&bLast Checkpoint &7(Right-Click)"
+      lore:
+        - ""
+      material: ARROW
+      durability: 0
+      slot: 1
+      command: "eden:parkour checkpoint"
+    reset:
+      enabled: true
+      name: "&bReset Parkour &7(Right-Click)"
+      lore:
+        - ""
+      material: FEATHER
+      durability: 0
+      slot: 2
+      command: "eden:parkour reset"
+  host:
+    manage-event:
+      enabled: true
+      name: "&bManage Event &7(Right-Click)"
+      lore:
+        - ""
+      material: COMPASS
+      durability: 0
+      slot: 4
+      command: "eden:event manage"

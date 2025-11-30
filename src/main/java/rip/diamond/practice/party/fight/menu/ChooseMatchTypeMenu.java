@@ -35,11 +35,11 @@ public class ChooseMatchTypeMenu extends Menu {
         final Map<Integer, Button> buttons = new HashMap<>();
         BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
 
-        // Filler and Border
+        
         MenuUtil.addFillerButtons(buttons, config, "party-events-menu", getSize());
         MenuUtil.addBorderButtons(buttons, config, "party-events-menu", getSize());
 
-        // Split Button (Party Fight)
+        
         int splitSlot = config.getInt("party-events-menu.items.split-button.slot");
         buttons.put(splitSlot, new Button() {
             @Override
@@ -58,7 +58,7 @@ public class ChooseMatchTypeMenu extends Menu {
             }
         });
 
-        // FFA Button
+        
         int ffaSlot = config.getInt("party-events-menu.items.ffa-button.slot");
         buttons.put(ffaSlot, new Button() {
             @Override

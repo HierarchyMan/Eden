@@ -32,21 +32,21 @@ public class KitEditorSelectKitMenu extends Menu {
 		String sizeStr = config.getString("kit-editor-select-kit-menu.size");
 
 		if ("dynamic".equalsIgnoreCase(sizeStr)) {
-			// Calculate dynamic size based on number of editable kits
+			
 			List<Kit> editableKits = getEditableKits();
 			boolean hasBorder = config.getBoolean("kit-editor-select-kit-menu.border.enabled");
 
-			// Calculate needed rows
+			
 			int kitsCount = editableKits.size();
-			int slotsPerRow = hasBorder ? 7 : 9; // Account for border
+			int slotsPerRow = hasBorder ? 7 : 9; 
 			int rowsNeeded = (int) Math.ceil((double) kitsCount / slotsPerRow);
-			int totalRows = rowsNeeded + (hasBorder ? 2 : 0); // Add top and bottom border
+			int totalRows = rowsNeeded + (hasBorder ? 2 : 0); 
 
-			// Ensure minimum of 3 rows
+			
 			int maxSize = config.getInt("kit-editor-select-kit-menu.max-size");
 			int calculatedSize = Math.max(27, Math.min(totalRows * 9, maxSize));
 
-			// Round to valid inventory size
+			
 			return ((calculatedSize + 8) / 9) * 9;
 		} else {
 			return config.getInt("kit-editor-select-kit-menu.size");
@@ -58,16 +58,16 @@ public class KitEditorSelectKitMenu extends Menu {
 		Map<Integer, Button> buttons = new HashMap<>();
 		BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
 
-		// Filler and Border
+		
 		MenuUtil.addFillerButtons(buttons, config, "kit-editor-select-kit-menu", getSize());
 		MenuUtil.addBorderButtons(buttons, config, "kit-editor-select-kit-menu", getSize());
 
-		// Kit buttons
+		
 		List<Kit> editableKits = getEditableKits();
 		int kitIndex = 0;
 
 		for (int slot = 0; slot < getSize() && kitIndex < editableKits.size(); slot++) {
-			// Skip border slots
+			
 			if (buttons.containsKey(slot) && (slot < 9 || slot >= getSize() - 9 || slot % 9 == 0 || slot % 9 == 8)) {
 				continue;
 			}

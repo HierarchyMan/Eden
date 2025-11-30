@@ -1,0 +1,15 @@
+# NOTE: You must set all the items in all the chests (9)
+# This system works by pure RNG (Random Number Generation)
+# For each chest that is placed on your SkyWars Arena, the contents
+# of it will be determined by the RNG Factor. Meaning that a
+# chest can have the loot of 1 out of the different 9 chests
+CHESTS:
+  '1': t@272;t@4:a@32;t@332:a@8;t@364:a@4;
+  '2': t@280;t@264:a@2;t@4:a@64;t@58;
+  '3': t@272;t@4:a@32;t@332:a@8;t@364:a@4;
+  '4': t@280;t@264:a@2;t@4:a@64;t@58;
+  '5': t@272;t@4:a@32;t@332:a@8;t@364:a@4;
+  '6': t@280;t@264:a@2;t@4:a@64;t@58;
+  '7': t@272;t@4:a@32;t@332:a@8;t@364:a@4;
+  '8': t@280;t@264:a@2;t@4:a@64;t@58;
+  '9': t@272;t@4:a@32;t@332:a@8;t@364:a@4;

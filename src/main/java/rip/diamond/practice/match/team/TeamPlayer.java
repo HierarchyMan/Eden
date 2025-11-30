@@ -150,7 +150,7 @@ public class TeamPlayer {
 			return true;
 		}
 		long timeSinceLastHit = System.currentTimeMillis() - lastHitTime;
-		return timeSinceLastHit > 10000; // 10 seconds in milliseconds
+		return timeSinceLastHit > 10000; 
 	}
 
 	/**
@@ -173,10 +173,10 @@ public class TeamPlayer {
 		}
 		kitLoadout.apply(match.getKit(), match, getPlayer());
 		((CraftPlayer) getPlayer()).getHandle().setAbsorptionHearts(0);
-		getPlayer().setHealth(getPlayer().getMaxHealth()); // A fix for #11 - Restore health each time when respawn
-		getPlayer().getActivePotionEffects().clear(); // A fix for #389 - Remove effects like absorption when score
-		lastHitDamager = null; // A fix for #11 - Prevent kill spam
-								// (https://www.youtube.com/watch?v=oD6k0rrNVTk)
+		getPlayer().setHealth(getPlayer().getMaxHealth()); 
+		getPlayer().getActivePotionEffects().clear(); 
+		lastHitDamager = null; 
+								
 	}
 
 }

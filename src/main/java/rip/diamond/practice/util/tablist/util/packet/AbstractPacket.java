@@ -26,7 +26,7 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.InvocationTargetException;
 
 public abstract class AbstractPacket {
-	// The packet we will be modifying
+	
 	protected PacketContainer handle;
 
 	/**
@@ -35,7 +35,7 @@ public abstract class AbstractPacket {
 	 * @param type - the packet type.
 	 */
 	protected AbstractPacket(PacketContainer handle, PacketType type) {
-		// Make sure we're given a valid packet
+		
 		if (handle == null)
 			throw new IllegalArgumentException("Packet handle cannot be NULL.");
 		if (!Objects.equal(handle.getType(), type))

@@ -48,30 +48,38 @@ public class ProtocolLibTabImpl implements IImanityTabImpl {
 
     @Override
     public void registerLoginListener() {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(Eden.INSTANCE, PacketType.Play.Server.LOGIN) {
-            @Override
-            public void onPacketSending(PacketEvent event) {
-                event.getPacket().getIntegers().write(2, 60);
-            }
-        });
+        ProtocolLibrary.getProtocolManager()
+                .addPacketListener(new PacketAdapter(Eden.INSTANCE, PacketType.Play.Server.LOGIN) {
+                    @Override
+                    public void onPacketSending(PacketEvent event) {
+                        event.getPacket().getIntegers().write(2, 60);
+                    }
+                });
     }
 
     @Override
-    public TabEntry createFakePlayer(ImanityTablist tablist, String string, TabColumn column, Integer slot, Integer rawSlot) {
+    public TabEntry createFakePlayer(ImanityTablist tablist, String string, TabColumn column, Integer slot,
+            Integer rawSlot) {
         UUID uuid = UUID.randomUUID();
         final Player player = tablist.getPlayer();
         final int protocolVersion = TablistUtil.getProtocolVersion(player);
 
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.PLAYER_INFO);
         packet.getPlayerInfoAction().write(0, EnumWrappers.PlayerInfoAction.ADD_PLAYER);
-        WrappedGameProfile profile = new WrappedGameProfile(uuid, protocolVersion > 5  ? string : LegacyClientUtil.entry(rawSlot - 1) + "");
-        PlayerInfoData playerInfoData = new PlayerInfoData(profile, 1, EnumWrappers.NativeGameMode.SURVIVAL, WrappedChatComponent.fromText(protocolVersion > 5 ?  "" : profile.getName()));
+        WrappedGameProfile profile = new WrappedGameProfile(uuid,
+                protocolVersion > 5 ? string : LegacyClientUtil.entry(rawSlot - 1) + "");
+        PlayerInfoData playerInfoData = new PlayerInfoData(profile, 1, EnumWrappers.NativeGameMode.SURVIVAL,
+                WrappedChatComponent.fromText(protocolVersion > 5 ? "" : profile.getName()));
         if (protocolVersion > 5) {
-            playerInfoData.getProfile().getProperties().put("texture", new WrappedSignedProperty("textures", Skin.GRAY.skinValue, Skin.GRAY.skinSignature));
+            playerInfoData.getProfile().getProperties().put("texture",
+                    new WrappedSignedProperty("textures", Skin.GRAY.skinValue, Skin.GRAY.skinSignature));
         }
         packet.getPlayerInfoDataLists().write(0, Collections.singletonList(playerInfoData));
         sendPacket(player, packet);
-        return new TabEntry(string, uuid, "", tablist, Skin.GRAY, column, slot, rawSlot, 10000); //Lunar Client will not display ping icon when the object ping is over 10000
+        return new TabEntry(string, uuid, "", tablist, Skin.GRAY, column, slot, rawSlot, 10000); 
+                                                                                                 
+                                                                                                 
+                                                                                                 
     }
 
     @Override
@@ -90,21 +98,20 @@ public class ProtocolLibTabImpl implements IImanityTabImpl {
                     CC.translate(newStrings[0]),
                     newStrings.length > 1 ? CC.translate(newStrings[1]) : "",
                     Collections.singleton(LegacyClientUtil.entry(tabEntry.getRawSlot() - 1)),
-                    2
-            );
+                    2);
         } else {
-            PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.PLAYER_INFO);
+            PacketContainer packet = ProtocolLibrary.getProtocolManager()
+                    .createPacket(PacketType.Play.Server.PLAYER_INFO);
             packet.getPlayerInfoAction().write(0, EnumWrappers.PlayerInfoAction.UPDATE_DISPLAY_NAME);
             WrappedGameProfile profile = new WrappedGameProfile(
                     tabEntry.getUuid(),
-                    tabEntry.getId()
-            );
+                    tabEntry.getId());
             PlayerInfoData playerInfoData = new PlayerInfoData(
                     profile,
                     1,
                     EnumWrappers.NativeGameMode.SURVIVAL,
-                    WrappedChatComponent.fromText(rip.diamond.practice.util.ColorUtil.colorize(newStrings.length > 1 ? newStrings[0] + newStrings[1] : newStrings[0]))
-            );
+                    WrappedChatComponent.fromText(rip.diamond.practice.util.ColorUtil
+                            .colorize(newStrings.length > 1 ? newStrings[0] + newStrings[1] : newStrings[0])));
             packet.getPlayerInfoDataLists().write(0, Collections.singletonList(playerInfoData));
             sendPacket(player, packet);
         }
@@ -122,15 +129,13 @@ public class ProtocolLibTabImpl implements IImanityTabImpl {
 
         WrappedGameProfile profile = new WrappedGameProfile(
                 tabEntry.getUuid(),
-                tabEntry.getId()
-        );
+                tabEntry.getId());
 
         PlayerInfoData playerInfoData = new PlayerInfoData(
                 profile,
                 latency,
                 EnumWrappers.NativeGameMode.SURVIVAL,
-                WrappedChatComponent.fromText(rip.diamond.practice.util.ColorUtil.colorize(tabEntry.getText()))
-        );
+                WrappedChatComponent.fromText(rip.diamond.practice.util.ColorUtil.colorize(tabEntry.getText())));
 
         packet.getPlayerInfoDataLists().write(0, Collections.singletonList(playerInfoData));
         sendPacket(tablist.getPlayer(), packet);
@@ -146,17 +151,19 @@ public class ProtocolLibTabImpl implements IImanityTabImpl {
         final Player player = tablist.getPlayer();
         final int protocolVersion = TablistUtil.getProtocolVersion(player);
 
-        WrappedGameProfile profile = new WrappedGameProfile(tabEntry.getUuid(), protocolVersion > 5  ? tabEntry.getId() : LegacyClientUtil.entry(tabEntry.getRawSlot() - 1) + "");
-        PlayerInfoData playerInfoData = new PlayerInfoData(profile, 1, EnumWrappers.NativeGameMode.SURVIVAL, WrappedChatComponent.fromText(tabEntry.getText()));
+        WrappedGameProfile profile = new WrappedGameProfile(tabEntry.getUuid(),
+                protocolVersion > 5 ? tabEntry.getId() : LegacyClientUtil.entry(tabEntry.getRawSlot() - 1) + "");
+        PlayerInfoData playerInfoData = new PlayerInfoData(profile, 1, EnumWrappers.NativeGameMode.SURVIVAL,
+                WrappedChatComponent.fromText(tabEntry.getText()));
 
         if (protocolVersion > 5) {
-            playerInfoData.getProfile().getProperties().put("texture", new WrappedSignedProperty("textures", skin.skinValue, skin.skinSignature));
+            playerInfoData.getProfile().getProperties().put("texture",
+                    new WrappedSignedProperty("textures", skin.skinValue, skin.skinSignature));
         }
 
         PacketContainer remove = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.PLAYER_INFO);
         remove.getPlayerInfoAction().write(0, EnumWrappers.PlayerInfoAction.REMOVE_PLAYER);
         remove.getPlayerInfoDataLists().write(0, Collections.singletonList(playerInfoData));
-
 
         PacketContainer add = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.PLAYER_INFO);
         add.getPlayerInfoAction().write(0, EnumWrappers.PlayerInfoAction.ADD_PLAYER);
@@ -173,18 +180,16 @@ public class ProtocolLibTabImpl implements IImanityTabImpl {
         PacketContainer headerAndFooter = new PacketContainer(PacketType.Play.Server.PLAYER_LIST_HEADER_FOOTER);
 
         final Player player = tablist.getPlayer();
-        final int protocolVersion = TablistUtil.getProtocolVersion(player);
 
-        if (protocolVersion > 5) {
+        
+        
+        headerAndFooter.getChatComponents().write(0, WrappedChatComponent.fromText(header));
+        headerAndFooter.getChatComponents().write(1, WrappedChatComponent.fromText(footer));
 
-            headerAndFooter.getChatComponents().write(0, WrappedChatComponent.fromText(header));
-            headerAndFooter.getChatComponents().write(1, WrappedChatComponent.fromText(footer));
-
-            sendPacket(player, headerAndFooter);
-        }
+        sendPacket(player, headerAndFooter);
     }
 
-    private static void sendPacket(Player player, PacketContainer packetContainer){
+    private static void sendPacket(Player player, PacketContainer packetContainer) {
         try {
             ProtocolLibrary.getProtocolManager().sendServerPacket(player, packetContainer);
         } catch (InvocationTargetException e) {

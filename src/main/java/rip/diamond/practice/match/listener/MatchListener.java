@@ -93,7 +93,6 @@ public class MatchListener implements Listener {
                             .collect(Collectors.joining(Language.MATCH_SEPARATE.toString()));
                     break;
                 case FFA:
-                case SUMO_EVENT:
                     opponents = match.getTeams().stream().map(team -> team.getLeader().getUsername())
                             .collect(Collectors.joining(Language.MATCH_SEPARATE.toString()));
                     break;
@@ -123,7 +122,6 @@ public class MatchListener implements Listener {
         Player player = event.getPlayer();
         PlayerProfile profile = PlayerProfile.get(player);
 
-        // Profile will be null if the profile is not loaded in PlayerJoinEvent
         if (profile == null) {
             return;
         }
@@ -173,10 +171,16 @@ public class MatchListener implements Listener {
 
             if ((gameRules.isBed() && !match.getTeam(player).isBedDestroyed()) || gameRules.isBreakGoal()
                     || gameRules.isPortalGoal()) {
+                match.getMatchPlayers().stream()
+                        .filter(p -> match.getTeam(p) != match.getTeam(player))
+                        .forEach(EdenSound.OPPONENT_DEATH::play);
                 new MatchRespawnTask(match, teamPlayer);
             } else if (gameRules.isPoint(match)) {
+                match.getMatchPlayers().stream()
+                        .filter(p -> match.getTeam(p) != match.getTeam(player))
+                        .forEach(EdenSound.POINT_SCORED::play);
                 TeamPlayer lastHitDamager = teamPlayer.getLastHitDamager();
-                // , , , 
+
                 if (lastHitDamager == null) {
                     lastHitDamager = match.getOpponentTeam(match.getTeam(player)).getAliveTeamPlayers().get(0);
                 }
@@ -186,8 +190,7 @@ public class MatchListener implements Listener {
             }
 
             if (gameRules.isDropItemWhenDie()) {
-                // This drops List will filter useless and banned items, and pots/bowls if the
-                // match is ending
+
                 List<ItemStack> drops = event.getDrops();
                 drops.removeIf(i -> i == null || i.getType() == Material.AIR || i.getType() == Material.BOOK
                         || i.getType() == Material.ENCHANTED_BOOK);
@@ -198,8 +201,8 @@ public class MatchListener implements Listener {
 
                 for (ItemStack itemStack : drops) {
                     Item item = Util.dropItemNaturally(player.getLocation(), itemStack, player);
-                    match.addDroppedItem(item, null); // Already modified the f value of EntityItem, therefore no need
-                                                      // to put anything in 2nd variables
+                    match.addDroppedItem(item, null);
+
                 }
             }
 
@@ -218,16 +221,14 @@ public class MatchListener implements Listener {
         event.setDroppedExp(0);
         event.getDrops().clear();
 
-        // Teleport 2 blocks up when die (only for match players, must be after
-        // setHealth)
         if (profile.getPlayerState() == PlayerState.IN_MATCH && profile.getMatch() != null
                 && Config.MATCH_TP_2_BLOCKS_UP_WHEN_DIE.toBoolean()) {
             Util.teleport(player, player.getLocation().clone().add(0, 2, 0));
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true) // A fix for #307 point 1 - try to cancel the
-                                                                         // hits which anticheat cancelled
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+
     public void onDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             return;
@@ -236,8 +237,6 @@ public class MatchListener implements Listener {
         Player player = (Player) event.getEntity();
         PlayerProfile profile = PlayerProfile.get(player);
 
-        // profile will be null when damaged player is a citizens player NPC, but is not
-        // a pvp bot
         if (profile == null) {
             return;
         }
@@ -263,7 +262,7 @@ public class MatchListener implements Listener {
                 event.setCancelled(true);
                 return;
             }
-            if (rules.isNoDamage() && !rules.isBoxing()) { // We handle boxing damages in MatchListener.onDamageEntity
+            if (rules.isNoDamage() && !rules.isBoxing()) {
                 event.setDamage(0);
                 return;
             }
@@ -275,7 +274,7 @@ public class MatchListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST) // Allow the above EntityDamageEvent run first
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onDamageEntity(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player && (event.getDamager() instanceof Player
                 || event.getDamager() instanceof FishHook || event.getDamager() instanceof Snowball
@@ -285,8 +284,6 @@ public class MatchListener implements Listener {
                     ? (Player) ((Projectile) event.getDamager()).getShooter()
                     : (Player) event.getDamager();
 
-            // Damager might be null because there might be a chance when arrow hit the
-            // entity, the damager isn't online
             if (damager == null) {
                 event.setCancelled(true);
                 return;
@@ -295,8 +292,6 @@ public class MatchListener implements Listener {
             PlayerProfile entityProfile = PlayerProfile.get(entity);
             PlayerProfile damagerProfile = PlayerProfile.get(damager);
 
-            // profile will be null when damaged player is a citizens player NPC, but is not
-            // a pvp bot
             if (entityProfile == null) {
                 return;
             }
@@ -310,8 +305,6 @@ public class MatchListener implements Listener {
                     throw new PracticeUnexpectedException("Damager's match does not match with entity's match");
                 }
 
-                // It is cancelled in EntityDamageEvent. Check this again to prevent Boxing
-                // hits.
                 if (match.getState() != MatchState.FIGHTING) {
                     event.setCancelled(true);
                     return;
@@ -320,9 +313,8 @@ public class MatchListener implements Listener {
                 Team teamEntity = match.getTeam(entity);
                 Team teamDamager = match.getTeam(damager);
 
-                // 
                 if (teamEntity == teamDamager) {
-                    // 
+
                     if (entity != damager) {
                         if (!kit.getGameRules().isTeamProjectile() && event.getDamager() instanceof Projectile) {
                             event.setCancelled(true);
@@ -339,7 +331,6 @@ public class MatchListener implements Listener {
                     }
                 }
 
-                // 
                 if (kit.getGameRules().isProjectileOnly() && event.getDamager() instanceof Player) {
                     event.setCancelled(true);
                     return;
@@ -361,30 +352,26 @@ public class MatchListener implements Listener {
                 }
 
                 if (kit.getGameRules().isBoxing()) {
-                    // Check if the damage is critical damage
-                    // The way bukkit handles critical damage is strange, because sometimes it might
-                    // fire the same event two times with different damage
+
                     double predictDamage = 1 + DamageCalculator.getEnchantedDamage(damager.getItemInHand());
                     if (predictDamage > damage) {
                         return;
                     }
                 }
 
-                teamPlayerDamager.setProtectionUntil(0); // Fix for #307 point 2
+                teamPlayerDamager.setProtectionUntil(0);
 
                 teamPlayerDamager.handleHit(event.getFinalDamage());
                 teamPlayerEntity.handleGotHit(match.getTeamPlayer(damager), entity.isBlocking());
 
-                // 
                 if (event.getDamager() instanceof Arrow && entity != damager) {
                     Util.sendArrowHitMessage(event);
                 }
 
-                // Boxing, Boxing, 
                 if (kit.getGameRules().isBoxing()
                         && match.getTeam(entity).getGotHits() >= match.getMaximumBoxingHits()) {
                     match.getTeam(entity).getAliveTeamPlayers().forEach(teamPlayer -> {
-                        teamPlayer.setProtectionUntil(0); // Allow our system to damage the player
+                        teamPlayer.setProtectionUntil(0);
                         Util.damage(teamPlayer.getPlayer(), 99999);
                     });
                 }
@@ -437,6 +424,13 @@ public class MatchListener implements Listener {
 
         if (Checker.canDamage(player)) {
             Match match = profile.getMatch();
+
+            if (match == null) {
+                if (profile.getPlayerState() == PlayerState.IN_EVENT) {
+                    event.setCancelled(true);
+                }
+                return;
+            }
 
             if (!match.getKit().getGameRules().isDropItems()) {
                 event.setCancelled(true);
@@ -540,7 +534,7 @@ public class MatchListener implements Listener {
 
             ItemStack itemStack = event.getItem();
             if (itemStack != null) {
-                // Golden Head
+
                 if (itemStack.getType() == Material.SKULL_ITEM && match.getKit().getGameRules().isHypixelUHC()
                         && itemStack.hasItemMeta() && ChatColor.stripColor(itemStack.getItemMeta().getDisplayName())
                                 .toLowerCase().contains("golden head")) {
@@ -563,16 +557,17 @@ public class MatchListener implements Listener {
                         }
                         player.setFoodLevel(
                                 Math.min(player.getFoodLevel() + Config.MATCH_GOLDEN_HEAD_FOOD_LEVEL.toInteger(), 20));
-                        player.setSaturation(Math.min(player.getSaturation() + Config.MATCH_GOLDEN_HEAD_SATURATION_LEVEL.toInteger(), 20));
+                        player.setSaturation(Math.min(
+                                player.getSaturation() + Config.MATCH_GOLDEN_HEAD_SATURATION_LEVEL.toInteger(), 20));
                         player.setItemInHand(new ItemBuilder(player.getItemInHand())
                                 .amount(player.getItemInHand().getAmount() - 1).build());
                         player.updateInventory();
                     }
-                    // ,  cancel event, 
+
                     event.setCancelled(true);
                     return;
                 }
-                // Ender Pearl
+
                 else if (itemStack.getType() == Material.ENDER_PEARL && action.name().startsWith("RIGHT_")) {
                     Kit kit = match.getKit();
                     if (match.getState() == MatchState.STARTING && kit.getGameRules().isStartFreeze()) {
@@ -587,7 +582,7 @@ public class MatchListener implements Listener {
                             event.setCancelled(true);
                             return;
                         } else {
-                            Util.throwEnderPearl(event); // Try to fix #514
+                            Util.throwEnderPearl(event);
                             profile.getCooldowns().put(CooldownType.ENDER_PEARL, new Cooldown(16) {
                                 @Override
                                 public void cancelCountdown() {
@@ -621,7 +616,7 @@ public class MatchListener implements Listener {
                     }
                     return;
                 }
-                // Fireball
+
                 else if (itemStack.getType() == Material.FIREBALL && action.name().startsWith("RIGHT_")
                         && Config.MATCH_FIREBALL_ENABLED.toBoolean()) {
                     Kit kit = match.getKit();
@@ -648,7 +643,7 @@ public class MatchListener implements Listener {
                     event.setCancelled(true);
                     return;
                 }
-                // Soup
+
                 else if (itemStack.getType() == Material.MUSHROOM_SOUP && player.getHealth() < 19.0) {
                     final double newHealth = Math.min(player.getHealth() + 7.0, 20.0);
                     player.setHealth(newHealth);
@@ -659,7 +654,7 @@ public class MatchListener implements Listener {
                     event.setCancelled(true);
                     return;
                 }
-                // Kit Loadout Book
+
                 else if (itemStack.getType() == Material.BOOK || itemStack.getType() == Material.ENCHANTED_BOOK) {
                     net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
                     if (nmsItem.hasTag()) {
@@ -894,10 +889,10 @@ public class MatchListener implements Listener {
 
             Kit kit = match.getKit();
             if (block.getType() == Material.BED_BLOCK) {
-                // Now get the bed location
+
                 Location bedLocation1 = new Location(block.getLocation().getWorld(), block.getLocation().getBlockX(),
                         block.getLocation().getBlockY(), block.getLocation().getBlockZ());
-                Location bedLocation2 = Util.getBedBlockNearBy(bedLocation1).clone(); // , 
+                Location bedLocation2 = Util.getBedBlockNearBy(bedLocation1).clone();
 
                 Team team = match.getTeam(player);
                 Team opponentTeam = match.getTeams().stream()
@@ -916,9 +911,9 @@ public class MatchListener implements Listener {
                 }
 
                 if (kit.getGameRules().isBed()) {
-                    match.broadcastSound(team, EdenSound.SELF_BREAK_BED);
-                    match.broadcastSound(opponentTeam, EdenSound.OPPONENT_BREAK_BED);
-                    match.broadcastSpectatorsSound(EdenSound.SELF_BREAK_BED);
+                    match.broadcastSound(team, EdenSound.BED_OPPONENT_BROKEN);
+                    match.broadcastSound(opponentTeam, EdenSound.BED_SELF_BROKEN);
+                    match.broadcastSpectatorsSound(EdenSound.BED_SELF_BROKEN);
                     match.broadcastTitle(opponentTeam, Language.MATCH_BED_BREAK_TITLE.toString());
                     match.broadcastSubTitle(opponentTeam, Language.MATCH_BED_BREAK_SUBTITLE.toString());
                     match.broadcastMessage(
@@ -958,8 +953,7 @@ public class MatchListener implements Listener {
         if (event.getPotion().getShooter() instanceof Player) {
             Player player = (Player) event.getEntity().getShooter();
             PlayerProfile profile = PlayerProfile.get(player);
-            // PracticePlayer may be null because player left the server but the potion
-            // still in there
+
             if (profile == null) {
                 return;
             }
@@ -1118,7 +1112,7 @@ public class MatchListener implements Listener {
             for (TeamPlayer teamPlayer : match.getTeamPlayers()) {
                 Player player = teamPlayer.getPlayer();
                 if (player != null && teamPlayer.getKitLoadout() == null) {
-                    player.setItemOnCursor(null); // Fix for #308 point 1 - Prevent book duplicate
+                    player.setItemOnCursor(null);
                     kit.getKitLoadout().apply(kit, match, player);
                     Language.MATCH_RECEIVED_KIT_LOADOUT_BECAUSE_TIMEOUT.sendMessage(player);
                 }
@@ -1131,7 +1125,6 @@ public class MatchListener implements Listener {
         Player player = event.getPlayer();
         Match match = event.getMatch();
 
-        // Match can be null when loading kit in editor mode
         if (match == null) {
             player.updateInventory();
             return;

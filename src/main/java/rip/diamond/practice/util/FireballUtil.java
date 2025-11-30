@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-//Credit: https://gist.github.com/aaron1998ish/1dd3f183d8d55902f65ea187019058ac
+
 
 public class FireballUtil {
 
@@ -27,7 +27,7 @@ public class FireballUtil {
         try {
             Class<?> fireballClass = Class.forName(nmsFireball);
 
-            //should be accessible by default.
+
             fieldFireballDirX = fireballClass.getDeclaredField("dirX");
             fieldFireballDirY = fireballClass.getDeclaredField("dirY");
             fieldFireballDirZ = fireballClass.getDeclaredField("dirZ");

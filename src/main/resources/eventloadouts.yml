@@ -1,0 +1,49 @@
+# Event Loadouts Configuration
+# Use /eden eventloadout <eventname> to set loadouts from your current inventory
+# Supports: OITC, SkyWars, Spleef
+
+OITC:
+  # Note: Leather armor color is dynamically applied (32 unique colors for teams)
+  # Any leather armor here will have its color overridden
+  helmet:
+    material: LEATHER_HELMET
+  chestplate:
+    material: LEATHER_CHESTPLATE
+  leggings:
+    material: IRON_LEGGINGS
+  boots:
+    material: IRON_BOOTS
+  items:
+    0:
+      material: STONE_SWORD
+    1:
+      material: BOW
+    8:
+      material: ARROW
+      amount: 1
+
+SkyWars:
+  # Starting loadout (chests are still randomized from chest.yml)
+  helmet:
+    material: IRON_HELMET
+  chestplate:
+    material: IRON_CHESTPLATE
+  items:
+    0:
+      material: STONE_SWORD
+    1:
+      material: BOW
+    8:
+      material: ARROW
+      amount: 16
+
+Spleef:
+  # Spleef starting loadout
+  items:
+    0:
+      material: DIAMOND_SPADE
+      enchantments:
+        - DIG_SPEED:5
+    1:
+      material: SNOW_BALL
+      amount: 16

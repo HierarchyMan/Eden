@@ -1,6 +1,12 @@
 receive-duel-request: CHICKEN_EGG_POP;1;1
+opponent-death: ORB_PICKUP;1;1
+point-scored: ORB_PICKUP;1;1
+final-death-sound: AMBIENCE_THUNDER;1;1
 golden-head-eat: EAT;1;1
-self-break-bed: ENDERDRAGON_GROWL;1;1
-opponent-break-bed: WITHER_DEATH;1;1
+bed-self-broken: VILLAGER_NO;1;1
+bed-opponent-broken: WITHER_DEATH;1;1
 new-round-countdown: CLICK;1;1
 match-start: FIREWORK_BLAST;1;1
+oitc-arrow-kill: NOTE_PLING;1;1.5
+oitc-melee-kill: ORB_PICKUP;1;1
+oitc-death: ENDERMAN_TELEPORT;1;1

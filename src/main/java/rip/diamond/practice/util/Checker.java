@@ -6,7 +6,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.potion.PotionEffectType;
-import rip.diamond.practice.events.EventType;
+
 import rip.diamond.practice.kits.KitMatchType;
 import rip.diamond.practice.match.MatchState;
 import rip.diamond.practice.profile.PlayerProfile;
@@ -106,15 +106,6 @@ public class Checker {
         }
     }
 
-    public static boolean isEventType(String index) {
-        try {
-            EventType.valueOf(index.toUpperCase());
-            return true;
-        } catch (Exception ignored) {
-            return false;
-        }
-    }
-
     public static boolean isKitMatchType(String index) {
         try {
             KitMatchType.valueOf(index.toUpperCase());
@@ -138,11 +129,26 @@ public class Checker {
         if (Util.isNPC(player)) {
             return profile != null;
         }
-        return profile.getPlayerState() == PlayerState.IN_MATCH
+
+        
+        if (profile.getPlayerState() == PlayerState.IN_MATCH
                 && profile.getMatch() != null
                 && profile.getMatch().getTeamPlayer(player).isAlive()
                 && !profile.getMatch().getTeamPlayer(player).isRespawning()
-                && profile.getMatch().getState() == MatchState.FIGHTING;
+                && profile.getMatch().getState() == MatchState.FIGHTING) {
+            return true;
+        }
+
+        
+        if (profile.getPlayerState() == PlayerState.IN_EVENT) {
+            rip.diamond.practice.events.PracticeEvent<?> event = rip.diamond.practice.Eden.INSTANCE.getEventManager().getEventPlaying(player);
+            
+            return event != null
+                && event.getState() == rip.diamond.practice.events.EventState.PLAYING
+                && event.getPlayers().containsKey(player.getUniqueId());
+        }
+
+        return false;
     }
 
 }

@@ -165,7 +165,7 @@ public class Party {
         broadcast(Language.PARTY_DISBAND.toString());
         getAllPartyMembers().stream().map(partyMember -> PlayerProfile.get(partyMember.getUniqueID())).forEach(profile -> {
             profile.setParty(null);
-            //Check if the player is in a match. This is to prevent player's inventory get reset when they are in match
+            
             if (profile.getPlayerState() != PlayerState.IN_MATCH && profile.getMatch() == null) {
                 profile.setupItems();
             }
@@ -209,7 +209,7 @@ public class Party {
         return getAllPartyMembers().stream().filter(partyMember -> partyMember.getUniqueID().equals(uuid)).findFirst().orElse(null);
     }
 
-    public PartyMember getMember(String username) { //Need to use real name, not disguised name
+    public PartyMember getMember(String username) { 
         return getAllPartyMembers().stream().filter(partyMember -> partyMember.getUsername().equalsIgnoreCase(username)).findFirst().orElse(null);
     }
 

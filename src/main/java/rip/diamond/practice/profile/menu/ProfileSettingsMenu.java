@@ -34,20 +34,20 @@ public class ProfileSettingsMenu extends Menu {
         String sizeStr = config.getString("profile-settings-menu.size");
 
         if ("dynamic".equalsIgnoreCase(sizeStr)) {
-            // Calculate dynamic size based on number of settings
+            
             int settingsCount = ProfileSettings.values().length;
             boolean hasBorder = config.getBoolean("profile-settings-menu.border.enabled");
 
-            // Calculate needed rows
+            
             int slotsPerRow = hasBorder ? 7 : 9;
             int rowsNeeded = (int) Math.ceil((double) settingsCount / slotsPerRow);
             int totalRows = rowsNeeded + (hasBorder ? 2 : 0);
 
-            // Ensure minimum of 3 rows
+            
             int maxSize = config.getInt("profile-settings-menu.max-size");
             int calculatedSize = Math.max(27, Math.min(totalRows * 9, maxSize));
 
-            // Round to valid inventory size
+            
             return ((calculatedSize + 8) / 9) * 9;
         } else {
             return config.getInt("profile-settings-menu.size");
@@ -59,11 +59,11 @@ public class ProfileSettingsMenu extends Menu {
         final Map<Integer, Button> buttons = new HashMap<>();
         BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
 
-        // Filler and Border
+        
         MenuUtil.addFillerButtons(buttons, config, "profile-settings-menu", getSize());
         MenuUtil.addBorderButtons(buttons, config, "profile-settings-menu", getSize());
 
-        // Settings buttons
+        
         for (ProfileSettings settings : ProfileSettings.values()) {
             String configKey = settings.name().toLowerCase().replace('_', '-');
             String path = "profile-settings-menu.items." + configKey;
@@ -85,23 +85,23 @@ public class ProfileSettingsMenu extends Menu {
                         String specificPath = path + "." + optionValue;
                         String statePath;
 
-                        // Check if material exists at base path (for settings like ping-range)
+                        
                         if (config.getConfiguration().contains(path + ".material")) {
                             statePath = path;
                         }
-                        // Check if specific configuration exists for this option value
+                        
                         else if (config.getConfiguration().contains(specificPath + ".material")) {
                             statePath = specificPath;
                         } else {
-                            // Fallback to enabled/disabled logic
+                            
                             boolean isEnabledState;
                             if (settings.getOptions().size() == 2 &&
                                     (settings.getOptions().get(0) instanceof TrueOption ||
                                             settings.getOptions().get(0) instanceof FalseOption)) {
-                                // Boolean setting
+                                
                                 isEnabledState = Boolean.parseBoolean(currentOption.getValue());
                             } else {
-                                // Multi-option setting: Non-default is considered "enabled"
+                                
                                 isEnabledState = !currentOption.equals(defaultOption);
                             }
                             statePath = path + "." + (isEnabledState ? "enabled" : "disabled");
@@ -112,7 +112,7 @@ public class ProfileSettingsMenu extends Menu {
                                 .durability(config.getInt(statePath + ".data"))
                                 .name(config.getString(statePath + ".name"));
 
-                        // Handle lore with placeholders for ping-range
+                        
                         List<String> lore = config.getStringList(statePath + ".lore");
                         if (settings == ProfileSettings.PING_RANGE) {
                             Option nextOption = settings.getNextOption(currentOption);
@@ -145,28 +145,28 @@ public class ProfileSettingsMenu extends Menu {
                             return;
                         }
 
-                        // Special handling for PING_RANGE
+                        
                         if (settings == ProfileSettings.PING_RANGE) {
-                            // Shift click resets to infinite
+                            
                             if (clickType.isShiftClick()) {
-                                Option infiniteOption = settings.getOptions().get(0); // First option is infinite
+                                Option infiniteOption = settings.getOptions().get(0); 
                                 profile.getSettings().replace(settings, infiniteOption);
                                 infiniteOption.run(player);
                             }
-                            // Left click: decrease ping range (50 -> 100 -> 150 -> 200 -> 300 -> infinite)
+                            
                             else if (clickType.isLeftClick()) {
                                 Option last = settings.getLastOption(currentOption);
                                 profile.getSettings().replace(settings, last);
                                 last.run(player);
                             }
-                            // Right click: increase ping range (infinite -> 300 -> 200 -> 150 -> 100 -> 50)
+                            
                             else if (clickType.isRightClick()) {
                                 Option next = settings.getNextOption(currentOption);
                                 profile.getSettings().replace(settings, next);
                                 next.run(player);
                             }
                         } else {
-                            // Default behavior for other settings
+                            
                             if (clickType.isLeftClick()) {
                                 Option next = settings.getNextOption(currentOption);
                                 profile.getSettings().replace(settings, next);

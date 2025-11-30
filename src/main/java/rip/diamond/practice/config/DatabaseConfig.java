@@ -6,7 +6,6 @@ import lombok.Getter;
 import rip.diamond.practice.Eden;
 import rip.diamond.practice.util.BasicConfigFile;
 import rip.diamond.practice.util.CC;
-import rip.diamond.practice.util.Common;
 
 import java.util.List;
 import java.util.Map;
@@ -16,10 +15,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public enum DatabaseConfig {
 
-    // Storage Type
     STORAGE_TYPE("storage-type", "FLATFILE"),
 
-    // MongoDB
     MONGODB_ENABLED("mongodb.enabled", true),
     MONGODB_URI_MODE("mongodb.uri-mode", false),
     MONGODB_NORMAL_HOST("mongodb.normal.host", "127.0.0.1"),
@@ -30,7 +27,6 @@ public enum DatabaseConfig {
     MONGODB_URI_DATABASE("mongodb.uri.database", "Practice"),
     MONGODB_URI_CONNECTION_STRING("mongodb.uri.connection-string", "mongodb://127.0.0.1:27017/Eden"),
 
-    // MySQL
     MYSQL_HOST("mysql.host", "127.0.0.1"),
     MYSQL_PORT("mysql.port", 3306),
     MYSQL_DATABASE("mysql.database", "eden_practice"),
@@ -107,19 +103,13 @@ public enum DatabaseConfig {
     public static void loadDefault() {
         BasicConfigFile databaseFile = Eden.INSTANCE.getDatabaseFile();
 
-        for (DatabaseConfig config : DatabaseConfig.values()) {
-            String path = config.getPath();
-            String str = databaseFile.getStringRaw(path);
-            if (str.equals(path)) {
-                Common.debug("沒有找到 '" + path + "'... 正在加入到 database.yml");
-                databaseFile.set(path, config.getDefaultValue());
-            }
-        }
+        boolean changed = ConfigUtil.addMissingKeys(databaseFile, DatabaseConfig.values());
 
-        databaseFile.save();
-        databaseFile.load();
-        invalidateCache();
+        if (changed) {
+            Eden.INSTANCE.getLogger().info("Updating database.yml with new keys...");
+            databaseFile.load();
+            invalidateCache();
+        }
     }
 
 }
-

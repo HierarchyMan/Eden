@@ -40,8 +40,8 @@ public class TabEntry {
     private ImanityTablist tab;
     private Skin texture;
     private TabColumn column;
-    private int slot; //slot means 1-20 + TabColumn.startNumber
-    private int rawSlot; //rawSlot means 1-80
+    private int slot; 
+    private int rawSlot; 
     private int latency;
 
 }

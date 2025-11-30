@@ -64,7 +64,7 @@ public class DuelCommand extends Command {
             }
         }
 
-        //duel [player] [kit:optional]
+        
         Player target = Bukkit.getPlayer(args[0]);
         if (target == null) {
             Language.DUEL_CANNOT_FIND_PLAYER.sendMessage(player, args[0]);

@@ -7,7 +7,7 @@ import org.bukkit.Material;
 import rip.diamond.practice.Eden;
 import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.BasicConfigFile;
-import rip.diamond.practice.util.Common;
+
 import rip.diamond.practice.util.Util;
 
 import java.util.List;
@@ -23,28 +23,31 @@ public enum Config {
     DISABLE_SAVE_WORLD("disable-save-world", true),
     LOBBY_ONLY_COMMANDS("lobby-only-commands", ImmutableList.of()),
 
-    // Tablist Edit
     FANCY_TABLIST_ENABLED("fancy-tablist.enabled", true),
     FANCY_TABLIST_FORMAT("fancy-tablist.format", "&a{player-name}"),
     FANCY_TABLIST_UPDATE_TICKS("fancy-tablist.update-ticks", 20),
-    // NameTag
+
     NAMETAG_ENABLED("nametag.enabled", true),
     NAMETAG_PREFIX_LOBBY("nametag.prefix.lobby", "&9"),
     NAMETAG_PREFIX_SPECTATOR("nametag.prefix.spectator", "&7"),
     NAMETAG_PREFIX_TEAMMATE("nametag.prefix.teammate", "&a"),
     NAMETAG_PREFIX_OPPONENT("nametag.prefix.opponent", "&c"),
     NAMETAG_PREFIX_OTHER("nametag.prefix.other", "&e"),
-    // Party
+
     PARTY_DEFAULT_MAX_SIZE("party.default-max-size", 30),
     PARTY_ANNOUNCE_COOLDOWN("party.announce-cooldown", 10),
-    // Lobby
+
     LOBBY_DISPLAY_PLAYERS("lobby.display-players", true),
-    // Queue
+
     QUEUE_RANKED_REQUIRED_WINS("queue.ranked-required-wins", 10),
-    // Match
+
     MATCH_ALLOW_PREFIRE("match.allow-prefire", true),
     MATCH_ALLOW_REQUEUE("match.allow-requeue", true),
     MATCH_OUTSIDE_CUBOID_INSTANT_DEATH("match.outside-cuboid-instant-death", true),
+    MATCH_ABOVE_BUILDHEIGHT_DAMAGE_ENABLED("match.above-buildheight-damage.enabled", true),
+    MATCH_ABOVE_BUILDHEIGHT_DAMAGE_THRESHOLD("match.above-buildheight-damage.threshold", 3),
+    MATCH_ABOVE_BUILDHEIGHT_DAMAGE_DELAY("match.above-buildheight-damage.delay", 20),
+    MATCH_ABOVE_BUILDHEIGHT_DAMAGE_AMOUNT("match.above-buildheight-damage.amount", 1.0),
     MATCH_REMOVE_CACTUS_SUGAR_CANE_PHYSICS("match.remove-cactus-sugar-cane-physics", true),
     MATCH_DEATH_LIGHTNING("match.death-lightning", true),
     MATCH_DEATH_ANIMATION("match.death-animation", true),
@@ -85,13 +88,13 @@ public enum Config {
             ImmutableList.of("REGENERATION;200;2", "ABSORPTION;2400;0", "SPEED;200;0")),
     MATCH_GOLDEN_HEAD_FOOD_LEVEL("match.golden-head.food-level", 6),
     MATCH_GOLDEN_HEAD_SATURATION_LEVEL("match.golden-head.saturation-level", 6),
-    // Event
+
     EVENT_SUMO_EVENT_ARENAS("event.sumo-event.arenas", ImmutableList.of("sumoevent")),
     EVENT_SUMO_EVENT_KIT("event.sumo-event.kit", "sumo"),
-    // Chat Format
+
     CHAT_FORMAT_ENABLED("chat-format.enabled", true),
     CHAT_FORMAT_FORMAT("chat-format.format", "&a%1$s&f: %2$s"),
-    // Profile
+
     PROFILE_DEFAULT_ELO("profile.default-elo", 1000),
     PROFILE_SAVE_ON_SERVER_STOP("profile.save-on-server-stop", true),
     PROFILE_DEFAULT_SETTINGS_TIME_CHANGER("profile.default-settings.time-changer", "normal"),
@@ -104,14 +107,14 @@ public enum Config {
             true),
     PROFILE_DEFAULT_SETTINGS_EVENT_ANNOUNCEMENT("profile.default-settings.event-announcement", true),
     PROFILE_DEFAULT_SETTINGS_PING_RANGE("profile.default-settings.ping-range", "infinite"),
-    // Crafting Options
+
     CRAFTING_ENABLED("crafting.enabled", false),
     CRAFTING_WHITELISTED_ITEMS("crafting.whitelisted-items", ImmutableList.of("MUSHROOM_SOUP")),
-    // Imanity Spigot Options
+
     IMANITY_TELEPORT_ASYNC("imanity.teleport-async", true),
-    // Optimization
+
     OPTIMIZATION_SET_BLOCK_FAST("optimization.set-block-fast", true),
-    // Experiment
+
     EXPERIMENT_DISABLE_ORIGINAL_ARENA("experiment.disable-original-arena", false),
     EXPERIMENT_K_FACTOR("experiment.k-factor", 32),
     ;
@@ -171,18 +174,13 @@ public enum Config {
     public static void loadDefault() {
         BasicConfigFile configFile = Eden.INSTANCE.getConfigFile();
 
-        for (Config config : Config.values()) {
-            String path = config.getPath();
-            String str = configFile.getStringRaw(path);
-            if (str.equals(path)) {
-                Common.debug("沒有找到 '" + path + "'... 正在加入到 config.yml");
-                configFile.set(path, config.getDefaultValue());
-            }
-        }
+        boolean changed = ConfigUtil.addMissingKeys(configFile, Config.values());
 
-        configFile.save();
-        configFile.load();
-        invalidateCache();
+        if (changed) {
+            Eden.INSTANCE.getLogger().info("Updating config.yml with new keys...");
+            configFile.load();
+            invalidateCache();
+        }
     }
 
 }

@@ -39,8 +39,8 @@ public class MatchMovementHandler {
                 if (gameRules.isStartFreeze() && match.getState() == MatchState.STARTING
                         && (from.getX() != to.getX() || from.getZ() != to.getZ())) {
                     Location location = match.getTeam(player).getSpawnLocation();
-                    // https://github.com/diamond-rip/Eden/issues/389#issuecomment-1630048579 -
-                    // Smoother looking by only changing the player's x and z location
+                    
+                    
                     location.setY(from.getY());
                     location.setPitch(from.getPitch());
                     location.setYaw(from.getYaw());
@@ -52,18 +52,18 @@ public class MatchMovementHandler {
                         && Config.MATCH_OUTSIDE_CUBOID_INSTANT_DEATH.toBoolean())
                         || arena.getYLimit() > player.getLocation().getY()) {
                     TeamPlayer teamPlayer = match.getTeamPlayer(player);
-                    // Only damage alive players who are not respawning
+                    
                     if (teamPlayer.isAlive() && !teamPlayer.isRespawning()) {
                         Util.damage(player, 99999);
                     }
                     return;
                 }
 
-                // Prevent any duplicate scoring
-                // If two people go into the portal at the same time in bridge, it will count as
-                // +2 points
-                // If player go into the water and PlayerMoveEvent is too slow to perform
-                // teleportation, it will run MatchNewRoundTask multiple times
+                
+                
+                
+                
+                
                 if (match.getMatchPlayers().stream().allMatch(p -> PlayerProfile
                         .get(p)
                         .getCooldowns()
@@ -71,12 +71,12 @@ public class MatchMovementHandler {
                         .isExpired())) {
                     TeamPlayer teamPlayer = match.getTeamPlayer(player);
                     if (match.getState() == MatchState.FIGHTING && !teamPlayer.isRespawning()) {
-                        //  KitGameRules 
+                        
                         if (gameRules.isDeathOnWater() && (block.getType() == Material.WATER
                                 || block.getType() == Material.STATIONARY_WATER)) {
                             if (gameRules.isPoint(match)) {
                                 TeamPlayer lastHitDamager = teamPlayer.getLastHitDamager();
-                                // , , , 
+                                
                                 if (lastHitDamager == null) {
                                     lastHitDamager = match.getOpponentTeam(match.getTeam(player)).getAliveTeamPlayers()
                                             .get(0);
@@ -88,7 +88,7 @@ public class MatchMovementHandler {
                             return;
                         }
 
-                        //  KitGameRules 
+                        
                         if (gameRules.isPortalGoal() && block.getType() == Material.ENDER_PORTAL) {
                             Team playerTeam = match.getTeam(player);
                             Team portalBelongsTo = match.getTeams().stream()
@@ -102,7 +102,7 @@ public class MatchMovementHandler {
                             if (portalBelongsTo != playerTeam) {
                                 match.score(profile, null, match.getTeamPlayer(player));
                             } else {
-                                // Prevent player scoring their own goal
+                                
                                 Util.damage(player, 99999);
                             }
                             return;

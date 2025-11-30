@@ -271,7 +271,7 @@ public class PartyCommand extends Command {
                     Language.PARTY_ONLY_LEADER.sendMessage(player);
                     return;
                 }
-                //Should not happen, but just in case
+                
                 if (party.getLeader().getPlayer() == null) {
                     Language.PARTY_ERROR_LEADER_NOT_FOUND.sendMessage(player);
                     return;

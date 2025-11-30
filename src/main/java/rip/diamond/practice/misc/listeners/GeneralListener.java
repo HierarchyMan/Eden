@@ -25,7 +25,7 @@ import org.bukkit.event.world.WorldLoadEvent;
 import rip.diamond.practice.Eden;
 import rip.diamond.practice.config.Config;
 import rip.diamond.practice.config.Language;
-import rip.diamond.practice.events.EdenEvent;
+
 import rip.diamond.practice.misc.task.EloResetTask;
 import rip.diamond.practice.party.Party;
 import rip.diamond.practice.profile.PlayerProfile;
@@ -54,10 +54,12 @@ public class GeneralListener implements Listener {
         }
     }
 
-    /*@EventHandler
-    public void onUnload(ChunkUnloadEvent event) {
-        event.setCancelled(true);
-    }*/
+    /*
+     * @EventHandler
+     * public void onUnload(ChunkUnloadEvent event) {
+     * event.setCancelled(true);
+     * }
+     */
 
     @EventHandler
     public void onWorldLoad(WorldLoadEvent event) {
@@ -100,7 +102,7 @@ public class GeneralListener implements Listener {
         if (!Config.MATCH_REMOVE_CACTUS_SUGAR_CANE_PHYSICS.toBoolean()) {
             return;
         }
-        if(type == Material.SUGAR_CANE_BLOCK || type == Material.CACTUS) {
+        if (type == Material.SUGAR_CANE_BLOCK || type == Material.CACTUS) {
             event.setCancelled(true);
         }
     }
@@ -112,7 +114,7 @@ public class GeneralListener implements Listener {
         }
     }
 
-    //
+    
     @EventHandler
     public void onCropsTrampling(PlayerInteractEvent event) {
         if (event.getAction() == Action.PHYSICAL && event.getClickedBlock().getType() == Material.SOIL) {

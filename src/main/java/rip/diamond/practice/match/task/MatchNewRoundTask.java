@@ -44,6 +44,7 @@ public class MatchNewRoundTask extends MatchTaskTicker {
             match.broadcastTitle("");
             match.setState(MatchState.FIGHTING);
             match.broadcastSound(EdenSound.MATCH_START);
+            match.removeStartingHolograms();
 
             MatchRoundStartEvent event = new MatchRoundStartEvent(match);
             event.call();
@@ -59,25 +60,19 @@ public class MatchNewRoundTask extends MatchTaskTicker {
 
     @Override
     public void preRun() {
-        match.clearEntities(true); // Patch for #226 - Clear all entities when new round is happening, so things
-                                   // like arrow and pearl from last round will not be activated
+        match.clearEntities(true);
 
-        // To prevent any duplicate MatchNewRoundTask happens
-        // This will occur when the match is sumo, and player walked into the water
-        // without taking any hits from opponent
         if (match.getTasks().stream().filter(taskTicker -> taskTicker != this)
                 .anyMatch(taskTicker -> taskTicker instanceof MatchNewRoundTask)) {
             cancel();
             return;
         }
 
-        // Meaning the game is started and someone scored
         if (scoredPlayer != null && match.getState() != MatchState.STARTING
                 && match.getKit().getGameRules().isPoint(match)) {
             Team team = match.getTeam(scoredPlayer);
             Player player = scoredPlayer.getPlayer();
 
-            // Display scored message
             match.broadcastMessage(Language.MATCH_NEW_ROUND_START_SCORE.toStringList(player,
                     team.getTeamColor().getColor(),
                     scoredPlayer.getUsername(),
@@ -88,7 +83,6 @@ public class MatchNewRoundTask extends MatchTaskTicker {
                     match.getOpponentTeam(team).getPoints()).stream().map(CenteredMessageSender::getCenteredMessage)
                     .collect(Collectors.toList()));
 
-            // Display scored title
             if (Config.MATCH_TITLE_SCORE.toBoolean()) {
                 String scoredTeamColor = team.getTeamColor().getColor();
                 String opponentTeamColor = match.getOpponentTeam(team).getTeamColor().getColor();
@@ -105,13 +99,10 @@ public class MatchNewRoundTask extends MatchTaskTicker {
         if (newRound) {
             match.setState(MatchState.STARTING);
 
-            // Teleport players into their team spawn
             match.getTeams().forEach(t -> t.teleport(t.getSpawnLocation()));
             match.getTeamPlayers().forEach(teamPlayer -> {
                 if (teamPlayer.isRespawning()) {
-                    // To prevent MatchRespawnTask gets cancelled because of a new round, we need to
-                    // fully respawn the player instead of just giving the kit loadout. A fix for
-                    // https://github.com/RealGoodestEnglish/Eden/issues/4
+
                     match.respawn(teamPlayer);
                 } else {
                     teamPlayer.respawn(match);
@@ -121,7 +112,6 @@ public class MatchNewRoundTask extends MatchTaskTicker {
             if (match.getKit().getGameRules().isResetArenaWhenGetPoint()) {
                 match.getArenaDetail().restoreChunk(true, false);
 
-                // Cancel any runnable which affects the gameplay
                 match.getTasks().stream().filter(taskTicker -> taskTicker instanceof MatchClearBlockTask)
                         .forEach(BukkitRunnable::cancel);
             }

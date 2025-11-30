@@ -54,11 +54,11 @@ public class ChooseKitMenu extends Menu {
         BasicConfigFile config = Eden.INSTANCE.getMenusConfig().getConfig();
         int itemsPerPage = MenuUtil.getItemsPerPage(config, "party-choose-kit-menu");
 
-        // Filler and Border
+
         MenuUtil.addFillerButtons(buttons, config, "party-choose-kit-menu", getSize());
         MenuUtil.addBorderButtons(buttons, config, "party-choose-kit-menu", getSize());
 
-        // Kit buttons
+
         List<Kit> allKits = getFilteredKits();
         int startIndex = (page - 1) * itemsPerPage;
         int endIndex = Math.min(startIndex + itemsPerPage, allKits.size());
@@ -68,7 +68,7 @@ public class ChooseKitMenu extends Menu {
         boolean hasBorder = config.getBoolean("party-choose-kit-menu.border.enabled");
         int kitIndex = 0;
         for (int slot = 0; slot < getSize() && kitIndex < kitsOnThisPage.size(); slot++) {
-            // Skip border slots
+
             if (hasBorder && (slot < 9 || slot >= getSize() - 9 || slot % 9 == 0 || slot % 9 == 8)) {
                 continue;
             }
@@ -103,7 +103,7 @@ public class ChooseKitMenu extends Menu {
             kitIndex++;
         }
 
-        // Pagination
+
         MenuUtil.addPreviousPageButton(buttons, config, "party-choose-kit-menu", page,
             p -> new ChooseKitMenu(kitMatchType, page - 1).openMenu(p));
         MenuUtil.addNextPageButton(buttons, config, "party-choose-kit-menu", endIndex < allKits.size(),

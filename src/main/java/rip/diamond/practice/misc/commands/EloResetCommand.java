@@ -38,7 +38,7 @@ public class EloResetCommand extends Command {
         String[] args = command.getArgs();
 
         if (args.length == 0) {
-            // Use DatabaseManager
+            
             Tasks.runAsync(() -> {
                 List<Document> documents = Eden.INSTANCE.getDatabaseManager().getHandler().getAllProfiles();
                 Tasks.run(() -> new EloResetTask(documents));
@@ -58,7 +58,7 @@ public class EloResetCommand extends Command {
                     Common.sendMessage(sender, CC.RED + "Cannot find a document with uuid '" + uuid.toString() + "'");
                     return;
                 }
-                // Task must run on main thread as it extends TaskTicker
+                
                 Tasks.run(() -> new EloResetTask(Collections.singletonList(document)));
             });
         }

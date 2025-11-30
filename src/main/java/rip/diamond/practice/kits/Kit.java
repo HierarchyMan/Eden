@@ -61,6 +61,9 @@ public class Kit {
 	@Getter
 	@Setter
 	private List<KitExtraItem> kitExtraItems = new ArrayList<>();
+	@Getter
+	@Setter
+	private List<String> allowedEvents = new ArrayList<>();
 
 	@Getter
 	@Setter
@@ -103,6 +106,7 @@ public class Kit {
 						GsonType.KIT_MATCH_TYPES);
 				List<KitExtraItem> kitExtraItems = Eden.GSON.fromJson(kitSection.getString(id + ".kit-extra-item"),
 						GsonType.KIT_EXTRA_ITEM);
+				List<String> allowedEvents = kitSection.getStringList(id + ".allowed-events");
 
 				Kit kit = new Kit(id);
 				kit.setEnabled(enabled);
@@ -118,12 +122,12 @@ public class Kit {
 				kit.setGameRules(gameRules);
 				kit.setKitMatchTypes(kitMatchTypes);
 				kit.setKitExtraItems(kitExtraItems);
+				kit.setAllowedEvents(allowedEvents);
 
 				loadedKits.add(kit);
 			});
 		}
 
-		// Process existing kits
 		List<Kit> toRemove = new ArrayList<>();
 		for (Kit currentKit : new ArrayList<>(kits)) {
 			Kit newVersion = loadedKits.stream().filter(k -> k.getName().equals(currentKit.getName())).findFirst()
@@ -140,7 +144,6 @@ public class Kit {
 
 		kits.removeAll(toRemove);
 
-		// Add new/updated kits
 		for (Kit loadedKit : loadedKits) {
 			if (kits.stream().noneMatch(k -> k.getName().equals(loadedKit.getName()))) {
 				kits.add(loadedKit);
@@ -151,6 +154,23 @@ public class Kit {
 		Common.log("&aReloaded kits. " + kits.size() + " kits loaded.");
 	}
 
+	public static void processPendingReload(Kit kit) {
+		if (kit.isPendingReload()) {
+			if (kit.isUsing()) {
+				return;
+			}
+
+			kits.remove(kit);
+			if (kit.getNextVersion() != null) {
+				kits.add(kit.getNextVersion());
+				sortKit();
+				Common.log("&aKit " + kit.getName() + " has been reloaded (was pending).");
+			} else {
+				Common.log("&aKit " + kit.getName() + " has been removed (was pending).");
+			}
+		}
+	}
+
 	public Kit(String name) {
 		this.name = name;
 		this.displayName = name;
@@ -159,6 +179,7 @@ public class Kit {
 	}
 
 	public static void init() {
+		kits.clear();
 		FileConfiguration fileConfig = Eden.INSTANCE.getKitFile().getConfiguration();
 		ConfigurationSection kitSection = fileConfig.getConfigurationSection("kits");
 		if (kitSection == null) {
@@ -186,6 +207,7 @@ public class Kit {
 					GsonType.KIT_MATCH_TYPES);
 			List<KitExtraItem> kitExtraItems = Eden.GSON.fromJson(kitSection.getString(id + ".kit-extra-item"),
 					GsonType.KIT_EXTRA_ITEM);
+			List<String> allowedEvents = kitSection.getStringList(id + ".allowed-events");
 
 			Kit kit = new Kit(id);
 			kit.setEnabled(enabled);
@@ -201,6 +223,7 @@ public class Kit {
 			kit.setGameRules(gameRules);
 			kit.setKitMatchTypes(kitMatchTypes);
 			kit.setKitExtraItems(kitExtraItems);
+			kit.setAllowedEvents(allowedEvents);
 
 			kits.add(kit);
 		});
@@ -223,7 +246,7 @@ public class Kit {
 	public void save() {
 		FileConfiguration fileConfig = Eden.INSTANCE.getKitFile().getConfiguration();
 		String kitRoot = "kits." + name;
-		fileConfig.set(kitRoot, null); // Remove everything related to that kit first, then add the details one by one
+		fileConfig.set(kitRoot, null);
 		fileConfig.set(kitRoot + ".enabled", enabled);
 		fileConfig.set(kitRoot + ".ranked", ranked);
 		fileConfig.set(kitRoot + ".display-name", displayName);
@@ -238,6 +261,7 @@ public class Kit {
 		fileConfig.set(kitRoot + ".game-rules", Eden.GSON.toJson(gameRules, GsonType.KIT_GAME_RULES));
 		fileConfig.set(kitRoot + ".kit-match-types", Eden.GSON.toJson(kitMatchTypes, GsonType.KIT_MATCH_TYPES));
 		fileConfig.set(kitRoot + ".kit-extra-item", Eden.GSON.toJson(kitExtraItems, GsonType.KIT_EXTRA_ITEM));
+		fileConfig.set(kitRoot + ".allowed-events", allowedEvents);
 
 		Eden.INSTANCE.getKitFile().save();
 	}
@@ -255,6 +279,21 @@ public class Kit {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Kit kit = (Kit) o;
+		return java.util.Objects.equals(name, kit.name);
+	}
+
+	@Override
+	public int hashCode() {
+		return java.util.Objects.hash(name);
 	}
 
 }
