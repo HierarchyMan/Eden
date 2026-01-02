@@ -691,12 +691,12 @@ public abstract class Match {
    private final List<rip.diamond.practice.leaderboard.hologram.PracticeHologram> startingHolograms = new ArrayList<>();
 
    public void showStartingHolograms() {
-      System.out.println("MatchStartingHologram: showStartingHolograms called for match " + uuid);
+      Common.debug("MatchStartingHologram: showStartingHolograms called for match " + uuid);
       if (!kit.getGameRules().isShowMatchStartScoreboard()) {
-         System.out.println("MatchStartingHologram: Rule disabled for kit " + kit.getName());
+         Common.debug("MatchStartingHologram: Rule disabled for kit " + kit.getName());
          return;
       }
-      System.out.println("MatchStartingHologram: Showing holograms for match " + uuid);
+      Common.debug("MatchStartingHologram: Showing holograms for match " + uuid);
       for (Team team : getTeams()) {
          createStartingHologram(team, "left");
          createStartingHologram(team, "right");
@@ -707,7 +707,7 @@ public abstract class Match {
       rip.diamond.practice.util.file.ConfigCursor config = new rip.diamond.practice.util.file.ConfigCursor(
             Eden.INSTANCE.getLeaderboardsConfig(), "match-starting-holograms." + side);
       if (!config.exists("type")) {
-         System.out.println("MatchStartingHologram: Config type not found for side " + side);
+         Common.debug("MatchStartingHologram: Config type not found for side " + side);
          return;
       }
 
@@ -715,7 +715,7 @@ public abstract class Match {
       try {
          type = rip.diamond.practice.leaderboard.LeaderboardType.valueOf(config.getString("type"));
       } catch (IllegalArgumentException e) {
-         System.out.println("MatchStartingHologram: Invalid type " + config.getString("type"));
+         Common.debug("MatchStartingHologram: Invalid type " + config.getString("type"));
          return;
       }
 
@@ -725,12 +725,12 @@ public abstract class Match {
 
       Location loc = team.getSpawnLocation();
 
-      System.out.println("MatchStartingHologram: Team " + team.getTeamColor() + " spawn location: " +
+      Common.debug("MatchStartingHologram: Team " + team.getTeamColor() + " spawn location: " +
             loc.getX() + ", " + loc.getY() + ", " + loc.getZ() +
             " (yaw: " + loc.getYaw() + ", pitch: " + loc.getPitch() + ") in world " + loc.getWorld().getName());
 
       org.bukkit.util.Vector dir = loc.getDirection().setY(0).normalize();
-      System.out.println(
+      Common.debug(
             "MatchStartingHologram: Direction vector: " + dir.getX() + ", " + dir.getY() + ", " + dir.getZ());
 
       org.bukkit.util.Vector right = dir.clone().crossProduct(new org.bukkit.util.Vector(0, 1, 0)).normalize();
@@ -740,7 +740,7 @@ public abstract class Match {
             .add(right.multiply(rightOffset))
             .add(0, upOffset, 0);
 
-      System.out.println("MatchStartingHologram: Calculated hologram location: " +
+      Common.debug("MatchStartingHologram: Calculated hologram location: " +
             hologramLoc.getX() + ", " + hologramLoc.getY() + ", " + hologramLoc.getZ());
 
       rip.diamond.practice.leaderboard.hologram.impl.MatchStartingHologram hologram = new rip.diamond.practice.leaderboard.hologram.impl.MatchStartingHologram(

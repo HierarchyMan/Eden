@@ -127,9 +127,9 @@ match:
     ## Should Eden handle how fireball works? (Including modify the value of fireball, explosion, speed, etc.)
     enabled: true
     ## Maximum damage at point-blank to yourself/teammates (scales with distance)
-    max-damage-self: 2.0
+    max-damage-self: 0.0
     ## Maximum damage at point-blank to enemies (scales with distance)
-    max-damage-others: 4.0
+    max-damage-others: 2.5
     ## How fast should the fireball speed goes?
     ## This value is a double, meaning it can include decimal points
     speed: 2.0
@@ -158,9 +158,9 @@ match:
     ## Should Eden handle how TNT works?
     enabled: true
     ## Maximum damage at point-blank to yourself/teammates (scales with distance)
-    max-damage-self: 2.0
+    max-damage-self: 0.0
     ## Maximum damage at point-blank to enemies (scales with distance)
-    max-damage-others: 6.0
+    max-damage-others: 3.5
     ## The power of the TNT explosion
     ## This value is a float, meaning it can include decimal points
     ## Default value of Minecraft's TNT yield is 4.0

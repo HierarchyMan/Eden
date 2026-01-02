@@ -271,7 +271,9 @@ public class EdenCommand extends Command {
         String[] args = command.getArgs();
 
         if (args.length == 1) {
-            return Arrays.stream(Action.values()).map(Action::name).collect(Collectors.toList());
+            List<String> suggestions = Arrays.stream(Action.values()).map(Action::name).collect(Collectors.toList());
+            suggestions.add("item");  // Registered as separate subcommand
+            return suggestions;
         } else if (args.length == 2 && args[0].equalsIgnoreCase("migrate")) {
             return Arrays.asList("FLATFILE", "MONGODB", "MYSQL");
         } else if (args.length == 3 && args[0].equalsIgnoreCase("migrate")) {

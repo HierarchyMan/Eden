@@ -14,7 +14,7 @@ import java.util.List;
 
 public class ItemCommand extends Command {
 
-    @CommandArgs(name = "eden.item", permission = "eden.command.item", inGameOnly = true)
+    @CommandArgs(name = "eden item", permission = "eden.command.item", inGameOnly = true)
     public void execute(CommandArguments args) {
         Player player = args.getPlayer();
         String[] arguments = args.getArgs();
@@ -46,6 +46,18 @@ public class ItemCommand extends Command {
 
     @Override
     public List<String> getDefaultTabComplete(CommandArguments command) {
-        return Arrays.asList("set", "reset");
+        String[] args = command.getArgs();
+        
+        if (args.length <= 1) {
+            // First argument: action
+            return Arrays.asList("set", "reset");
+        } else if (args.length == 2) {
+            // Second argument: item type
+            return Arrays.stream(rip.diamond.practice.managers.DefaultItem.values())
+                    .map(item -> item.getName())
+                    .collect(java.util.stream.Collectors.toList());
+        }
+        
+        return Arrays.asList();
     }
 }

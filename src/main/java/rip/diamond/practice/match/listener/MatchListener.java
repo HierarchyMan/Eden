@@ -381,35 +381,22 @@ public class MatchListener implements Listener {
             Player player = (Player) event.getEntity();
             Fireball fireball = (Fireball) event.getDamager();
             
-            // Determine if self-damage or enemy damage
-            double maxDamage;
-            if (fireball.getShooter() instanceof Player) {
-                Player shooter = (Player) fireball.getShooter();
-                PlayerProfile shooterProfile = PlayerProfile.get(shooter);
-                PlayerProfile targetProfile = PlayerProfile.get(player);
-                
-                if (shooterProfile != null && targetProfile != null 
-                        && shooterProfile.getMatch() != null && shooterProfile.getMatch() == targetProfile.getMatch()) {
-                    Match match = shooterProfile.getMatch();
-                    Team shooterTeam = match.getTeam(shooter);
-                    Team targetTeam = match.getTeam(player);
-                    
-                    if (shooterTeam != null && shooterTeam.equals(targetTeam)) {
-                        maxDamage = Config.MATCH_FIREBALL_MAX_DAMAGE_SELF.toDouble();
-                    } else {
-                        maxDamage = Config.MATCH_FIREBALL_MAX_DAMAGE_OTHERS.toDouble();
-                    }
-                } else {
-                    maxDamage = Config.MATCH_FIREBALL_MAX_DAMAGE_OTHERS.toDouble();
-                }
-            } else {
-                maxDamage = Config.MATCH_FIREBALL_MAX_DAMAGE_OTHERS.toDouble();
-            }
+            double maxDamage = rip.diamond.practice.match.util.ExplosionDamageUtil.getMaxDamage(
+                    player,
+                    fireball.getShooter() instanceof org.bukkit.entity.LivingEntity ? (org.bukkit.entity.LivingEntity) fireball.getShooter() : null,
+                    Config.MATCH_FIREBALL_MAX_DAMAGE_SELF.toDouble(),
+                    Config.MATCH_FIREBALL_MAX_DAMAGE_OTHERS.toDouble());
             
-            // Scale damage: originalDamage is distance-based, scale it so max becomes our configured max
-            // Vanilla fireball max damage is roughly yield * 6
-            double vanillaMaxDamage = Config.MATCH_FIREBALL_YIELD.toDouble() * 6.0;
-            double scaledDamage = (event.getDamage() / vanillaMaxDamage) * maxDamage;
+            // Get pre-calculated obstruction from metadata
+            String key = "obstruction_" + player.getUniqueId().toString();
+            int obstructionBlocks = fireball.hasMetadata(key) ? fireball.getMetadata(key).get(0).asInt() : 0;
+            
+            double scaledDamage = rip.diamond.practice.match.util.ExplosionDamageUtil.calculateDamage(
+                    player.getLocation(),
+                    event.getDamager().getLocation(),
+                    Config.MATCH_FIREBALL_YIELD.toDouble(),
+                    maxDamage,
+                    obstructionBlocks);
 
             if (Config.MATCH_FIREBALL_KNOCKBACK_ENABLED.toBoolean()) {
                 event.setCancelled(true);
@@ -425,35 +412,22 @@ public class MatchListener implements Listener {
             Player player = (Player) event.getEntity();
             TNTPrimed tnt = (TNTPrimed) event.getDamager();
             
-            // Determine if self-damage or enemy damage
-            double maxDamage;
-            if (tnt.getSource() instanceof Player) {
-                Player source = (Player) tnt.getSource();
-                PlayerProfile sourceProfile = PlayerProfile.get(source);
-                PlayerProfile targetProfile = PlayerProfile.get(player);
-                
-                if (sourceProfile != null && targetProfile != null 
-                        && sourceProfile.getMatch() != null && sourceProfile.getMatch() == targetProfile.getMatch()) {
-                    Match match = sourceProfile.getMatch();
-                    Team sourceTeam = match.getTeam(source);
-                    Team targetTeam = match.getTeam(player);
-                    
-                    if (sourceTeam != null && sourceTeam.equals(targetTeam)) {
-                        maxDamage = Config.MATCH_TNT_MAX_DAMAGE_SELF.toDouble();
-                    } else {
-                        maxDamage = Config.MATCH_TNT_MAX_DAMAGE_OTHERS.toDouble();
-                    }
-                } else {
-                    maxDamage = Config.MATCH_TNT_MAX_DAMAGE_OTHERS.toDouble();
-                }
-            } else {
-                maxDamage = Config.MATCH_TNT_MAX_DAMAGE_OTHERS.toDouble();
-            }
+            double maxDamage = rip.diamond.practice.match.util.ExplosionDamageUtil.getMaxDamage(
+                    player,
+                    tnt.getSource() instanceof org.bukkit.entity.LivingEntity ? (org.bukkit.entity.LivingEntity) tnt.getSource() : null,
+                    Config.MATCH_TNT_MAX_DAMAGE_SELF.toDouble(),
+                    Config.MATCH_TNT_MAX_DAMAGE_OTHERS.toDouble());
             
-            // Scale damage: originalDamage is distance-based, scale it so max becomes our configured max
-            // Vanilla TNT max damage is roughly yield * 5.5
-            double vanillaMaxDamage = Config.MATCH_TNT_YIELD.toDouble() * 5.5;
-            double scaledDamage = (event.getDamage() / vanillaMaxDamage) * maxDamage;
+            // Get pre-calculated obstruction from metadata
+            String key = "obstruction_" + player.getUniqueId().toString();
+            int obstructionBlocks = tnt.hasMetadata(key) ? tnt.getMetadata(key).get(0).asInt() : 0;
+            
+            double scaledDamage = rip.diamond.practice.match.util.ExplosionDamageUtil.calculateDamage(
+                    player.getLocation(),
+                    event.getDamager().getLocation(),
+                    Config.MATCH_TNT_YIELD.toDouble(),
+                    maxDamage,
+                    obstructionBlocks);
 
             if (Config.MATCH_TNT_KNOCKBACK_ENABLED.toBoolean()) {
                 event.setCancelled(true);
@@ -1193,6 +1167,21 @@ public class MatchListener implements Listener {
             Common.log(CC.RED + "ERROR: Cannot find match when explosion happens ("
                     + LocationSerialization.toReadable(location) + CC.RED + ") (" + type.name() + ")");
             return;
+        }
+        
+        // Pre-calculate obstruction for nearby players BEFORE blocks are destroyed
+        double yield = (type == EntityType.FIREBALL) 
+                ? Config.MATCH_FIREBALL_YIELD.toDouble() 
+                : Config.MATCH_TNT_YIELD.toDouble();
+        double radius = yield * 2.0;
+        
+        for (Player player : match.getPlayersAndSpectators()) {
+            if (player.getLocation().distance(location) <= radius) {
+                int blockCount = rip.diamond.practice.match.util.ExplosionDamageUtil.countBlocksInPath(location, player.getLocation());
+                // Store in entity metadata for retrieval during damage event
+                String key = "obstruction_" + player.getUniqueId().toString();
+                event.getEntity().setMetadata(key, new org.bukkit.metadata.FixedMetadataValue(Eden.INSTANCE, blockCount));
+            }
         }
 
         if (type == EntityType.FIREBALL && Config.MATCH_FIREBALL_ENABLED.toBoolean()) {
