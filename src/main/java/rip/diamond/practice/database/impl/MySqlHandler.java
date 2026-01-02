@@ -85,6 +85,10 @@ public class MySqlHandler implements DatabaseHandler {
                     "uuid VARCHAR(36) NOT NULL PRIMARY KEY," +
                     "json LONGTEXT NOT NULL" +
                     ")");
+            st.executeUpdate("CREATE TABLE IF NOT EXISTS custom_items (" +
+                    "name VARCHAR(64) NOT NULL PRIMARY KEY," +
+                    "item LONGTEXT NOT NULL" +
+                    ")");
         }
     }
 
@@ -212,5 +216,59 @@ public class MySqlHandler implements DatabaseHandler {
         } catch (Exception e) {
             Eden.INSTANCE.getLogger().log(Level.SEVERE, "Failed to save raw document for " + uuid, e);
         }
+    }
+
+    @Override
+    public void saveCustomItem(String key, org.bukkit.inventory.ItemStack item) {
+        Tasks.runAsync(() -> {
+            String sql = "INSERT INTO custom_items (name, item) VALUES (?, ?) ON DUPLICATE KEY UPDATE item=VALUES(item)";
+            try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+                ps.setString(1, key);
+                ps.setString(2, rip.diamond.practice.util.serialization.BukkitSerialization.itemStackToBase64(item));
+                ps.executeUpdate();
+            } catch (Exception e) {
+                Eden.INSTANCE.getLogger().log(Level.SEVERE, "Failed to save custom item " + key, e);
+            }
+        });
+    }
+
+    @Override
+    public void loadAllCustomItems(Consumer<java.util.Map<String, org.bukkit.inventory.ItemStack>> callback) {
+        Tasks.runAsync(() -> {
+            java.util.Map<String, org.bukkit.inventory.ItemStack> map = new java.util.HashMap<>();
+            String sql = "SELECT name, item FROM custom_items";
+            try (Connection c = dataSource.getConnection();
+                    PreparedStatement ps = c.prepareStatement(sql);
+                    ResultSet rs = ps.executeQuery()) {
+
+                while (rs.next()) {
+                    String key = rs.getString("name");
+                    String itemBase64 = rs.getString("item");
+                    try {
+                        map.put(key, rip.diamond.practice.util.serialization.BukkitSerialization
+                                .itemStackFromBase64(itemBase64));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            } catch (Exception e) {
+                Eden.INSTANCE.getLogger().log(Level.SEVERE, "Failed to load all custom items", e);
+            }
+            callback.accept(map);
+        });
+    }
+
+    @Override
+    public void deleteCustomItem(String key) {
+        Tasks.runAsync(() -> {
+            String sql = "DELETE FROM custom_items WHERE name=?";
+            try (Connection c = dataSource.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
+                ps.setString(1, key);
+                ps.executeUpdate();
+            } catch (Exception e) {
+                Eden.INSTANCE.getLogger().log(Level.SEVERE, "Failed to delete custom item " + key, e);
+            }
+        });
     }
 }

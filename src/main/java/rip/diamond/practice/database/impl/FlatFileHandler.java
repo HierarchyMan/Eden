@@ -21,11 +21,14 @@ import java.util.stream.Collectors;
 public class FlatFileHandler implements DatabaseHandler {
 
     private final File folder;
+    private final File customItemsFile;
+    private final Object fileLock = new Object();
 
     private final Map<String, UUID> nameIndex = new ConcurrentHashMap<>();
 
     public FlatFileHandler() {
         this.folder = new File(Eden.INSTANCE.getDataFolder(), "data");
+        this.customItemsFile = new File(this.folder, "custom_items.json");
     }
 
     @Override
@@ -214,5 +217,77 @@ public class FlatFileHandler implements DatabaseHandler {
         }
         File file = new File(folder, uuid + ".json");
         writeJsonAtomically(file, json);
+    }
+
+    @Override
+    public void saveCustomItem(String key, org.bukkit.inventory.ItemStack item) {
+        Tasks.runAsync(() -> {
+            synchronized (fileLock) {
+                Document document;
+                if (customItemsFile.exists()) {
+                    try {
+                        String content = new String(Files.readAllBytes(customItemsFile.toPath()),
+                                StandardCharsets.UTF_8);
+                        document = Document.parse(content);
+                    } catch (Exception e) {
+                        document = new Document();
+                    }
+                } else {
+                    document = new Document();
+                }
+
+                document.put(key, rip.diamond.practice.util.serialization.BukkitSerialization.itemStackToBase64(item));
+                writeJsonAtomically(customItemsFile, document.toJson());
+            }
+        });
+    }
+
+    @Override
+    public void loadAllCustomItems(Consumer<java.util.Map<String, org.bukkit.inventory.ItemStack>> callback) {
+        Tasks.runAsync(() -> {
+            synchronized (fileLock) {
+                java.util.Map<String, org.bukkit.inventory.ItemStack> map = new java.util.HashMap<>();
+                if (customItemsFile.exists()) {
+                    try {
+                        String content = new String(Files.readAllBytes(customItemsFile.toPath()),
+                                StandardCharsets.UTF_8);
+                        Document document = Document.parse(content);
+                        for (String key : document.keySet()) {
+                            try {
+                                map.put(key, rip.diamond.practice.util.serialization.BukkitSerialization
+                                        .itemStackFromBase64(document.getString(key)));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    } catch (Exception e) {
+                        Eden.INSTANCE.getLogger().log(java.util.logging.Level.SEVERE, "Failed to load custom items", e);
+                    }
+                }
+                callback.accept(map);
+            }
+        });
+    }
+
+    @Override
+    public void deleteCustomItem(String key) {
+        Tasks.runAsync(() -> {
+            synchronized (fileLock) {
+                if (customItemsFile.exists()) {
+                    try {
+                        String content = new String(Files.readAllBytes(customItemsFile.toPath()),
+                                StandardCharsets.UTF_8);
+                        Document document = Document.parse(content);
+                        if (document.containsKey(key)) {
+                            document.remove(key);
+                            writeJsonAtomically(customItemsFile, document.toJson());
+                        }
+                    } catch (Exception e) {
+                        Eden.INSTANCE.getLogger().log(java.util.logging.Level.SEVERE,
+                                "Failed to delete custom item " + key, e);
+                    }
+                }
+            }
+        });
     }
 }

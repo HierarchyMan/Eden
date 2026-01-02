@@ -363,7 +363,6 @@ OITC:
       - "&f3. &b{top3_name} &7- &f{top3_score}"
       - ""
       - "{server-ip}"
-      - "{server-ip}"
       - "&7&m---------------------"
   ENDING:
     TITLE: "&b&lOITC"

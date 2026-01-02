@@ -379,27 +379,89 @@ public class MatchListener implements Listener {
         } else if (event.getEntity() instanceof Player && event.getDamager() instanceof Fireball
                 && Config.MATCH_FIREBALL_ENABLED.toBoolean()) {
             Player player = (Player) event.getEntity();
+            Fireball fireball = (Fireball) event.getDamager();
+            
+            // Determine if self-damage or enemy damage
+            double maxDamage;
+            if (fireball.getShooter() instanceof Player) {
+                Player shooter = (Player) fireball.getShooter();
+                PlayerProfile shooterProfile = PlayerProfile.get(shooter);
+                PlayerProfile targetProfile = PlayerProfile.get(player);
+                
+                if (shooterProfile != null && targetProfile != null 
+                        && shooterProfile.getMatch() != null && shooterProfile.getMatch() == targetProfile.getMatch()) {
+                    Match match = shooterProfile.getMatch();
+                    Team shooterTeam = match.getTeam(shooter);
+                    Team targetTeam = match.getTeam(player);
+                    
+                    if (shooterTeam != null && shooterTeam.equals(targetTeam)) {
+                        maxDamage = Config.MATCH_FIREBALL_MAX_DAMAGE_SELF.toDouble();
+                    } else {
+                        maxDamage = Config.MATCH_FIREBALL_MAX_DAMAGE_OTHERS.toDouble();
+                    }
+                } else {
+                    maxDamage = Config.MATCH_FIREBALL_MAX_DAMAGE_OTHERS.toDouble();
+                }
+            } else {
+                maxDamage = Config.MATCH_FIREBALL_MAX_DAMAGE_OTHERS.toDouble();
+            }
+            
+            // Scale damage: originalDamage is distance-based, scale it so max becomes our configured max
+            // Vanilla fireball max damage is roughly yield * 6
+            double vanillaMaxDamage = Config.MATCH_FIREBALL_YIELD.toDouble() * 6.0;
+            double scaledDamage = (event.getDamage() / vanillaMaxDamage) * maxDamage;
 
             if (Config.MATCH_FIREBALL_KNOCKBACK_ENABLED.toBoolean()) {
                 event.setCancelled(true);
-                player.damage(event.getDamage() / Config.MATCH_FIREBALL_DIVIDE_DAMAGE.toDouble());
+                player.damage(scaledDamage);
                 Util.pushAway(player, event.getDamager().getLocation(),
                         Config.MATCH_FIREBALL_KNOCKBACK_VERTICAL.toDouble(),
                         Config.MATCH_FIREBALL_KNOCKBACK_HORIZONTAL.toDouble());
             } else {
-                event.setDamage(event.getDamage() / Config.MATCH_FIREBALL_DIVIDE_DAMAGE.toDouble());
+                event.setDamage(scaledDamage);
             }
         } else if (event.getEntity() instanceof Player && event.getDamager() instanceof TNTPrimed
                 && Config.MATCH_TNT_ENABLED.toBoolean()) {
             Player player = (Player) event.getEntity();
+            TNTPrimed tnt = (TNTPrimed) event.getDamager();
+            
+            // Determine if self-damage or enemy damage
+            double maxDamage;
+            if (tnt.getSource() instanceof Player) {
+                Player source = (Player) tnt.getSource();
+                PlayerProfile sourceProfile = PlayerProfile.get(source);
+                PlayerProfile targetProfile = PlayerProfile.get(player);
+                
+                if (sourceProfile != null && targetProfile != null 
+                        && sourceProfile.getMatch() != null && sourceProfile.getMatch() == targetProfile.getMatch()) {
+                    Match match = sourceProfile.getMatch();
+                    Team sourceTeam = match.getTeam(source);
+                    Team targetTeam = match.getTeam(player);
+                    
+                    if (sourceTeam != null && sourceTeam.equals(targetTeam)) {
+                        maxDamage = Config.MATCH_TNT_MAX_DAMAGE_SELF.toDouble();
+                    } else {
+                        maxDamage = Config.MATCH_TNT_MAX_DAMAGE_OTHERS.toDouble();
+                    }
+                } else {
+                    maxDamage = Config.MATCH_TNT_MAX_DAMAGE_OTHERS.toDouble();
+                }
+            } else {
+                maxDamage = Config.MATCH_TNT_MAX_DAMAGE_OTHERS.toDouble();
+            }
+            
+            // Scale damage: originalDamage is distance-based, scale it so max becomes our configured max
+            // Vanilla TNT max damage is roughly yield * 5.5
+            double vanillaMaxDamage = Config.MATCH_TNT_YIELD.toDouble() * 5.5;
+            double scaledDamage = (event.getDamage() / vanillaMaxDamage) * maxDamage;
 
-            if (Config.MATCH_TNT_ENABLED.toBoolean()) {
+            if (Config.MATCH_TNT_KNOCKBACK_ENABLED.toBoolean()) {
                 event.setCancelled(true);
-                player.damage(event.getDamage() / Config.MATCH_TNT_DIVIDE_DAMAGE.toDouble());
+                player.damage(scaledDamage);
                 Util.pushAway(player, event.getDamager().getLocation(), Config.MATCH_TNT_KNOCKBACK_VERTICAL.toDouble(),
                         Config.MATCH_TNT_KNOCKBACK_HORIZONTAL.toDouble());
             } else {
-                event.setDamage(event.getDamage() / Config.MATCH_TNT_DIVIDE_DAMAGE.toDouble());
+                event.setDamage(scaledDamage);
             }
         }
     }
@@ -413,6 +475,16 @@ public class MatchListener implements Listener {
 
         if (item.getItemStack().getType() == Material.BED) {
             event.setCancelled(true);
+            return;
+        }
+
+        // Track items spawned within match arenas (e.g., explosion drops) so they can be picked up
+        Location loc = item.getLocation();
+        for (Match match : Match.getMatches().values()) {
+            if (match.getArenaDetail().getCuboid().contains(loc)) {
+                match.addDroppedItem(item, null);
+                break;
+            }
         }
     }
 
@@ -477,6 +549,36 @@ public class MatchListener implements Listener {
         }
     }
 
+    private boolean isGoldenHead(ItemStack item) {
+        if (item == null)
+            return false;
+        ItemStack goldenHead = rip.diamond.practice.Eden.INSTANCE.getCustomItemManager().getItem("GOLDEN_HEAD");
+        if (goldenHead != null && item.isSimilar(goldenHead)) {
+            return true;
+        }
+        return item.hasItemMeta() && item.getItemMeta().hasDisplayName() &&
+                ChatColor.stripColor(item.getItemMeta().getDisplayName()).toLowerCase().contains("golden head");
+    }
+
+    private void applyGoldenHeadEffects(Player player) {
+        for (String s : Config.MATCH_GOLDEN_HEAD_EFFECTS.toStringList()) {
+            String[] effect = s.split(";");
+            if (effect.length < 3)
+                continue;
+            PotionEffectType type = PotionEffectType.getByName(effect[0]);
+            if (type == null)
+                continue;
+            int duration = Integer.parseInt(effect[1]);
+            int amplifier = Integer.parseInt(effect[2]);
+
+            player.removePotionEffect(type);
+            player.addPotionEffect(new PotionEffect(type, duration, amplifier));
+        }
+        player.setFoodLevel(Math.min(player.getFoodLevel() + Config.MATCH_GOLDEN_HEAD_FOOD_LEVEL.toInteger(), 20));
+        player.setSaturation(
+                Math.min(player.getSaturation() + Config.MATCH_GOLDEN_HEAD_SATURATION_LEVEL.toInteger(), 20));
+    }
+
     @EventHandler
     public void onConsume(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
@@ -484,6 +586,18 @@ public class MatchListener implements Listener {
 
         if (profile.getPlayerState() == PlayerState.IN_MATCH && profile.getMatch() != null) {
             Match match = profile.getMatch();
+
+            if (isGoldenHead(event.getItem())) {
+                event.setCancelled(true);
+                ItemStack hand = player.getItemInHand();
+                if (hand.getAmount() > 1) {
+                    hand.setAmount(hand.getAmount() - 1);
+                } else {
+                    player.setItemInHand(null);
+                }
+                applyGoldenHeadEffects(player);
+                return;
+            }
 
             if (event.getItem().getType() == Material.GOLDEN_APPLE) {
                 if (match.getKit().getGameRules().isHypixelUHC()) {
@@ -509,15 +623,6 @@ public class MatchListener implements Listener {
                         ((CraftPlayer) player).getHandle().setAbsorptionHearts(0);
                     }
                     return;
-                } else if (event.getItem().hasItemMeta()
-                        && ChatColor.stripColor(event.getItem().getItemMeta().getDisplayName()).toLowerCase()
-                                .contains("golden head")) {
-                    player.removePotionEffect(PotionEffectType.REGENERATION);
-                    player.removePotionEffect(PotionEffectType.ABSORPTION);
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 200, 1));
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 2400, 0));
-                    player.setFoodLevel(Math.min(player.getFoodLevel() + 6, 20));
-                    return;
                 }
             }
         }
@@ -535,37 +640,30 @@ public class MatchListener implements Listener {
             ItemStack itemStack = event.getItem();
             if (itemStack != null) {
 
-                if (itemStack.getType() == Material.SKULL_ITEM && match.getKit().getGameRules().isHypixelUHC()
-                        && itemStack.hasItemMeta() && ChatColor.stripColor(itemStack.getItemMeta().getDisplayName())
-                                .toLowerCase().contains("golden head")) {
-                    if (!profile.getCooldowns().get(CooldownType.GOLDEN_HEAD).isExpired()) {
-                        String time = TimeUtil
-                                .millisToSeconds(profile.getCooldowns().get(CooldownType.GOLDEN_HEAD).getRemaining());
-                        Language.MATCH_USE_AGAIN_GOLDEN_HEAD.sendMessage(player, time);
-                    } else {
-                        profile.getCooldowns().put(CooldownType.GOLDEN_HEAD, new Cooldown(1));
+                if (isGoldenHead(itemStack)) {
+                    if (itemStack.getType() == Material.SKULL_ITEM || match.getKit().getGameRules().isHypixelUHC()) {
+                        if (!profile.getCooldowns().get(CooldownType.GOLDEN_HEAD).isExpired()) {
+                            String time = TimeUtil
+                                    .millisToSeconds(
+                                            profile.getCooldowns().get(CooldownType.GOLDEN_HEAD).getRemaining());
+                            Language.MATCH_USE_AGAIN_GOLDEN_HEAD.sendMessage(player, time);
+                        } else {
+                            profile.getCooldowns().put(CooldownType.GOLDEN_HEAD, new Cooldown(1));
 
-                        EdenSound.GOLDEN_HEAD_EAT.play(player);
-                        for (String s : Config.MATCH_GOLDEN_HEAD_EFFECTS.toStringList()) {
-                            String[] effect = s.split(";");
-                            PotionEffectType type = PotionEffectType.getByName(effect[0]);
-                            int duration = Integer.parseInt(effect[1]);
-                            int amplifier = Integer.parseInt(effect[2]);
+                            EdenSound.GOLDEN_HEAD_EAT.play(player);
+                            applyGoldenHeadEffects(player);
 
-                            player.removePotionEffect(type);
-                            player.addPotionEffect(new PotionEffect(type, duration, amplifier));
+                            if (itemStack.getAmount() > 1) {
+                                itemStack.setAmount(itemStack.getAmount() - 1);
+                            } else {
+                                player.setItemInHand(null);
+                            }
+                            player.updateInventory();
                         }
-                        player.setFoodLevel(
-                                Math.min(player.getFoodLevel() + Config.MATCH_GOLDEN_HEAD_FOOD_LEVEL.toInteger(), 20));
-                        player.setSaturation(Math.min(
-                                player.getSaturation() + Config.MATCH_GOLDEN_HEAD_SATURATION_LEVEL.toInteger(), 20));
-                        player.setItemInHand(new ItemBuilder(player.getItemInHand())
-                                .amount(player.getItemInHand().getAmount() - 1).build());
-                        player.updateInventory();
-                    }
 
-                    event.setCancelled(true);
-                    return;
+                        event.setCancelled(true);
+                        return;
+                    }
                 }
 
                 else if (itemStack.getType() == Material.ENDER_PEARL && action.name().startsWith("RIGHT_")) {
@@ -809,23 +907,28 @@ public class MatchListener implements Listener {
             if (match.getState() == MatchState.STARTING && match.getKit().getGameRules().isStartFreeze()) {
                 if (!(match.getKit().getGameRules().isBed() && block.getType() == Material.TNT)) {
                     event.setCancelled(true);
+                    player.updateInventory();
                     return;
                 }
             }
             if (match.getState() == MatchState.ENDING) {
                 event.setCancelled(true);
+                player.updateInventory();
                 return;
             }
             if (!match.getTeamPlayer(player).isAlive() || match.getTeamPlayer(player).isRespawning()) {
                 event.setCancelled(true);
+                player.updateInventory();
                 return;
             }
             if (!match.getKit().getGameRules().isBuild()) {
                 event.setCancelled(true);
+                player.updateInventory();
                 return;
             }
             if (match.isProtected(block.getLocation(), true, block)) {
                 event.setCancelled(true);
+                player.updateInventory();
                 return;
             }
 
@@ -841,6 +944,7 @@ public class MatchListener implements Listener {
                 Util.setSource(tntPrimed, player);
 
                 event.setCancelled(true);
+                player.updateInventory();
                 return;
             }
 
@@ -1092,14 +1196,55 @@ public class MatchListener implements Listener {
         }
 
         if (type == EntityType.FIREBALL && Config.MATCH_FIREBALL_ENABLED.toBoolean()) {
-            event.blockList()
-                    .removeIf(block -> !Config.MATCH_FIREBALL_ALLOWED_BREAKING_BLOCKS.toStringList()
-                            .contains(block.getType().name()) || match.isProtected(block.getLocation(), false)
-                            || block.getType() == Material.BED_BLOCK);
+            List<String> allowedBlocks = Config.MATCH_FIREBALL_ALLOWED_BREAKING_BLOCKS.toStringList();
+            List<String> placedOnlyBlocks = Config.MATCH_FIREBALL_PLACED_ONLY_BREAKING_BLOCKS.toStringList();
+            
+            event.blockList().removeIf(block -> {
+                String blockName = block.getType().name();
+                
+                // BED_BLOCK is always protected
+                if (block.getType() == Material.BED_BLOCK) {
+                    return true;
+                }
+                
+                // If in allowed list, use original behavior (arena blocks + player-placed)
+                if (allowedBlocks.contains(blockName)) {
+                    return match.isProtected(block.getLocation(), false);
+                }
+                
+                // If in placed-only list, must be player-placed
+                if (placedOnlyBlocks.contains(blockName)) {
+                    return !match.getPlacedBlocks().contains(block.getLocation());
+                }
+                
+                // Not in any list, remove from explosion
+                return true;
+            });
         } else if (type == EntityType.PRIMED_TNT && Config.MATCH_TNT_ENABLED.toBoolean()) {
-            event.blockList().removeIf(
-                    block -> !Config.MATCH_TNT_ALLOWED_BREAKING_BLOCKS.toStringList().contains(block.getType().name())
-                            || match.isProtected(block.getLocation(), false) || block.getType() == Material.BED_BLOCK);
+            List<String> allowedBlocks = Config.MATCH_TNT_ALLOWED_BREAKING_BLOCKS.toStringList();
+            List<String> placedOnlyBlocks = Config.MATCH_TNT_PLACED_ONLY_BREAKING_BLOCKS.toStringList();
+            
+            event.blockList().removeIf(block -> {
+                String blockName = block.getType().name();
+                
+                // BED_BLOCK is always protected
+                if (block.getType() == Material.BED_BLOCK) {
+                    return true;
+                }
+                
+                // If in allowed list, use original behavior (arena blocks + player-placed)
+                if (allowedBlocks.contains(blockName)) {
+                    return match.isProtected(block.getLocation(), false);
+                }
+                
+                // If in placed-only list, must be player-placed
+                if (placedOnlyBlocks.contains(blockName)) {
+                    return !match.getPlacedBlocks().contains(block.getLocation());
+                }
+                
+                // Not in any list, remove from explosion
+                return true;
+            });
         }
     }
 

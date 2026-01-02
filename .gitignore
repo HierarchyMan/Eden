@@ -9,6 +9,7 @@
 /.target/
 *output.py
 *output.txt
+/.agent/*
 
 # Maven
 /target/

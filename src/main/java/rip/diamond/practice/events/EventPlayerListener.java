@@ -111,7 +111,7 @@ public class EventPlayerListener implements Listener {
                 if (profileVoid != null && profileVoid.getPlayerState() == PlayerState.IN_EVENT) {
                     PracticeEvent<?> event1 = plugin.getEventManager().getEventPlaying(player);
                     if (event1 != null) {
-                        
+
                         event1.onDeath().accept(player);
                         event.setCancelled(true);
                     }
@@ -175,7 +175,6 @@ public class EventPlayerListener implements Listener {
                 return;
             }
 
-            
             if (plugin.getEventManager().getSpectators().containsKey(damager.getUniqueId()) ||
                     plugin.getEventManager().getSpectators().containsKey(entity.getUniqueId())) {
                 event.setCancelled(true);
@@ -189,7 +188,7 @@ public class EventPlayerListener implements Listener {
                     event.setCancelled(true);
                     return;
                 }
-                event.setDamage(0.0D); 
+                event.setDamage(0.0D);
             } else if (eventDamager instanceof KnockoutEvent) {
                 KnockoutEvent knockoutEvent = (KnockoutEvent) eventDamager;
                 if (knockoutEvent.getPlayer(damager).getState() != KnockoutPlayer.KnockoutState.FIGHTING
@@ -197,7 +196,7 @@ public class EventPlayerListener implements Listener {
                     event.setCancelled(true);
                     return;
                 }
-                event.setDamage(0.0D); 
+                event.setDamage(0.0D);
             } else if (eventDamager instanceof BracketsEvent) {
                 BracketsEvent bracketsEvent = (BracketsEvent) eventDamager;
                 if (bracketsEvent.getPlayer(damager).getState() != BracketsPlayer.BracketsState.FIGHTING
@@ -205,7 +204,7 @@ public class EventPlayerListener implements Listener {
                     event.setCancelled(true);
                     return;
                 }
-                event.setDamage(0.0D); 
+                event.setDamage(0.0D);
             } else if (eventDamager instanceof LMSEvent) {
                 LMSEvent lmsEvent = (LMSEvent) eventDamager;
                 if (lmsEvent.getPlayer(damager).getState() != LMSPlayer.LMSState.FIGHTING
@@ -270,6 +269,7 @@ public class EventPlayerListener implements Listener {
             if (practiceEvent != null) {
                 if (!practiceEvent.canDropItems()) {
                     event.setCancelled(true);
+                    player.updateInventory();
                 }
             }
         }

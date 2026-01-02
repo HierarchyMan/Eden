@@ -38,6 +38,7 @@ import rip.diamond.practice.lobby.LobbyManager;
 import rip.diamond.practice.lobby.LobbyMovementHandler;
 import rip.diamond.practice.managers.EventManager;
 import rip.diamond.practice.managers.SpawnManager;
+import rip.diamond.practice.managers.CustomItemManager;
 import rip.diamond.practice.managers.chest.ChestManager;
 import rip.diamond.practice.managers.chunk.ChunkRestorationManager;
 import rip.diamond.practice.match.Match;
@@ -99,6 +100,7 @@ public class Eden extends JavaPlugin {
 
     private CommandManager commandManager;
     private DatabaseManager databaseManager;
+    private CustomItemManager customItemManager;
     private LobbyManager lobbyManager;
     private KitEditorManager kitEditorManager;
     private DuelRequestManager duelRequestManager;
@@ -265,6 +267,7 @@ public class Eden extends JavaPlugin {
     private void loadManagers() {
         this.commandManager = new CommandManager(this);
         this.databaseManager = new DatabaseManager(this);
+        this.customItemManager = new CustomItemManager();
         this.lobbyManager = new LobbyManager(this);
         this.kitEditorManager = new KitEditorManager(this);
         this.duelRequestManager = new DuelRequestManager();
@@ -307,6 +310,7 @@ public class Eden extends JavaPlugin {
         new ArenaCommand();
         new GoldenHeadCommand();
         new KitCommand();
+        new rip.diamond.practice.command.ItemCommand();
         new EdenCommand();
         new EloResetCommand();
         new LocationCommand();

@@ -55,7 +55,7 @@ public class SkyWarsEvent extends PracticeEvent<SkyWarsPlayer> implements Listen
 
     @Override
     public EventCountdownTask getCountdownTask() {
-        
+
         if (eventCountdown == null || eventCountdown.isEnded()) {
             eventCountdown = new SkyWarsCountdown(this, 2);
         }
@@ -79,16 +79,15 @@ public class SkyWarsEvent extends PracticeEvent<SkyWarsPlayer> implements Listen
 
     @Override
     public void onStart() {
-        
+
         Location min = plugin.getSpawnManager().getSkywarsMin();
         Location max = plugin.getSpawnManager().getSkywarsMax();
         if (min != null && max != null) {
             this.arenaCuboid = new Cuboid(min, max);
-            
+
             plugin.getChunkRestorationManager().copy(this.arenaCuboid);
         }
 
-        
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
 
         gameTask = new SkyWarsGameTask();
@@ -112,14 +111,13 @@ public class SkyWarsEvent extends PracticeEvent<SkyWarsPlayer> implements Listen
             return;
         }
 
-        
         final List<Block> allBlocks = new ArrayList<>();
         for (Block block : arenaCuboid) {
             allBlocks.add(block);
         }
 
         final List<Location> chests = new ArrayList<>();
-        final int blocksPerTick = 500; 
+        final int blocksPerTick = 500;
         final int[] currentIndex = { 0 };
 
         new BukkitRunnable() {
@@ -171,7 +169,6 @@ public class SkyWarsEvent extends PracticeEvent<SkyWarsPlayer> implements Listen
             handleWin(winner);
         }
 
-        
         Location lobby = getSpawnLocations().isEmpty() ? null : getSpawnLocations().get(0);
         if (lobby != null) {
             for (Player p : getBukkitPlayers()) {
@@ -185,13 +182,13 @@ public class SkyWarsEvent extends PracticeEvent<SkyWarsPlayer> implements Listen
 
     @Override
     public void end() {
-        
+
         if (gameTask != null) {
             gameTask.cancel();
         }
 
         super.end();
-        
+
         if (this.arenaCuboid != null) {
             plugin.getChunkRestorationManager().reset(this.arenaCuboid);
         }
@@ -202,7 +199,6 @@ public class SkyWarsEvent extends PracticeEvent<SkyWarsPlayer> implements Listen
         return player -> {
             players.put(player.getUniqueId(), new SkyWarsPlayer(player.getUniqueId(), this));
 
-            
             if (players.size() == 1 && chestLocations.isEmpty()) {
                 cacheChestLocations();
             }
@@ -220,18 +216,12 @@ public class SkyWarsEvent extends PracticeEvent<SkyWarsPlayer> implements Listen
             Player killer = player.getKiller();
             data.setState(SkyWarsPlayer.SkyWarsState.ELIMINATED);
 
-            
             if (killer != null) {
                 SkyWarsPlayer killerData = getPlayer(killer);
                 if (killerData != null) {
                     killerData.setKills(killerData.getKills() + 1);
                 }
             }
-
-            
-            
-            
-            
 
             plugin.getEventManager().addSpectator(player,
                     rip.diamond.practice.profile.PlayerProfile.get(player), this);
@@ -256,7 +246,7 @@ public class SkyWarsEvent extends PracticeEvent<SkyWarsPlayer> implements Listen
         SkyWarsPlayer skyWarsPlayer = getPlayer(player);
         if (skyWarsPlayer != null) {
             if (skyWarsPlayer.getState() == SkyWarsPlayer.SkyWarsState.FIGHTING) {
-                
+
                 skyWarsPlayer.setState(SkyWarsPlayer.SkyWarsState.ELIMINATED);
                 sendMessage(ChatColor.RED + player.getName() + ChatColor.GRAY + " disconnected.");
             }
@@ -284,17 +274,19 @@ public class SkyWarsEvent extends PracticeEvent<SkyWarsPlayer> implements Listen
 
             if (getState() != EventState.PLAYING) {
                 event.setCancelled(true);
+                player.updateInventory();
                 return;
             }
 
             if (data.getState() != SkyWarsPlayer.SkyWarsState.FIGHTING) {
                 event.setCancelled(true);
+                player.updateInventory();
                 return;
             }
 
-            
             if (arenaCuboid != null && !arenaCuboid.contains(event.getBlock().getLocation())) {
                 event.setCancelled(true);
+                player.updateInventory();
             }
         }
     }
@@ -309,17 +301,19 @@ public class SkyWarsEvent extends PracticeEvent<SkyWarsPlayer> implements Listen
 
             if (getState() != EventState.PLAYING) {
                 event.setCancelled(true);
+                player.updateInventory();
                 return;
             }
 
             if (data.getState() != SkyWarsPlayer.SkyWarsState.FIGHTING) {
                 event.setCancelled(true);
+                player.updateInventory();
                 return;
             }
 
-            
             if (arenaCuboid != null && !arenaCuboid.contains(event.getBlock().getLocation())) {
                 event.setCancelled(true);
+                player.updateInventory();
             }
         }
     }
@@ -338,7 +332,7 @@ public class SkyWarsEvent extends PracticeEvent<SkyWarsPlayer> implements Listen
             }
 
             if (data.getState() != SkyWarsPlayer.SkyWarsState.FIGHTING) {
-                
+
                 if (event.getClickedBlock() != null &&
                         (event.getClickedBlock().getType() == Material.CHEST ||
                                 event.getClickedBlock().getType() == Material.TRAPPED_CHEST)) {
@@ -365,10 +359,8 @@ public class SkyWarsEvent extends PracticeEvent<SkyWarsPlayer> implements Listen
                 sendMessage(plugin.getLanguageFile().getConfiguration()
                         .getString("event.new-round-start.message"));
 
-                
                 setState(EventState.PLAYING);
 
-                
                 if (!chestLocations.isEmpty()) {
                     populateCachedChests();
                 }
@@ -383,22 +375,17 @@ public class SkyWarsEvent extends PracticeEvent<SkyWarsPlayer> implements Listen
                             player.teleport(spawnList.remove(ThreadLocalRandom.current().nextInt(spawnList.size())));
                         }
 
-                        
                         EventLoadout loadout = new EventLoadout("SkyWars");
                         if (loadout.exists()) {
                             loadout.apply(player);
                         } else {
-                            
+
                             getKitOptional().ifPresent(kit -> kit.getKitLoadout().apply(kit, null, player));
                         }
                     });
                 });
             } else if (time <= 0) {
-                
-                
-                
-                
-                
+
                 preEnd(null);
                 cancel();
                 return;
@@ -423,20 +410,18 @@ public class SkyWarsEvent extends PracticeEvent<SkyWarsPlayer> implements Listen
         } else if (getState() == EventState.ENDING) {
             lines = new ArrayList<>(Eden.INSTANCE.getScoreboardFile().getLines("SKYWARS", "ENDING"));
         } else {
-            
+
             lines = new ArrayList<>(Eden.INSTANCE.getScoreboardFile().getLines("SKYWARS", "PLAYING"));
         }
 
-        
         List<String> replaced = new ArrayList<>();
         for (String line : lines) {
-            
+
             line = line.replace("{event_name}", getName());
             line = line.replace("{event_players}", String.valueOf(getPlayers().size()));
             line = line.replace("{event_limit}", String.valueOf(getLimit()));
             line = line.replace("{event_host}", getHost() != null ? getHost().getName() : "None");
 
-            
             if (getState() == EventState.PLAYING) {
                 SkyWarsPlayer data = getPlayer(player);
                 if (data != null) {

@@ -53,13 +53,13 @@ public class ProfileListener implements Listener {
         }
         PlayerProfile profile = PlayerProfile.createPlayerProfile(player);
 
-        
         PlayerUtil.reset(player);
         plugin.getLobbyManager().teleport(player);
 
         profile.load((success) -> {
             if (!success) {
-                Tasks.run(()-> player.kickPlayer(CC.RED + "[Eden] Unable to load your data. Please try to re-login in a few seconds"));
+                Tasks.run(() -> player.kickPlayer(
+                        CC.RED + "[Eden] Unable to load your data. Please try to re-login in a few seconds"));
             } else {
                 Language.JOIN_MESSAGE.sendListOfMessage(player);
                 plugin.getLobbyManager().sendToSpawnAndReset(player);
@@ -78,7 +78,7 @@ public class ProfileListener implements Listener {
         Player player = event.getPlayer();
         PlayerProfile profile = PlayerProfile.get(player);
 
-        if (profile == null) { 
+        if (profile == null) {
             Common.log(player.getName() + "'s profile is not saved due to the profile is null");
             return;
         }
@@ -87,12 +87,12 @@ public class ProfileListener implements Listener {
             if (success) {
                 PlayerProfile.getProfiles().remove(player.getUniqueId());
             } else {
-                Common.log(CC.RED + "[Eden] Unable to save " + player.getName() + "'s profile. Data is not going to clear.");
+                Common.log(CC.RED + "[Eden] Unable to save " + player.getName()
+                        + "'s profile. Data is not going to clear.");
             }
         });
     }
 
-    
     @EventHandler(priority = EventPriority.LOW)
     public void onInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -100,7 +100,7 @@ public class ProfileListener implements Listener {
 
         if (profile.getPlayerState() != PlayerState.IN_MATCH && profile.getPlayerState() != PlayerState.IN_EVENT) {
             event.setCancelled(player.getGameMode() != GameMode.CREATIVE);
-            
+
         }
 
         ItemStack item = event.getItem();
@@ -124,7 +124,6 @@ public class ProfileListener implements Listener {
             }
         }
     }
-
 
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
@@ -153,7 +152,10 @@ public class ProfileListener implements Listener {
         Player player = event.getPlayer();
         PlayerProfile profile = PlayerProfile.get(player);
         if (profile.getPlayerState() != PlayerState.IN_MATCH && profile.getPlayerState() != PlayerState.IN_EVENT) {
-            event.setCancelled(event.getPlayer().getGameMode() != GameMode.CREATIVE);
+            if (event.getPlayer().getGameMode() != GameMode.CREATIVE) {
+                event.setCancelled(true);
+                player.updateInventory();
+            }
         }
     }
 
@@ -182,12 +184,13 @@ public class ProfileListener implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        
+
         if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
             PlayerProfile profile = PlayerProfile.get(player);
 
-            if (event.getClickedInventory() instanceof PlayerInventory && !profile.getPlayerState().isAbleToMoveItemInInventory()) {
+            if (event.getClickedInventory() instanceof PlayerInventory
+                    && !profile.getPlayerState().isAbleToMoveItemInInventory()) {
                 event.setCancelled(player.getGameMode() != GameMode.CREATIVE);
             }
         }
@@ -230,11 +233,8 @@ public class ProfileListener implements Listener {
             profile.setupItems();
         }
 
-        
         if (settings == ProfileSettings.MATCH_SCOREBOARD) {
-            
-            
-            
+
         }
     }
 

@@ -90,8 +90,6 @@ public class MatchStartingHologram extends LeaderboardHologram {
         updateLines();
 
         if (getLines().isEmpty()) {
-            System.out.println(
-                    "MatchStartingHologram: Lines are empty for team " + team.getTeamColor() + " side " + side);
         }
 
         boolean recreate = false;
@@ -131,9 +129,9 @@ public class MatchStartingHologram extends LeaderboardHologram {
         for (Player player : team.getPlayers()) {
             if (player != null && player.isOnline()) {
                 boolean inWorld = player.getWorld().equals(getLocation().getWorld());
-                boolean inRange = player.getLocation().distanceSquared(getLocation()) < 64 * 64;
+                boolean inRange = inWorld && player.getLocation().distanceSquared(getLocation()) < 64 * 64;
 
-                if (inWorld && inRange) {
+                if (inRange) {
                     if (!viewers.contains(player.getUniqueId())) {
                         show(player);
                         viewers.add(player.getUniqueId());

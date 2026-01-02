@@ -93,4 +93,39 @@ public class MongoHandler implements DatabaseHandler {
         String uuid = document.getString("uuid");
         profiles.replaceOne(Filters.eq("uuid", uuid), document, new ReplaceOptions().upsert(true));
     }
+
+    @Override
+    public void saveCustomItem(String key, org.bukkit.inventory.ItemStack item) {
+        Tasks.runAsync(() -> {
+            Document document = new Document("_id", key);
+            document.put("item", rip.diamond.practice.util.serialization.BukkitSerialization.itemStackToBase64(item));
+            database.getCollection("custom_items").replaceOne(Filters.eq("_id", key), document,
+                    new ReplaceOptions().upsert(true));
+        });
+    }
+
+    @Override
+    public void loadAllCustomItems(Consumer<java.util.Map<String, org.bukkit.inventory.ItemStack>> callback) {
+        Tasks.runAsync(() -> {
+            java.util.Map<String, org.bukkit.inventory.ItemStack> map = new java.util.HashMap<>();
+            for (Document document : database.getCollection("custom_items").find()) {
+                String key = document.getString("_id");
+                String itemBase64 = document.getString("item");
+                try {
+                    map.put(key, rip.diamond.practice.util.serialization.BukkitSerialization
+                            .itemStackFromBase64(itemBase64));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            callback.accept(map);
+        });
+    }
+
+    @Override
+    public void deleteCustomItem(String key) {
+        Tasks.runAsync(() -> {
+            database.getCollection("custom_items").deleteOne(Filters.eq("_id", key));
+        });
+    }
 }

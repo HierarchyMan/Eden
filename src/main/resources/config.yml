@@ -60,11 +60,11 @@ match:
   above-buildheight-damage:
     enabled: true
     ## How many seconds should the player be above the build height before taking damage?
-    threshold: 6
+    threshold: 4
     ## How often (in ticks) should the damage be applied?
     delay: 40
     ## How much damage should be applied?
-    amount: 4.0
+    amount: 3.0
   ## Should Eden remove cactus and sugar cane's physics?
   ## If true, when player places a block near cactus and sugar cane, cactus won't be destroyed
   remove-cactus-sugar-cane-physics: true
@@ -126,21 +126,25 @@ match:
   fireball:
     ## Should Eden handle how fireball works? (Including modify the value of fireball, explosion, speed, etc.)
     enabled: true
-    ## Should Eden modify the fireball damage?
-    ## The damage will be original damage divide by 'divide-damage'
-    ## For example, if original damage is 10, 'divide-damage' is 5, then player will take 2 damage (10 / 5 = 2)
-    divide-damage: 5.0
+    ## Maximum damage at point-blank to yourself/teammates (scales with distance)
+    max-damage-self: 2.0
+    ## Maximum damage at point-blank to enemies (scales with distance)
+    max-damage-others: 4.0
     ## How fast should the fireball speed goes?
     ## This value is a double, meaning it can include decimal points
     speed: 2.0
     ## The power of the fireball's explosion
     ## This value is a float, meaning it can include decimal points
     yield: 2.0
-    ## The block which allow to break by the explosion
-    ## Blocks which is placed by match players will ALWAYS allow breaking
+    ## The block which allow to break by the explosion (arena blocks + player-placed)
     allowed-breaking-blocks:
       - WOOD
       - ENDER_STONE
+    ## Blocks that can ONLY be broken if placed by players during the match
+    ## These will NOT destroy arena blocks, only player-placed blocks
+    placed-only-breaking-blocks:
+      - WOOL
+      - LADDER
     ## The knockback when player takes damage by fireball
     knockback:
       ## Should Eden use our own knockback mechanism?
@@ -153,10 +157,10 @@ match:
   tnt:
     ## Should Eden handle how TNT works?
     enabled: true
-    ## Should Eden modify the TNT damage?
-    ## The damage will be original damage divide by 'divide-damage'
-    ## For example, if original damage is 10, 'divide-damage' is 5, then player will take 2 damage (10 / 5 = 2)
-    divide-damage: 5.0
+    ## Maximum damage at point-blank to yourself/teammates (scales with distance)
+    max-damage-self: 2.0
+    ## Maximum damage at point-blank to enemies (scales with distance)
+    max-damage-others: 6.0
     ## The power of the TNT explosion
     ## This value is a float, meaning it can include decimal points
     ## Default value of Minecraft's TNT yield is 4.0
@@ -164,11 +168,15 @@ match:
     ## The ticks of the tnt explosion
     ## Remember: 20 ticks is equals to 1 second. Meaning 50 ticks is 2.5 seconds
     fuse-ticks: 50
-    ## The block which allow to break by the explosion
-    ## Blocks which is placed by match players will ALWAYS allow breaking
+    ## The block which allow to break by the explosion (arena blocks + player-placed)
     allowed-breaking-blocks:
       - WOOD
       - ENDER_STONE
+    ## Blocks that can ONLY be broken if placed by players during the match
+    ## These will NOT destroy arena blocks, only player-placed blocks
+    placed-only-breaking-blocks:
+      - WOOL
+      - LADDER
     ## The knockback when player takes damage by TNT
     knockback:
       ## Should Eden use our own knockback mechanism?
@@ -261,7 +269,6 @@ optimization:
 ## Avoid to change any of these settings if the developer didn't tell you to change
 experiment:
   disable-original-arena: false
-  new-arena-chunk-cache: false
   k-factor: 32
 ## Kit Editor Mode
 ## Options: GUI, LEGACY

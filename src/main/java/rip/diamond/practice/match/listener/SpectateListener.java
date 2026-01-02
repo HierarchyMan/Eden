@@ -41,6 +41,7 @@ public class SpectateListener implements Listener {
 
         if (profile.getPlayerState() == PlayerState.IN_SPECTATING) {
             event.setCancelled(true);
+            player.updateInventory();
         }
     }
 

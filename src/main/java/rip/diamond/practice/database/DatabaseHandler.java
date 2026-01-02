@@ -26,4 +26,13 @@ public interface DatabaseHandler {
 
     // Save raw document (For migration)
     void saveDocumentRaw(Document document);
+
+    // Save a custom item
+    void saveCustomItem(String key, org.bukkit.inventory.ItemStack item);
+
+    // Load all custom items
+    void loadAllCustomItems(Consumer<java.util.Map<String, org.bukkit.inventory.ItemStack>> callback);
+
+    // Delete a custom item
+    void deleteCustomItem(String key);
 }
