@@ -534,6 +534,17 @@ public class MatchListener implements Listener {
                 ChatColor.stripColor(item.getItemMeta().getDisplayName()).toLowerCase().contains("golden head");
     }
 
+    private boolean isInstaBoomTNT(ItemStack item) {
+        if (item == null || item.getType() != Material.TNT)
+            return false;
+        ItemStack instaBoomTNT = rip.diamond.practice.Eden.INSTANCE.getCustomItemManager().getItem("INSTA_BOOM_TNT");
+        if (instaBoomTNT != null && item.isSimilar(instaBoomTNT)) {
+            return true;
+        }
+        return item.hasItemMeta() && item.getItemMeta().hasDisplayName() &&
+                ChatColor.stripColor(item.getItemMeta().getDisplayName()).toLowerCase().contains("insta boom");
+    }
+
     private void applyGoldenHeadEffects(Player player) {
         for (String s : Config.MATCH_GOLDEN_HEAD_EFFECTS.toStringList()) {
             String[] effect = s.split(";");
@@ -879,7 +890,9 @@ public class MatchListener implements Listener {
         if (profile.getPlayerState() == PlayerState.IN_MATCH && profile.getMatch() != null) {
             Match match = profile.getMatch();
             if (match.getState() == MatchState.STARTING && match.getKit().getGameRules().isStartFreeze()) {
-                if (!(match.getKit().getGameRules().isBed() && block.getType() == Material.TNT)) {
+                // Allow TNT during freeze ONLY in Bed mode, but NOT if it's Insta Boom TNT (treated as normal block)
+                boolean isRegularTNT = block.getType() == Material.TNT && !isInstaBoomTNT(player.getItemInHand());
+                if (!(match.getKit().getGameRules().isBed() && isRegularTNT)) {
                     event.setCancelled(true);
                     player.updateInventory();
                     return;
@@ -906,7 +919,8 @@ public class MatchListener implements Listener {
                 return;
             }
 
-            if (block.getType() == Material.TNT && Config.MATCH_TNT_ENABLED.toBoolean()) {
+            // Convert regular TNT to TNTPrimed entity, but NOT Insta Boom TNT (let it place as normal block)
+            if (block.getType() == Material.TNT && Config.MATCH_TNT_ENABLED.toBoolean() && !isInstaBoomTNT(player.getItemInHand())) {
                 ItemStack itemStack = player.getItemInHand();
                 itemStack.setAmount(itemStack.getAmount() - 1);
                 player.setItemInHand(itemStack);

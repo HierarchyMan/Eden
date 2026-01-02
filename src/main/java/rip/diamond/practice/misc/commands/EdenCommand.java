@@ -75,12 +75,10 @@ public class EdenCommand extends Command {
             case MIGRATE:
                 handleMigration(sender, args);
                 return;
-            case GOLDENHEAD:
-                if (!(sender instanceof Player)) {
-                    Common.sendMessage(sender, CC.RED + "This command can only be executed by a player.");
-                    return;
-                }
-                handleGoldenHead((Player) sender, args);
+            case ITEM:
+                // ITEM is registered as a separate command in ItemCommand.java
+                // This case exists only for tab completion consistency
+                Common.sendMessage(sender, CC.RED + "Use /eden item <set|reset|give> <type> [amount]");
                 return;
             case EDITITEM:
                 if (!(sender instanceof Player)) {
@@ -99,18 +97,7 @@ public class EdenCommand extends Command {
         }
     }
 
-    private void handleGoldenHead(Player player, String[] args) {
-        if (!player.hasPermission("eden.command.goldenhead")) {
-            Language.NO_PERMISSION.sendMessage(player);
-            return;
-        }
 
-
-        String[] newArgs = args.length > 1 ? Arrays.copyOfRange(args, 1, args.length) : new String[0];
-
-
-        new rip.diamond.practice.kits.command.GoldenHeadCommand().executeGoldenHead(player, newArgs);
-    }
 
     private void handleEditItem(Player player, String[] args) {
         if (!player.hasPermission("eden.command.edititem")) {
@@ -271,15 +258,11 @@ public class EdenCommand extends Command {
         String[] args = command.getArgs();
 
         if (args.length == 1) {
-            List<String> suggestions = Arrays.stream(Action.values()).map(Action::name).collect(Collectors.toList());
-            suggestions.add("item");  // Registered as separate subcommand
-            return suggestions;
+            return Arrays.stream(Action.values()).map(Action::name).collect(Collectors.toList());
         } else if (args.length == 2 && args[0].equalsIgnoreCase("migrate")) {
             return Arrays.asList("FLATFILE", "MONGODB", "MYSQL");
         } else if (args.length == 3 && args[0].equalsIgnoreCase("migrate")) {
             return Arrays.asList("FLATFILE", "MONGODB", "MYSQL");
-        } else if (args.length == 2 && args[0].equalsIgnoreCase("goldenhead")) {
-            return Arrays.asList("1", "16", "32", "64");
         } else if (args.length == 2 && args[0].equalsIgnoreCase("edititem")) {
             return Arrays.asList("removeattributes", "setunbreakable", "enchant");
         } else if (args.length == 3 && args[0].equalsIgnoreCase("edititem") && args[1].equalsIgnoreCase("enchant")) {
@@ -301,6 +284,6 @@ public class EdenCommand extends Command {
     }
 
     enum Action {
-        RELOAD, DEBUG, SPIGOT, MIGRATE, GOLDENHEAD, EDITITEM, LOCATION
+        RELOAD, DEBUG, SPIGOT, MIGRATE, ITEM, EDITITEM, LOCATION
     }
 }

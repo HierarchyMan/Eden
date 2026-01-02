@@ -20,7 +20,7 @@ public class ItemCommand extends Command {
         String[] arguments = args.getArgs();
 
         if (arguments.length < 2) {
-            player.sendMessage(CC.translate("&cUsage: /eden item <set|reset> <type>"));
+            player.sendMessage(CC.translate("&cUsage: /eden item <set|reset|give> <type> [amount]"));
             return;
         }
 
@@ -39,8 +39,36 @@ public class ItemCommand extends Command {
         } else if (action.equalsIgnoreCase("reset")) {
             Eden.INSTANCE.getCustomItemManager().resetItem(type);
             player.sendMessage(CC.translate("&aReset custom item for &e" + type + "&a."));
+        } else if (action.equalsIgnoreCase("give")) {
+            ItemStack customItem = Eden.INSTANCE.getCustomItemManager().getItem(type);
+            
+            if (customItem == null) {
+                player.sendMessage(CC.translate("&cCustom item &e" + type + " &cis not configured."));
+                return;
+            }
+            
+            customItem = customItem.clone();
+            
+            // Parse amount if provided, default to 1
+            int amount = 1;
+            if (arguments.length >= 3) {
+                try {
+                    amount = Integer.parseInt(arguments[2]);
+                    if (amount <= 0 || amount > 64) {
+                        player.sendMessage(CC.translate("&cAmount must be between 1 and 64."));
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    player.sendMessage(CC.translate("&cInvalid amount: " + arguments[2]));
+                    return;
+                }
+            }
+            
+            customItem.setAmount(amount);
+            player.getInventory().addItem(customItem);
+            player.sendMessage(CC.translate("&aAdded &e" + amount + " &ax &e" + type + " &ato your inventory."));
         } else {
-            player.sendMessage(CC.translate("&cUsage: /eden item <set|reset> <type>"));
+            player.sendMessage(CC.translate("&cUsage: /eden item <set|reset|give> <type> [amount]"));
         }
     }
 
@@ -50,12 +78,15 @@ public class ItemCommand extends Command {
         
         if (args.length <= 1) {
             // First argument: action
-            return Arrays.asList("set", "reset");
+            return Arrays.asList("set", "reset", "give");
         } else if (args.length == 2) {
             // Second argument: item type
             return Arrays.stream(rip.diamond.practice.managers.DefaultItem.values())
                     .map(item -> item.getName())
                     .collect(java.util.stream.Collectors.toList());
+        } else if (args.length == 3 && args[0].equalsIgnoreCase("give")) {
+            // Third argument for 'give': amount suggestions
+            return Arrays.asList("1", "16", "32", "64");
         }
         
         return Arrays.asList();
