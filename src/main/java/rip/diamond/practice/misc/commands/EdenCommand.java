@@ -2,12 +2,16 @@ package rip.diamond.practice.misc.commands;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import rip.diamond.practice.Eden;
 import rip.diamond.practice.config.Language;
 import rip.diamond.practice.database.impl.FlatFileHandler;
 import rip.diamond.practice.database.impl.MongoHandler;
 import rip.diamond.practice.database.impl.MySqlHandler;
+import rip.diamond.practice.managers.DefaultItem;
 import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.Checker;
 import rip.diamond.practice.util.Common;
@@ -19,6 +23,7 @@ import rip.diamond.practice.util.command.argument.CommandArguments;
 import rip.diamond.practice.spigot.spigotapi.SpigotAPI;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,9 +81,11 @@ public class EdenCommand extends Command {
                 handleMigration(sender, args);
                 return;
             case ITEM:
-                // ITEM is registered as a separate command in ItemCommand.java
-                // This case exists only for tab completion consistency
-                Common.sendMessage(sender, CC.RED + "Use /eden item <set|reset|give> <type> [amount]");
+                if (!(sender instanceof Player)) {
+                    Common.sendMessage(sender, CC.RED + "This command can only be executed by a player.");
+                    return;
+                }
+                handleItem((Player) sender, args);
                 return;
             case EDITITEM:
                 if (!(sender instanceof Player)) {
@@ -98,6 +105,66 @@ public class EdenCommand extends Command {
     }
 
 
+
+    private void handleItem(Player player, String[] args) {
+        if (!player.hasPermission("eden.command.item")) {
+            Language.NO_PERMISSION.sendMessage(player);
+            return;
+        }
+
+        // args[0] = "item", args[1] = action, args[2] = type, args[3] = amount (optional)
+        if (args.length < 3) {
+            player.sendMessage(CC.translate("&cUsage: /eden item <set|reset|give> <type> [amount]"));
+            return;
+        }
+
+        String action = args[1];
+        String type = args[2].toUpperCase();
+
+        if (action.equalsIgnoreCase("set")) {
+            ItemStack item = player.getItemInHand();
+            if (item == null || item.getType() == Material.AIR) {
+                player.sendMessage(CC.translate("&cYou must be holding an item."));
+                return;
+            }
+
+            Eden.INSTANCE.getCustomItemManager().setItem(type, item);
+            player.sendMessage(CC.translate("&aSet custom item for &e" + type + "&a."));
+        } else if (action.equalsIgnoreCase("reset")) {
+            Eden.INSTANCE.getCustomItemManager().resetItem(type);
+            player.sendMessage(CC.translate("&aReset custom item for &e" + type + "&a."));
+        } else if (action.equalsIgnoreCase("give")) {
+            ItemStack customItem = Eden.INSTANCE.getCustomItemManager().getItem(type);
+            
+            if (customItem == null) {
+                player.sendMessage(CC.translate("&cCustom item &e" + type + " &cis not configured."));
+                return;
+            }
+            
+            customItem = customItem.clone();
+            
+            // Parse amount if provided, default to 1
+            int amount = 1;
+            if (args.length >= 4) {
+                try {
+                    amount = Integer.parseInt(args[3]);
+                    if (amount <= 0 || amount > 64) {
+                        player.sendMessage(CC.translate("&cAmount must be between 1 and 64."));
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    player.sendMessage(CC.translate("&cInvalid amount: " + args[3]));
+                    return;
+                }
+            }
+            
+            customItem.setAmount(amount);
+            player.getInventory().addItem(customItem);
+            player.sendMessage(CC.translate("&aAdded &e" + amount + " &ax &e" + type + " &ato your inventory."));
+        } else {
+            player.sendMessage(CC.translate("&cUsage: /eden item <set|reset|give> <type> [amount]"));
+        }
+    }
 
     private void handleEditItem(Player player, String[] args) {
         if (!player.hasPermission("eden.command.edititem")) {
@@ -256,31 +323,84 @@ public class EdenCommand extends Command {
     @Override
     public List<String> getDefaultTabComplete(CommandArguments command) {
         String[] args = command.getArgs();
+        
+        // Get all action names for filtering
+        List<String> actionNames = Arrays.stream(Action.values())
+                .map(Action::name)
+                .collect(Collectors.toList());
 
+        // Arg 1: Main action (RELOAD, DEBUG, SPIGOT, MIGRATE, ITEM, EDITITEM, LOCATION)
         if (args.length == 1) {
-            return Arrays.stream(Action.values()).map(Action::name).collect(Collectors.toList());
-        } else if (args.length == 2 && args[0].equalsIgnoreCase("migrate")) {
-            return Arrays.asList("FLATFILE", "MONGODB", "MYSQL");
-        } else if (args.length == 3 && args[0].equalsIgnoreCase("migrate")) {
-            return Arrays.asList("FLATFILE", "MONGODB", "MYSQL");
-        } else if (args.length == 2 && args[0].equalsIgnoreCase("edititem")) {
-            return Arrays.asList("removeattributes", "setunbreakable", "enchant");
-        } else if (args.length == 3 && args[0].equalsIgnoreCase("edititem") && args[1].equalsIgnoreCase("enchant")) {
-
-            return Arrays.asList(
-                    "PROTECTION", "FIRE_PROTECTION", "FEATHER_FALLING", "BLAST_PROTECTION",
-                    "PROJECTILE_PROTECTION", "RESPIRATION", "AQUA_AFFINITY", "THORNS",
-                    "DEPTH_STRIDER", "SHARPNESS", "SMITE", "BANE_OF_ARTHROPODS",
-                    "KNOCKBACK", "FIRE_ASPECT", "LOOTING", "EFFICIENCY", "SILK_TOUCH",
-                    "UNBREAKING", "FORTUNE", "POWER", "PUNCH", "FLAME", "INFINITY",
-                    "LUCK_OF_THE_SEA", "LURE");
-        } else if (args.length == 4 && args[0].equalsIgnoreCase("edititem") && args[1].equalsIgnoreCase("enchant")) {
-            return Arrays.asList("1", "2", "3", "4", "5", "10");
-        } else if (args.length >= 2 && args[0].equalsIgnoreCase("location")) {
-            return LocationCommand.getTabComplete(args);
+            return filterCompletions(args, 0, actionNames);
         }
-
-        return Arrays.stream(Action.values()).map(Action::name).collect(Collectors.toList());
+        
+        // Determine which action was selected
+        String action = args[0].toUpperCase();
+        
+        // ==================== MIGRATE ====================
+        if (action.equals("MIGRATE")) {
+            List<String> storageTypes = Arrays.asList("FLATFILE", "MONGODB", "MYSQL");
+            if (args.length == 2) {
+                return filterCompletions(args, 1, storageTypes);
+            } else if (args.length == 3) {
+                return filterCompletions(args, 2, storageTypes);
+            }
+            return Collections.emptyList();
+        }
+        
+        // ==================== ITEM ====================
+        if (action.equals("ITEM")) {
+            List<String> itemActions = Arrays.asList("set", "reset", "give");
+            if (args.length == 2) {
+                // /eden item <set|reset|give>
+                return filterCompletions(args, 1, itemActions);
+            } else if (args.length == 3) {
+                // /eden item set/reset/give <type>
+                return filterCompletions(args, 2, DefaultItem.getNames());
+            } else if (args.length == 4 && args[1].equalsIgnoreCase("give")) {
+                // /eden item give <type> <amount>
+                return filterCompletions(args, 3, Arrays.asList("1", "16", "32", "64"));
+            }
+            return Collections.emptyList();
+        }
+        
+        // ==================== EDITITEM ====================
+        if (action.equals("EDITITEM")) {
+            List<String> editItemActions = Arrays.asList("removeattributes", "setunbreakable", "enchant");
+            if (args.length == 2) {
+                // /eden edititem <subcommand>
+                return filterCompletions(args, 1, editItemActions);
+            } else if (args.length == 3 && args[1].equalsIgnoreCase("enchant")) {
+                // /eden edititem enchant <type>
+                List<String> enchantments = Arrays.asList(
+                        "PROTECTION", "FIRE_PROTECTION", "FEATHER_FALLING", "BLAST_PROTECTION",
+                        "PROJECTILE_PROTECTION", "RESPIRATION", "AQUA_AFFINITY", "THORNS",
+                        "DEPTH_STRIDER", "SHARPNESS", "SMITE", "BANE_OF_ARTHROPODS",
+                        "KNOCKBACK", "FIRE_ASPECT", "LOOTING", "EFFICIENCY", "SILK_TOUCH",
+                        "UNBREAKING", "FORTUNE", "POWER", "PUNCH", "FLAME", "INFINITY",
+                        "LUCK_OF_THE_SEA", "LURE");
+                return filterCompletions(args, 2, enchantments);
+            } else if (args.length == 4 && args[1].equalsIgnoreCase("enchant")) {
+                // /eden edititem enchant <type> <level>
+                return filterCompletions(args, 3, Arrays.asList("1", "2", "3", "4", "5", "10"));
+            }
+            return Collections.emptyList();
+        }
+        
+        // ==================== LOCATION ====================
+        if (action.equals("LOCATION")) {
+            // Delegate to LocationCommand's tab completion with filtering
+            List<String> completions = LocationCommand.getTabComplete(args);
+            if (completions != null && !completions.isEmpty()) {
+                // Apply filtering based on the current arg being typed
+                int currentArgIndex = args.length - 1;
+                return filterCompletions(args, currentArgIndex, completions);
+            }
+            return Collections.emptyList();
+        }
+        
+        // For completed commands or unknown actions, return empty list
+        return Collections.emptyList();
     }
 
     enum Action {

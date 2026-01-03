@@ -76,19 +76,19 @@ public class ItemCommand extends Command {
     public List<String> getDefaultTabComplete(CommandArguments command) {
         String[] args = command.getArgs();
         
+        List<String> itemActions = Arrays.asList("set", "reset", "give");
+        
         if (args.length <= 1) {
-            // First argument: action
-            return Arrays.asList("set", "reset", "give");
+            // First argument: action (set, reset, give)
+            return filterCompletions(args, 0, itemActions);
         } else if (args.length == 2) {
             // Second argument: item type
-            return Arrays.stream(rip.diamond.practice.managers.DefaultItem.values())
-                    .map(item -> item.getName())
-                    .collect(java.util.stream.Collectors.toList());
+            return filterCompletions(args, 1, rip.diamond.practice.managers.DefaultItem.getNames());
         } else if (args.length == 3 && args[0].equalsIgnoreCase("give")) {
             // Third argument for 'give': amount suggestions
-            return Arrays.asList("1", "16", "32", "64");
+            return filterCompletions(args, 2, Arrays.asList("1", "16", "32", "64"));
         }
         
-        return Arrays.asList();
+        return java.util.Collections.emptyList();
     }
 }

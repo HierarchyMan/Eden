@@ -15,11 +15,44 @@ import rip.diamond.practice.util.command.argument.CommandArguments;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
 public abstract class Command {
+
+    /**
+     * Utility method to filter completions based on what the user has already typed.
+     * This ensures tab completion only shows relevant suggestions.
+     * 
+     * @param options The available options to filter from
+     * @param partial The partial input the user has typed (can be empty)
+     * @return A filtered list of matching options
+     */
+    protected static List<String> filterCompletions(Collection<String> options, String partial) {
+        if (partial == null || partial.isEmpty()) {
+            return new ArrayList<>(options);
+        }
+        String lowerPartial = partial.toLowerCase();
+        return options.stream()
+                .filter(option -> option.toLowerCase().startsWith(lowerPartial))
+                .collect(Collectors.toList());
+    }
+    
+    /**
+     * Utility method to filter completions based on what the user has already typed.
+     * This ensures tab completion only shows relevant suggestions.
+     * 
+     * @param args The command arguments array
+     * @param argIndex The 0-indexed argument position to filter (e.g., 0 for first arg after command)
+     * @param options The available options to filter from
+     * @return A filtered list of matching options
+     */
+    protected static List<String> filterCompletions(String[] args, int argIndex, Collection<String> options) {
+        String partial = (args.length > argIndex) ? args[argIndex] : "";
+        return filterCompletions(options, partial);
+    }
 
     public Eden plugin;
     private CommandExecutor executor;
