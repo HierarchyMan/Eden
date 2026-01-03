@@ -429,31 +429,69 @@ public class MatchListener implements Listener {
             boolean isInstaBoom = tnt.hasMetadata("INSTA_BOOM");
             
             if (isInstaBoom && Config.MATCH_INSTA_TNT_ENABLED.toBoolean()) {
-                // Use Insta Boom TNT damage config
-                double maxDamage = rip.diamond.practice.match.util.ExplosionDamageUtil.getMaxDamage(
-                        player,
-                        tnt.getSource() instanceof org.bukkit.entity.LivingEntity ? (org.bukkit.entity.LivingEntity) tnt.getSource() : null,
-                        Config.MATCH_INSTA_TNT_MAX_DAMAGE_SELF.toDouble(),
-                        Config.MATCH_INSTA_TNT_MAX_DAMAGE_OTHERS.toDouble());
-                
-                // Get pre-calculated obstruction from metadata
-                String key = "obstruction_" + player.getUniqueId().toString();
-                int obstructionBlocks = tnt.hasMetadata(key) ? tnt.getMetadata(key).get(0).asInt() : 0;
-                
-                double scaledDamage = rip.diamond.practice.match.util.ExplosionDamageUtil.calculateDamage(
-                        player.getLocation(),
-                        event.getDamager().getLocation(),
-                        Config.MATCH_INSTA_TNT_YIELD.toDouble(),
-                        maxDamage,
-                        obstructionBlocks);
+                // Get match for exclusion checks
+                PlayerProfile profile = PlayerProfile.get(player);
+                Match match = (profile != null) ? profile.getMatch() : null;
+
+                // Exclude spectators and respawning players
+                if (rip.diamond.practice.match.util.InstaBoomKnockback.shouldExclude(player, match)) {
+                    event.setCancelled(true);
+                    return;
+                }
+
+                // Check if within radius
+                if (!rip.diamond.practice.match.util.InstaBoomKnockback.isWithinRadius(player, tnt.getLocation())) {
+                    event.setCancelled(true);
+                    return;
+                }
 
                 if (Config.MATCH_INSTA_TNT_KNOCKBACK_ENABLED.toBoolean()) {
                     event.setCancelled(true);
-                    player.damage(scaledDamage);
-                    Util.pushAway(player, event.getDamager().getLocation(), 
-                            Config.MATCH_INSTA_TNT_KNOCKBACK_VERTICAL.toDouble(),
-                            Config.MATCH_INSTA_TNT_KNOCKBACK_HORIZONTAL.toDouble());
+
+                    rip.diamond.practice.match.util.InstaBoomKnockback.KnockbackResult result = 
+                            rip.diamond.practice.match.util.InstaBoomKnockback.calculate(player, tnt);
+
+                    // Apply damage only if result allows (self on ground = no damage)
+                    if (result.shouldDamage) {
+                        double maxDamage = rip.diamond.practice.match.util.ExplosionDamageUtil.getMaxDamage(
+                                player,
+                                tnt.getSource() instanceof org.bukkit.entity.LivingEntity ? (org.bukkit.entity.LivingEntity) tnt.getSource() : null,
+                                Config.MATCH_INSTA_TNT_MAX_DAMAGE_SELF.toDouble(),
+                                Config.MATCH_INSTA_TNT_MAX_DAMAGE_OTHERS.toDouble());
+
+                        String key = "obstruction_" + player.getUniqueId().toString();
+                        int obstructionBlocks = tnt.hasMetadata(key) ? tnt.getMetadata(key).get(0).asInt() : 0;
+
+                        double scaledDamage = rip.diamond.practice.match.util.ExplosionDamageUtil.calculateDamage(
+                                player.getLocation(),
+                                tnt.getLocation(),
+                                Config.MATCH_INSTA_TNT_YIELD.toDouble(),
+                                maxDamage,
+                                obstructionBlocks);
+
+                        player.damage(scaledDamage);
+                    }
+
+                    // Apply knockback
+                    rip.diamond.practice.match.util.InstaBoomKnockback.applyKnockback(player, result.velocity);
                 } else {
+                    // Fallback to vanilla behavior
+                    double maxDamage = rip.diamond.practice.match.util.ExplosionDamageUtil.getMaxDamage(
+                            player,
+                            tnt.getSource() instanceof org.bukkit.entity.LivingEntity ? (org.bukkit.entity.LivingEntity) tnt.getSource() : null,
+                            Config.MATCH_INSTA_TNT_MAX_DAMAGE_SELF.toDouble(),
+                            Config.MATCH_INSTA_TNT_MAX_DAMAGE_OTHERS.toDouble());
+
+                    String key = "obstruction_" + player.getUniqueId().toString();
+                    int obstructionBlocks = tnt.hasMetadata(key) ? tnt.getMetadata(key).get(0).asInt() : 0;
+
+                    double scaledDamage = rip.diamond.practice.match.util.ExplosionDamageUtil.calculateDamage(
+                            player.getLocation(),
+                            tnt.getLocation(),
+                            Config.MATCH_INSTA_TNT_YIELD.toDouble(),
+                            maxDamage,
+                            obstructionBlocks);
+
                     event.setDamage(scaledDamage);
                 }
             } else if (Config.MATCH_TNT_ENABLED.toBoolean()) {

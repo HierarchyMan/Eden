@@ -202,14 +202,25 @@ match:
     ## These will NOT destroy arena blocks, only player-placed blocks
     placed-only-breaking-blocks:
       - STAINED_CLAY
+    ## Effect radius - how far players can be affected by the explosion
+    radius: 9.0
     ## The knockback when player takes damage by Insta Boom TNT
     knockback:
       ## Should Eden use our own knockback mechanism?
       enabled: true
-      ## The knockback vertical multiplier
+      ## Full knockback for players in the air
       vertical: 1.5
-      ## The knockback horizontal multiplier
       horizontal: 1.5
+      ## Reduced knockback for OTHER players on ground (self on ground = 0 damage/KB)
+      ground-vertical: 0.15
+      ground-horizontal: 0.5
+      ## Maximum vertical velocity value (caps how fast player is launched upward)
+      y-limit: 1.5
+      ## Within this distance (blocks), horizontal KB scales with distance from center
+      ## At center = pure vertical, at threshold = full horizontal
+      distance-threshold: 3.0
+      ## Beyond distance-threshold, horizontal KB becomes this constant value
+      constant-horizontal: 0.8
     ## Cooldown between placing Insta Boom TNT (in milliseconds)
     ## 200ms = 0.2 seconds, prevents spam placing
     placement-cooldown-ms: 200
