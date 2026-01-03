@@ -276,6 +276,17 @@ public class MatchListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDamageEntity(EntityDamageByEntityEvent event) {
+        // Block spectators from damaging ANY entity (including fireballs)
+        if (event.getDamager() instanceof Player) {
+            Player damager = (Player) event.getDamager();
+            PlayerProfile damagerProfile = PlayerProfile.get(damager);
+            
+            if (damagerProfile != null && damagerProfile.getPlayerState() == PlayerState.IN_SPECTATING) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+        
         if (event.getEntity() instanceof Player && (event.getDamager() instanceof Player
                 || event.getDamager() instanceof FishHook || event.getDamager() instanceof Snowball
                 || event.getDamager() instanceof Egg || event.getDamager() instanceof Arrow)) {
@@ -1077,7 +1088,10 @@ public class MatchListener implements Listener {
                         && projectile instanceof Arrow) {
                     event.setCancelled(true);
                     Language.MATCH_CANNOT_PREFIRE.sendMessage(player);
-                    Tasks.runLater(() -> Util.giveBackArrow(match, player), 1L);
+                    // Don't give arrow back to respawning players
+                    if (!match.getTeamPlayer(player).isRespawning()) {
+                        Tasks.runLater(() -> Util.giveBackArrow(match, player), 1L);
+                    }
                     return;
                 }
                 if (match.getState() == MatchState.ENDING) {
@@ -1104,7 +1118,9 @@ public class MatchListener implements Listener {
 
                         @Override
                         public void runExpired() {
-                            if (!player.getInventory().contains(Material.ARROW)) {
+                            // Don't give arrow back to respawning players
+                            if (!player.getInventory().contains(Material.ARROW) 
+                                    && !match.getTeamPlayer(player).isRespawning()) {
                                 Util.giveBackArrow(match, player);
                             }
                             if (player.getLevel() > 0)
