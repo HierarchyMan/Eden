@@ -185,6 +185,34 @@ match:
       vertical: 1.1
       ## The knockback horizontal multiplier
       horizontal: 1.2
+  ## Insta Boom TNT - Custom TNT that explodes instantly when placed
+  insta-boom-tnt:
+    ## Should Insta Boom TNT be enabled?
+    enabled: true
+    ## The power of the Insta Boom TNT explosion
+    ## This is separate from regular TNT yield
+    yield: 3.0
+    ## Maximum damage at point-blank to yourself/teammates (scales with distance)
+    max-damage-self: 0.0
+    ## Maximum damage at point-blank to enemies (scales with distance)
+    max-damage-others: 4.0
+    ## The block which allow to break by the explosion (arena blocks + player-placed)
+    allowed-breaking-blocks: []
+    ## Blocks that can ONLY be broken if placed by players during the match
+    ## These will NOT destroy arena blocks, only player-placed blocks
+    placed-only-breaking-blocks:
+      - STAINED_CLAY
+    ## The knockback when player takes damage by Insta Boom TNT
+    knockback:
+      ## Should Eden use our own knockback mechanism?
+      enabled: true
+      ## The knockback vertical multiplier
+      vertical: 1.5
+      ## The knockback horizontal multiplier
+      horizontal: 1.5
+    ## Cooldown between placing Insta Boom TNT (in milliseconds)
+    ## 200ms = 0.2 seconds, prevents spam placing
+    placement-cooldown-ms: 200
   ##Option to set golden head related stuff
   golden-head:
     ## A potion effect is separated to 3 parts - Effect Type, Duration and Amplifier. Each part is separated by using ';'

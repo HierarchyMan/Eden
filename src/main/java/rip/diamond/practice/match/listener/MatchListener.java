@@ -69,6 +69,9 @@ import java.util.stream.Collectors;
 public class MatchListener implements Listener {
 
     private final Eden plugin;
+    
+    // Track last Insta Boom TNT placement time per player (for cooldown)
+    private final java.util.Map<java.util.UUID, Long> lastInstaTntPlacement = new java.util.HashMap<>();
 
     @EventHandler
     public void onStart(MatchStartEvent event) {
@@ -418,16 +421,48 @@ public class MatchListener implements Listener {
             } else {
                 event.setDamage(scaledDamage);
             }
-        } else if (event.getEntity() instanceof Player && event.getDamager() instanceof TNTPrimed
-                && Config.MATCH_TNT_ENABLED.toBoolean()) {
+        } else if (event.getEntity() instanceof Player && event.getDamager() instanceof TNTPrimed) {
             Player player = (Player) event.getEntity();
             TNTPrimed tnt = (TNTPrimed) event.getDamager();
             
-            double maxDamage = rip.diamond.practice.match.util.ExplosionDamageUtil.getMaxDamage(
-                    player,
-                    tnt.getSource() instanceof org.bukkit.entity.LivingEntity ? (org.bukkit.entity.LivingEntity) tnt.getSource() : null,
-                    Config.MATCH_TNT_MAX_DAMAGE_SELF.toDouble(),
-                    Config.MATCH_TNT_MAX_DAMAGE_OTHERS.toDouble());
+            // Check if this is Insta Boom TNT or regular TNT
+            boolean isInstaBoom = tnt.hasMetadata("INSTA_BOOM");
+            
+            if (isInstaBoom && Config.MATCH_INSTA_TNT_ENABLED.toBoolean()) {
+                // Use Insta Boom TNT damage config
+                double maxDamage = rip.diamond.practice.match.util.ExplosionDamageUtil.getMaxDamage(
+                        player,
+                        tnt.getSource() instanceof org.bukkit.entity.LivingEntity ? (org.bukkit.entity.LivingEntity) tnt.getSource() : null,
+                        Config.MATCH_INSTA_TNT_MAX_DAMAGE_SELF.toDouble(),
+                        Config.MATCH_INSTA_TNT_MAX_DAMAGE_OTHERS.toDouble());
+                
+                // Get pre-calculated obstruction from metadata
+                String key = "obstruction_" + player.getUniqueId().toString();
+                int obstructionBlocks = tnt.hasMetadata(key) ? tnt.getMetadata(key).get(0).asInt() : 0;
+                
+                double scaledDamage = rip.diamond.practice.match.util.ExplosionDamageUtil.calculateDamage(
+                        player.getLocation(),
+                        event.getDamager().getLocation(),
+                        Config.MATCH_INSTA_TNT_YIELD.toDouble(),
+                        maxDamage,
+                        obstructionBlocks);
+
+                if (Config.MATCH_INSTA_TNT_KNOCKBACK_ENABLED.toBoolean()) {
+                    event.setCancelled(true);
+                    player.damage(scaledDamage);
+                    Util.pushAway(player, event.getDamager().getLocation(), 
+                            Config.MATCH_INSTA_TNT_KNOCKBACK_VERTICAL.toDouble(),
+                            Config.MATCH_INSTA_TNT_KNOCKBACK_HORIZONTAL.toDouble());
+                } else {
+                    event.setDamage(scaledDamage);
+                }
+            } else if (Config.MATCH_TNT_ENABLED.toBoolean()) {
+                // Use regular TNT damage config
+                double maxDamage = rip.diamond.practice.match.util.ExplosionDamageUtil.getMaxDamage(
+                        player,
+                        tnt.getSource() instanceof org.bukkit.entity.LivingEntity ? (org.bukkit.entity.LivingEntity) tnt.getSource() : null,
+                        Config.MATCH_TNT_MAX_DAMAGE_SELF.toDouble(),
+                        Config.MATCH_TNT_MAX_DAMAGE_OTHERS.toDouble());
             
             // Get pre-calculated obstruction from metadata
             String key = "obstruction_" + player.getUniqueId().toString();
@@ -447,6 +482,7 @@ public class MatchListener implements Listener {
                         Config.MATCH_TNT_KNOCKBACK_HORIZONTAL.toDouble());
             } else {
                 event.setDamage(scaledDamage);
+            }
             }
         }
     }
@@ -930,8 +966,12 @@ public class MatchListener implements Listener {
                 return;
             }
 
-            // Convert regular TNT to TNTPrimed entity, but NOT Insta Boom TNT (let it place as normal block)
-            if (block.getType() == Material.TNT && Config.MATCH_TNT_ENABLED.toBoolean() && !isInstaBoomTNT(player.getItemInHand())) {
+
+            // Convert regular TNT to TNTPrimed entity ONLY in Bed Fight matches
+            // In other matches, TNT will just place as a normal block
+            if (block.getType() == Material.TNT && Config.MATCH_TNT_ENABLED.toBoolean() 
+                    && !isInstaBoomTNT(player.getItemInHand())
+                    && match.getKit().getGameRules().isBed()) {
                 ItemStack itemStack = player.getItemInHand();
                 itemStack.setAmount(itemStack.getAmount() - 1);
                 player.setItemInHand(itemStack);
@@ -944,6 +984,46 @@ public class MatchListener implements Listener {
 
                 event.setCancelled(true);
                 player.updateInventory();
+                return;
+            }
+
+            // Handle Insta Boom TNT - spawns ONE TNT with 1-tick fuse
+            if (block.getType() == Material.TNT && Config.MATCH_INSTA_TNT_ENABLED.toBoolean() 
+                    && isInstaBoomTNT(player.getItemInHand())) {
+                
+                // Check cooldown
+                long currentTime = System.currentTimeMillis();
+                long cooldownMs = Config.MATCH_INSTA_TNT_PLACEMENT_COOLDOWN_MS.toInteger();
+                
+                if (lastInstaTntPlacement.containsKey(player.getUniqueId())) {
+                    long lastPlacement = lastInstaTntPlacement.get(player.getUniqueId());
+                    long timeSince = currentTime - lastPlacement;
+                    
+                    if (timeSince < cooldownMs) {
+                        event.setCancelled(true);
+                        player.updateInventory();
+                        // Optionally send cooldown message
+                        long remainingMs = cooldownMs - timeSince;
+                        player.sendMessage(CC.RED + "Wait " + (remainingMs / 1000.0) + "s before placing Insta Boom TNT!");
+                        return;
+                    }
+                }
+                
+                // Update last placement time
+                lastInstaTntPlacement.put(player.getUniqueId(), currentTime);
+                
+                // Remove the placed block immediately
+                block.setType(Material.AIR);
+                
+                Location spawnLoc = block.getLocation().clone().add(0.5, 0.0, 0.5);
+                
+                // Spawn ONE TNT with 1-tick fuse (visible for 1 tick, then explodes)
+                final TNTPrimed tnt = spawnLoc.getWorld().spawn(spawnLoc, TNTPrimed.class);
+                tnt.setYield((float) Config.MATCH_INSTA_TNT_YIELD.toDouble());
+                tnt.setFuseTicks(1); // Explodes after 1 tick (visible for 1 tick)
+                Util.setSource(tnt, player); // Track who placed it
+                tnt.setMetadata("INSTA_BOOM", new org.bukkit.metadata.FixedMetadataValue(Eden.INSTANCE, true));
+                
                 return;
             }
 
@@ -1239,8 +1319,67 @@ public class MatchListener implements Listener {
                 // Not in any list, remove from explosion
                 return true;
             });
-        } else if (type == EntityType.PRIMED_TNT && Config.MATCH_TNT_ENABLED.toBoolean()) {
-            List<String> allowedBlocks = Config.MATCH_TNT_ALLOWED_BREAKING_BLOCKS.toStringList();
+        } else if (type == EntityType.PRIMED_TNT) {
+            // Check if this is Insta Boom TNT or regular TNT
+            boolean isInstaBoom = event.getEntity().hasMetadata("INSTA_BOOM");
+            
+            // DEBUG: Log metadata status
+            Common.debug("TNT Explosion - isInstaBoom: " + isInstaBoom + ", enabled: " + Config.MATCH_INSTA_TNT_ENABLED.toBoolean());
+            
+            if (isInstaBoom && Config.MATCH_INSTA_TNT_ENABLED.toBoolean()) {
+                // Use Insta Boom TNT config - bypasses kit game rules but respects arena boundaries
+                List<String> allowedBlocks = Config.MATCH_INSTA_TNT_ALLOWED_BREAKING_BLOCKS.toStringList();
+                List<String> placedOnlyBlocks = Config.MATCH_INSTA_TNT_PLACED_ONLY_BREAKING_BLOCKS.toStringList();
+                
+                // DEBUG: Log config values
+                Common.debug("Insta TNT - allowedBlocks: " + allowedBlocks + ", placedOnlyBlocks: " + placedOnlyBlocks);
+                Common.debug("Insta TNT - blockList size before filter: " + event.blockList().size());
+                
+                event.blockList().removeIf(block -> {
+                    String blockName = block.getType().name();
+                    Location blockLoc = block.getLocation();
+                    
+                    // === ARENA BOUNDARY CHECKS (always enforced) ===
+                    // Check build height limits
+                    if (blockLoc.getBlockY() >= match.getArenaDetail().getArena().getBuildMax()
+                            || blockLoc.getBlockY() <= match.getArenaDetail().getArena().getYLimit()) {
+                        return true; // Protected - outside build height
+                    }
+                    
+                    // Check cuboid bounds
+                    if (!match.getArenaDetail().getCuboid().contains(blockLoc)) {
+                        return true; // Protected - outside arena
+                    }
+                    
+                    // === INSTA BOOM TNT SPECIFIC RULES ===
+                    // BED_BLOCK is always protected
+                    if (block.getType() == Material.BED_BLOCK) {
+                        return true;
+                    }
+                    
+                    // PRIORITY: If in placed-only list, ONLY break if player-placed
+                    if (placedOnlyBlocks.contains(blockName)) {
+                        boolean isPlayerPlaced = match.getPlacedBlocks().contains(blockLoc);
+                        return !isPlayerPlaced; // Remove from explosion if NOT player-placed
+                    }
+                    
+                    // If in allowed-breaking-blocks list, ALWAYS break it (arena OR player-placed)
+                    if (allowedBlocks.contains(blockName)) {
+                        return false; // false = KEEP in explosion = WILL break
+                    }
+                    
+                    // If allowed list is empty, break ALL player-placed blocks
+                    if (allowedBlocks.isEmpty()) {
+                        boolean isPlayerPlaced = match.getPlacedBlocks().contains(blockLoc);
+                        return !isPlayerPlaced; // Remove from explosion if NOT player-placed
+                    }
+                    
+                    // Not in any list and allowed list isn't empty = don't break
+                    return true;
+                });
+            } else if (Config.MATCH_TNT_ENABLED.toBoolean()) {
+                // Use regular TNT config
+                List<String> allowedBlocks = Config.MATCH_TNT_ALLOWED_BREAKING_BLOCKS.toStringList();
             List<String> placedOnlyBlocks = Config.MATCH_TNT_PLACED_ONLY_BREAKING_BLOCKS.toStringList();
             
             event.blockList().removeIf(block -> {
@@ -1264,6 +1403,7 @@ public class MatchListener implements Listener {
                 // Not in any list, remove from explosion
                 return true;
             });
+            }
         }
     }
 

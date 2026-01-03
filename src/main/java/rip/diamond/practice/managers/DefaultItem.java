@@ -23,9 +23,8 @@ public enum DefaultItem {
                     .name("&c&lInsta Boom TNT")
                     .lore(
                             "&7Explodes instantly when placed!",
-                            "&7Perfect for quick destruction",
                             "",
-                            "&ePlace to detonate immediately"
+                            "&ePlace to thwack away the opponent"
                     )
                     .glow()
                     .build(),

@@ -81,7 +81,7 @@ public enum Config {
     MATCH_TNT_ENABLED("match.tnt.enabled", true),
     MATCH_TNT_MAX_DAMAGE_SELF("match.tnt.max-damage-self", 2.0),
     MATCH_TNT_MAX_DAMAGE_OTHERS("match.tnt.max-damage-others", 6.0),
-    MATCH_TNT_SPEED("match.tnt.speed", 2.0),
+
     MATCH_TNT_YIELD("match.tnt.yield", 2.0),
     MATCH_TNT_FUSE_TICKS("match.tnt.fuse-ticks", 50),
     MATCH_TNT_ALLOWED_BREAKING_BLOCKS("match.tnt.allowed-breaking-blocks", ImmutableList.of("WOOD", "BED_BLOCK")),
@@ -89,6 +89,18 @@ public enum Config {
     MATCH_TNT_KNOCKBACK_ENABLED("match.tnt.knockback.enabled", true),
     MATCH_TNT_KNOCKBACK_VERTICAL("match.tnt.knockback.vertical", 1.1),
     MATCH_TNT_KNOCKBACK_HORIZONTAL("match.tnt.knockback.horizontal", 1.2),
+    MATCH_INSTA_TNT_ENABLED("match.insta-boom-tnt.enabled", true),
+    MATCH_INSTA_TNT_YIELD("match.insta-boom-tnt.yield", 3.0),
+    MATCH_INSTA_TNT_MAX_DAMAGE_SELF("match.insta-boom-tnt.max-damage-self", 0.0),
+    MATCH_INSTA_TNT_MAX_DAMAGE_OTHERS("match.insta-boom-tnt.max-damage-others", 4.0),
+    MATCH_INSTA_TNT_ALLOWED_BREAKING_BLOCKS("match.insta-boom-tnt.allowed-breaking-blocks", 
+            ImmutableList.of("WOOL")),
+    MATCH_INSTA_TNT_PLACED_ONLY_BREAKING_BLOCKS("match.insta-boom-tnt.placed-only-breaking-blocks", 
+            ImmutableList.of("STAINED_CLAY")),
+    MATCH_INSTA_TNT_KNOCKBACK_ENABLED("match.insta-boom-tnt.knockback.enabled", true),
+    MATCH_INSTA_TNT_KNOCKBACK_VERTICAL("match.insta-boom-tnt.knockback.vertical", 1.5),
+    MATCH_INSTA_TNT_KNOCKBACK_HORIZONTAL("match.insta-boom-tnt.knockback.horizontal", 1.5),
+    MATCH_INSTA_TNT_PLACEMENT_COOLDOWN_MS("match.insta-boom-tnt.placement-cooldown-ms", 200),
     MATCH_GOLDEN_HEAD_EFFECTS("match.golden-head.effects",
             ImmutableList.of("REGENERATION;200;2", "ABSORPTION;2400;0", "SPEED;200;0")),
     MATCH_GOLDEN_HEAD_FOOD_LEVEL("match.golden-head.food-level", 6),
@@ -151,7 +163,9 @@ public enum Config {
             return (List<String>) CACHE.get(this);
         }
         List<String> result = Eden.INSTANCE.getConfigFile().getRawStringList(path);
-        if (result.isEmpty() || result.get(0).equals(path)) {
+        // Only use default if the config key is MISSING (getRawStringList returns [path] when key doesn't exist)
+        // An intentionally empty list [] should NOT fall back to default
+        if (result.size() == 1 && result.get(0).equals(path)) {
             result = (List<String>) defaultValue;
         }
         List<String> colored = result.stream().map(CC::translate).collect(Collectors.toList());
