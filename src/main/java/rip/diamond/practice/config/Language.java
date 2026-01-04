@@ -688,6 +688,10 @@ public enum Language {
     MENU_VIEW_ALL_PAGES_TITLE("menu.view-all-pages.title"),
     TABLIST_HEADER("tablist.header"),
     TABLIST_FOOTER("tablist.footer"),
+    PARKOUR_MATCH_CANCELLED_NO_CHECKPOINTS_MESSAGE("parkour.match.cancelled-no-checkpoints.message"),
+    PARKOUR_MATCH_CANCELLED_NO_CHECKPOINTS_ADMIN("parkour.match.cancelled-no-checkpoints.admin"),
+    PARKOUR_CHECKPOINT_REACHED("parkour.match.checkpoint-reached"),
+    PARKOUR_MISSING_PREVIOUS_CHECKPOINTS("parkour.match.missing-previous-checkpoints"),
     ;
 
     @Getter

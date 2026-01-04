@@ -12,7 +12,6 @@ import rip.diamond.practice.config.Config;
 import rip.diamond.practice.kits.Kit;
 import rip.diamond.practice.util.Common;
 import rip.diamond.practice.util.ItemBuilder;
-import rip.diamond.practice.util.exception.PracticeUnexpectedException;
 import rip.diamond.practice.util.serialization.BukkitSerialization;
 import rip.diamond.practice.util.serialization.LocationSerialization;
 
@@ -41,6 +40,188 @@ public class Arena {
 
     private boolean pendingReload = false;
     private Arena nextVersion = null;
+
+    // Optional locations (extensible) - first feature: parkour checkpoints
+    // NOTE: Parkour checkpoints are stored per-team so each side can have its own route.
+    private List<Location> parkourCheckpointsA = new ArrayList<>();
+    private List<Location> parkourCheckpointsB = new ArrayList<>();
+
+    /**
+     * Legacy (pre-team) checkpoints list.
+     *
+     * We keep it for one release cycle to avoid hard-breaking old arena.yml files.
+     * On load, we migrate this list -> A list if A/B are missing.
+     */
+    @Deprecated
+    private List<Location> parkourCheckpoints = new ArrayList<>();
+
+    /**
+     * @return parkour checkpoints for a specific team side.
+     */
+    public List<Location> getParkourCheckpoints(boolean teamA) {
+        List<Location> src = teamA ? parkourCheckpointsA : parkourCheckpointsB;
+        List<Location> copy = new ArrayList<>();
+        for (Location l : src) {
+            if (l != null) {
+                copy.add(l.clone());
+            }
+        }
+        return copy;
+    }
+
+    public void setParkourCheckpoints(boolean teamA, List<Location> checkpoints) {
+        List<Location> dst = teamA ? parkourCheckpointsA : parkourCheckpointsB;
+        dst.clear();
+        if (checkpoints != null) {
+            for (Location l : checkpoints) {
+                if (l != null) {
+                    dst.add(l.clone());
+                }
+            }
+        }
+    }
+
+    public void addParkourCheckpoint(boolean teamA, Location location) {
+        if (location == null) {
+            return;
+        }
+        (teamA ? parkourCheckpointsA : parkourCheckpointsB).add(location.clone());
+    }
+
+    public boolean removeNearestParkourCheckpoint(boolean teamA, Location location, double radius) {
+        List<Location> list = teamA ? parkourCheckpointsA : parkourCheckpointsB;
+        if (location == null || list.isEmpty()) {
+            return false;
+        }
+        Location nearest = null;
+        double best = Double.MAX_VALUE;
+        for (Location cp : list) {
+            if (cp == null || cp.getWorld() == null || location.getWorld() == null) {
+                continue;
+            }
+            if (!cp.getWorld().getName().equals(location.getWorld().getName())) {
+                continue;
+            }
+            double dist = cp.distance(location);
+            if (dist <= radius && dist < best) {
+                best = dist;
+                nearest = cp;
+            }
+        }
+        if (nearest != null) {
+            list.remove(nearest);
+            return true;
+        }
+        return false;
+    }
+
+    public void clearParkourCheckpoints(boolean teamA) {
+        (teamA ? parkourCheckpointsA : parkourCheckpointsB).clear();
+    }
+
+    public Location findCheckpointAt(boolean teamA, Location location, double radius) {
+        List<Location> list = teamA ? parkourCheckpointsA : parkourCheckpointsB;
+        if (location == null || list.isEmpty()) {
+            return null;
+        }
+        for (Location cp : list) {
+            if (cp == null || cp.getWorld() == null || location.getWorld() == null) {
+                continue;
+            }
+            if (!cp.getWorld().getName().equals(location.getWorld().getName())) {
+                continue;
+            }
+            if (cp.distance(location) <= radius) {
+                return cp.clone();
+            }
+        }
+        return null;
+    }
+
+    public boolean isNearCheckpoint(boolean teamA, Location location, int radiusBlocks) {
+        List<Location> list = teamA ? parkourCheckpointsA : parkourCheckpointsB;
+        if (location == null || list.isEmpty() || radiusBlocks <= 0) {
+            return false;
+        }
+        double r = radiusBlocks;
+        for (Location cp : list) {
+            if (cp == null || cp.getWorld() == null || location.getWorld() == null) {
+                continue;
+            }
+            if (!cp.getWorld().getName().equals(location.getWorld().getName())) {
+                continue;
+            }
+            if (cp.distance(location) <= r) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Migration helper: if A/B are empty but legacy list has data, copy legacy -> A.
+     */
+    public void migrateLegacyParkourCheckpointsIfNeeded() {
+        if (!parkourCheckpointsA.isEmpty() || !parkourCheckpointsB.isEmpty()) {
+            return;
+        }
+        if (parkourCheckpoints == null || parkourCheckpoints.isEmpty()) {
+            return;
+        }
+        setParkourCheckpoints(true, parkourCheckpoints);
+    }
+
+    /**
+     * Legacy getter (merged).
+     * Prefer getParkourCheckpoints(true/false).
+     */
+    @Deprecated
+    public List<Location> getParkourCheckpoints() {
+        // Keep old behavior: if only A is set, return A; else merge A+B.
+        if (!parkourCheckpointsA.isEmpty() && parkourCheckpointsB.isEmpty()) {
+            return getParkourCheckpoints(true);
+        }
+        List<Location> merged = new ArrayList<>();
+        merged.addAll(getParkourCheckpoints(true));
+        merged.addAll(getParkourCheckpoints(false));
+        return merged;
+    }
+
+    /**
+     * Legacy setter (writes to team A).
+     */
+    @Deprecated
+    public void setParkourCheckpoints(List<Location> checkpoints) {
+        setParkourCheckpoints(true, checkpoints);
+    }
+
+    /**
+     * Legacy add (adds to team A).
+     */
+    @Deprecated
+    public void addParkourCheckpoint(Location location) {
+        addParkourCheckpoint(true, location);
+    }
+
+    @Deprecated
+    public boolean removeNearestParkourCheckpoint(Location location, double radius) {
+        return removeNearestParkourCheckpoint(true, location, radius);
+    }
+
+    @Deprecated
+    public void clearParkourCheckpoints() {
+        clearParkourCheckpoints(true);
+    }
+
+    @Deprecated
+    public Location findCheckpointAt(Location location, double radius) {
+        return findCheckpointAt(true, location, radius);
+    }
+
+    @Deprecated
+    public boolean isNearCheckpoint(Location location, int radiusBlocks) {
+        return isNearCheckpoint(true, location, radiusBlocks);
+    }
 
     public boolean isUsing() {
         return arenaDetails.stream().anyMatch(ArenaDetail::isUsing);
@@ -89,6 +270,52 @@ public class Arena {
                         arena.getArenaDetails().add(arenaDetail);
                     });
                 }
+
+                // Optional parkour checkpoints (per-team)
+                List<String> checkpointStringsA = arenaSection.getStringList(name + ".parkour-checkpoints-a");
+                List<String> checkpointStringsB = arenaSection.getStringList(name + ".parkour-checkpoints-b");
+
+                boolean hasAnyNew = (checkpointStringsA != null && !checkpointStringsA.isEmpty())
+                        || (checkpointStringsB != null && !checkpointStringsB.isEmpty());
+
+                if (hasAnyNew) {
+                    if (checkpointStringsA != null && !checkpointStringsA.isEmpty()) {
+                        List<Location> checkpointsA = new ArrayList<>();
+                        for (String s : checkpointStringsA) {
+                            Location l = LocationSerialization.deserializeLocation(s);
+                            if (l != null) {
+                                checkpointsA.add(l);
+                            }
+                        }
+                        arena.setParkourCheckpoints(true, checkpointsA);
+                    }
+
+                    if (checkpointStringsB != null && !checkpointStringsB.isEmpty()) {
+                        List<Location> checkpointsB = new ArrayList<>();
+                        for (String s : checkpointStringsB) {
+                            Location l = LocationSerialization.deserializeLocation(s);
+                            if (l != null) {
+                                checkpointsB.add(l);
+                            }
+                        }
+                        arena.setParkourCheckpoints(false, checkpointsB);
+                    }
+                } else {
+                    // Legacy fallback
+                    List<String> checkpointStrings = arenaSection.getStringList(name + ".parkour-checkpoints");
+                    if (checkpointStrings != null && !checkpointStrings.isEmpty()) {
+                        List<Location> checkpoints = new ArrayList<>();
+                        for (String s : checkpointStrings) {
+                            Location l = LocationSerialization.deserializeLocation(s);
+                            if (l != null) {
+                                checkpoints.add(l);
+                            }
+                        }
+                        arena.setParkourCheckpoints(checkpoints);
+                        arena.migrateLegacyParkourCheckpointsIfNeeded();
+                    }
+                }
+
                 loadedArenas.add(arena);
             });
         }
@@ -300,6 +527,51 @@ public class Arena {
                 });
             }
 
+            // Optional parkour checkpoints (per-team)
+            List<String> checkpointStringsA = arenaSection.getStringList(name + ".parkour-checkpoints-a");
+            List<String> checkpointStringsB = arenaSection.getStringList(name + ".parkour-checkpoints-b");
+
+            boolean hasAnyNew = (checkpointStringsA != null && !checkpointStringsA.isEmpty())
+                    || (checkpointStringsB != null && !checkpointStringsB.isEmpty());
+
+            if (hasAnyNew) {
+                if (checkpointStringsA != null && !checkpointStringsA.isEmpty()) {
+                    List<Location> checkpointsA = new ArrayList<>();
+                    for (String s : checkpointStringsA) {
+                        Location l = LocationSerialization.deserializeLocation(s);
+                        if (l != null) {
+                            checkpointsA.add(l);
+                        }
+                    }
+                    arena.setParkourCheckpoints(true, checkpointsA);
+                }
+
+                if (checkpointStringsB != null && !checkpointStringsB.isEmpty()) {
+                    List<Location> checkpointsB = new ArrayList<>();
+                    for (String s : checkpointStringsB) {
+                        Location l = LocationSerialization.deserializeLocation(s);
+                        if (l != null) {
+                            checkpointsB.add(l);
+                        }
+                    }
+                    arena.setParkourCheckpoints(false, checkpointsB);
+                }
+            } else {
+                // Legacy fallback
+                List<String> checkpointStrings = arenaSection.getStringList(name + ".parkour-checkpoints");
+                if (checkpointStrings != null && !checkpointStrings.isEmpty()) {
+                    List<Location> checkpoints = new ArrayList<>();
+                    for (String s : checkpointStrings) {
+                        Location l = LocationSerialization.deserializeLocation(s);
+                        if (l != null) {
+                            checkpoints.add(l);
+                        }
+                    }
+                    arena.setParkourCheckpoints(checkpoints);
+                    arena.migrateLegacyParkourCheckpointsIfNeeded();
+                }
+            }
+
             arenas.add(arena);
             Common.log("Loaded " + arena.getArenaDetails().size() + " " + arena.getName() + " arenas");
         });
@@ -372,6 +644,33 @@ public class Arena {
                         LocationSerialization.serializeLocation(arenaDetail.getMax()));
             }
         }
+
+        // Optional parkour checkpoints (per-team)
+        List<Location> cpsA = getParkourCheckpoints(true);
+        List<Location> cpsB = getParkourCheckpoints(false);
+
+        if (cpsA != null && !cpsA.isEmpty()) {
+            List<String> serialized = new ArrayList<>();
+            for (Location l : cpsA) {
+                if (l != null) {
+                    serialized.add(LocationSerialization.serializeLocation(l));
+                }
+            }
+            fileConfig.set(arenaRoot + ".parkour-checkpoints-a", serialized);
+        }
+
+        if (cpsB != null && !cpsB.isEmpty()) {
+            List<String> serialized = new ArrayList<>();
+            for (Location l : cpsB) {
+                if (l != null) {
+                    serialized.add(LocationSerialization.serializeLocation(l));
+                }
+            }
+            fileConfig.set(arenaRoot + ".parkour-checkpoints-b", serialized);
+        }
+
+        // Remove legacy key to avoid confusion (we can still read it for migration).
+        fileConfig.set(arenaRoot + ".parkour-checkpoints", null);
 
         Eden.INSTANCE.getArenaFile().save();
     }

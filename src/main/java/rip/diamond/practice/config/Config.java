@@ -107,6 +107,10 @@ public enum Config {
     MATCH_INSTA_TNT_KNOCKBACK_CONSTANT_HORIZONTAL("match.insta-boom-tnt.knockback.constant-horizontal", 0.8),
     MATCH_INSTA_TNT_RADIUS("match.insta-boom-tnt.radius", 5.0),
     MATCH_INSTA_TNT_PLACEMENT_COOLDOWN_MS("match.insta-boom-tnt.placement-cooldown-ms", 200),
+
+    // Parkour (match)
+    MATCH_PARKOUR_ALLOW_CHECKPOINT_SKIPPING("match.parkour.allow-checkpoint-skipping", false),
+
     MATCH_GOLDEN_HEAD_EFFECTS("match.golden-head.effects",
             ImmutableList.of("REGENERATION;200;2", "ABSORPTION;2400;0", "SPEED;200;0")),
     MATCH_GOLDEN_HEAD_FOOD_LEVEL("match.golden-head.food-level", 6),

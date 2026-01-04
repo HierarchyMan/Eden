@@ -42,6 +42,10 @@ public class ArenaEditMenu extends Menu {
         buttons.put(25, new ArenaPortalProtectionRadiusButton(arena));
         buttons.put(26, new ArenaAllowedKitsButton(arena, this));
 
+        // Parkour checkpoints (per-team)
+        buttons.put(27, new ArenaParkourCheckpointsTeamButton(arena, this, true));
+        buttons.put(28, new ArenaParkourCheckpointsTeamButton(arena, this, false));
+
         return buttons;
     }
 }

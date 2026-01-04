@@ -1216,3 +1216,11 @@ tablist:
     - ""
     - "&bdiamond.rip"
     - ""
+parkour:
+  match:
+    checkpoint-reached: "&aReached Checkpoint #{0}!"
+    missing-previous-checkpoints: "&cYou must complete checkpoints 1-{0} before reaching checkpoint {1}."
+    cancelled-no-checkpoints:
+      message: "&cThis parkour match was cancelled because the arena has no checkpoints set up."
+      admin: "&c[Parkour] Cancelled match: kit '{0}' tried to start on arena '{1}' but no checkpoints were configured for one or both teams."
+

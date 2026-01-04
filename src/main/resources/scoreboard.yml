@@ -91,6 +91,8 @@ GENERAL:
       - "&7&m----------------------"
       - "&b&l┃ &fFighting: &b{match-solo-opponent}"
       - ""
+      - "&b&l┃ &fCheckpoints: &b{match-parkour-checkpoints-crossed}&7/&b{match-parkour-checkpoints-total}"
+      - ""
       - "&b&l┃ &fYour Ping: &b{match-solo-self-ping}ms"
       - "&b&l┃ &fTheir Ping: &b{match-solo-opponent-ping}ms"
       - ""
@@ -149,6 +151,8 @@ GENERAL:
       - "&b&l┃ &aTeam: &7(&b{match-team-self-alive}&7/&b{match-team-self-size}&7)"
       - "&b&l┃ &cOpponents: &7(&b{match-team-opponent-alive}&7/&b{match-team-opponent-size}&7)"
       - ""
+      - "&b&l┃ &fCheckpoints: &b{match-parkour-checkpoints-crossed}&7/&b{match-parkour-checkpoints-total}"
+      - ""
       - "{server-ip}"
       - "&7&m----------------------"
     boxing:
@@ -196,6 +200,8 @@ GENERAL:
     fighting:
       - "&7&m----------------------"
       - "&b&l┃ &fAlive: &7(&b{match-ffa-alive}&7/&b{match-ffa-player-size}&7)"
+      - ""
+      - "&b&l┃ &fCheckpoints: &b{match-parkour-checkpoints-crossed}&7/&b{match-parkour-checkpoints-total}"
       - ""
       - "{server-ip}"
       - "&7&m----------------------"

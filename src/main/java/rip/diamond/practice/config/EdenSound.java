@@ -23,6 +23,11 @@ public enum EdenSound {
     OPPONENT_DEATH("opponent-death", Sound.ARROW_HIT, 1f, 1f),
     POINT_SCORED("point-scored", Sound.ORB_PICKUP, 1f, 1f),
     FINAL_DEATH_SOUND("final-death-sound", Sound.AMBIENCE_THUNDER, 1f, 1f),
+    // Parkour
+    PARKOUR_CHECKPOINT("parkour-checkpoint", Sound.NOTE_PLING, 1f, 1.2f),
+    PARKOUR_OPPONENT_CHECKPOINT("parkour-opponent-checkpoint", Sound.NOTE_PLING, 1f, 0.8f),
+    PARKOUR_WIN("parkour-win", Sound.LEVEL_UP, 1f, 1.2f),
+    PARKOUR_LOSE("parkour-lose", Sound.VILLAGER_NO, 1f, 1f),
     ;
 
     private final String path;
@@ -35,7 +40,15 @@ public enum EdenSound {
         if (Util.isNull(str)) {
             return sound;
         }
-        return Sound.valueOf(str.split(";")[0]);
+        String token = str.split(";")[0];
+        try {
+            // sound.yml should contain Bukkit Sound enum names like NOTE_PLING
+            return Sound.valueOf(token.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            Common.log("[EdenSound] Invalid sound '" + token + "' for key '" + path + "' in sound.yml. Using default: "
+                    + sound.name());
+            return sound;
+        }
     }
 
     public float getVolume() {

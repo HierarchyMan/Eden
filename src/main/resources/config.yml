@@ -54,6 +54,13 @@ match:
   allow-prefire: true
   ## This option will give a 'Play Again' item to match players when a match is ended, like Minemen Club
   allow-requeue: true
+
+  parkour:
+    ## If false (default), players must complete checkpoints sequentially.
+    ## If they reach checkpoint N without having completed 1..N-1, they will be told to go back.
+    ## If true, players may skip ahead; skipped checkpoints will be automatically marked as passed.
+    allow-checkpoint-skipping: false
+
   ## When player is outside the cuboid (which uses arena min/max), should player receive a instant death damage?
   outside-cuboid-instant-death: false
   ## Settings for damage when player is above build height

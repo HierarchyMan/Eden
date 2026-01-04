@@ -70,6 +70,10 @@ public abstract class Match {
 
    private final long startTimestamp = System.currentTimeMillis();
 
+   // Parkour progress (match-scoped)
+   private final rip.diamond.practice.match.parkour.ParkourProgressTracker parkourProgressTracker =
+         new rip.diamond.practice.match.parkour.ParkourProgressTracker();
+
    public static void init() {
       new MatchClearItemTask();
       new MatchPostMatchInventoriesClearTask();
@@ -664,6 +668,113 @@ public abstract class Match {
 
    public void broadcastSpectatorsSound(EdenSound sound) {
       getSpectators().forEach(sound::play);
+   }
+
+   /**
+    * Update/mark the player's last passed parkour checkpoint.
+    *
+    * @param index 1..N (ordered as stored in Arena), or 0 for none.
+    */
+   public void updateLastParkourCheckpoint(java.util.UUID playerUuid, org.bukkit.Location checkpoint, int index) {
+      parkourProgressTracker.set(playerUuid, checkpoint, index);
+   }
+
+   /**
+    * Backwards-compatible helper.
+    */
+   public void updateLastParkourCheckpoint(java.util.UUID playerUuid, org.bukkit.Location checkpoint) {
+      // If index isn't known, treat as "some checkpoint".
+      updateLastParkourCheckpoint(playerUuid, checkpoint, 0);
+   }
+
+   public void clearParkourProgress(java.util.UUID playerUuid) {
+      parkourProgressTracker.clear(playerUuid);
+   }
+
+   /**
+    * @return last checkpoint the player passed, or null if none.
+    */
+   public org.bukkit.Location getLastParkourCheckpoint(java.util.UUID playerUuid) {
+      return parkourProgressTracker.getLastCheckpoint(playerUuid);
+   }
+
+   /**
+    * @return checkpoint index (1..N) or 0 if none.
+    */
+   public int getLastParkourCheckpointIndex(java.util.UUID playerUuid) {
+      return parkourProgressTracker.getLastCheckpointIndex(playerUuid);
+   }
+
+   /**
+    * @return total checkpoints for the player's team side (0 if none)
+    */
+   public int getTotalParkourCheckpoints(org.bukkit.entity.Player player) {
+      if (player == null) {
+         return 0;
+      }
+      if (arenaDetail == null || arenaDetail.getArena() == null) {
+         return 0;
+      }
+
+      rip.diamond.practice.match.team.Team team = getTeam(player);
+      if (team == null) {
+         return 0;
+      }
+
+      org.bukkit.Location a = arenaDetail.getA();
+      org.bukkit.Location b = arenaDetail.getB();
+      if (a == null || b == null) {
+         return arenaDetail.getArena().getParkourCheckpoints().size();
+      }
+
+      // IMPORTANT: Determine side by comparing the team's spawn to the arena's A/B spawns.
+      org.bukkit.Location teamSpawn = team.getSpawnLocation();
+      if (teamSpawn == null) {
+         return arenaDetail.getArena().getParkourCheckpoints().size();
+      }
+
+      boolean teamA = teamSpawn.distanceSquared(a) <= teamSpawn.distanceSquared(b);
+      return arenaDetail.getArena().getParkourCheckpoints(teamA).size();
+   }
+
+   /**
+    * Backwards compat: merged list size.
+    */
+   public int getTotalParkourCheckpoints() {
+      if (arenaDetail == null || arenaDetail.getArena() == null) {
+         return 0;
+      }
+      return arenaDetail.getArena().getParkourCheckpoints().size();
+   }
+
+   /**
+    * Teleport a player to their parkour respawn point.
+    *
+    * Priority:
+    * 1) last checkpoint passed in this match
+    * 2) their team spawn location
+    */
+   public void teleportToParkourRespawn(org.bukkit.entity.Player player) {
+      if (player == null) {
+         return;
+      }
+
+      org.bukkit.Location last = getLastParkourCheckpoint(player.getUniqueId());
+      if (last != null) {
+         rip.diamond.practice.util.Util.teleport(player, last);
+         return;
+      }
+
+      rip.diamond.practice.match.team.Team team = getTeam(player);
+      if (team != null && team.getSpawnLocation() != null) {
+         rip.diamond.practice.util.Util.teleport(player, team.getSpawnLocation());
+         return;
+      }
+
+      // Ultra-safe fallback
+      if (arenaDetail != null && arenaDetail.getA() != null) {
+         rip.diamond.practice.util.Util.teleport(player, arenaDetail.getA());
+      }
    }
 
    public abstract void setupTeamSpawnLocation();

@@ -1,7 +1,6 @@
 package rip.diamond.practice;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.entity.Player;
 import rip.diamond.practice.config.Language;
 import rip.diamond.practice.match.Match;
@@ -20,7 +19,6 @@ import rip.diamond.practice.queue.QueueProfile;
 import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.TimeUtil;
 import rip.diamond.practice.util.Util;
-import rip.diamond.practice.util.exception.PracticeUnexpectedException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,6 +72,21 @@ public class EdenPlaceholder {
                                                 .replace("{match-build-limit-difference}", Util.renderBuildLimit(
                                                                 player.getLocation().getBlockY(),
                                                                 match.getArenaDetail().getArena().getBuildMax()));
+
+                                // Parkour progress placeholders (work for any match type as long as kit rule is enabled)
+                                if (match.getKit().getGameRules().isParkour()
+                                                && match.getArenaDetail() != null
+                                                && match.getArenaDetail().getArena() != null) {
+                                        int crossed = match.getLastParkourCheckpointIndex(player.getUniqueId());
+                                        int total = match.getTotalParkourCheckpoints(player);
+                                        str = str
+                                                        .replace("{match-parkour-checkpoints-crossed}", String.valueOf(crossed))
+                                                        .replace("{match-parkour-checkpoints-total}", String.valueOf(total));
+                                } else {
+                                        str = str
+                                                        .replace("{match-parkour-checkpoints-crossed}", "0")
+                                                        .replace("{match-parkour-checkpoints-total}", "0");
+                                }
 
                                 for (int i = 0; i < match.getTeams().size(); i++) {
                                         Team team = match.getTeams().get(i);

@@ -10,3 +10,9 @@ match-start: FIREWORK_BLAST;1;1
 oitc-arrow-kill: NOTE_PLING;1;1.5
 oitc-melee-kill: ORB_PICKUP;1;1
 oitc-death: ENDERMAN_TELEPORT;1;1
+
+# Parkour
+parkour-checkpoint: NOTE_PLING;1;1.2
+parkour-opponent-checkpoint: NOTE_PLING;1;0.8
+parkour-win: LEVEL_UP;1;1.2
+parkour-lose: VILLAGER_NO;1;1

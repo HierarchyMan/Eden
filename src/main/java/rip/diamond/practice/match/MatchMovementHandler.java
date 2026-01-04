@@ -52,8 +52,23 @@ public class MatchMovementHandler {
                         && Config.MATCH_OUTSIDE_CUBOID_INSTANT_DEATH.toBoolean())
                         || arena.getYLimit() > player.getLocation().getY()) {
                     TeamPlayer teamPlayer = match.getTeamPlayer(player);
-                    
+
                     if (teamPlayer.isAlive() && !teamPlayer.isRespawning()) {
+                        // Parkour mode: falling below y-limit should "fail" and teleport back, not die.
+                        Team team = match.getTeam(player);
+                        boolean teamA = true;
+                        if (team != null && team.getSpawnLocation() != null && arenaDetail.getA() != null
+                                && arenaDetail.getB() != null) {
+                            org.bukkit.Location teamSpawn = team.getSpawnLocation();
+                            teamA = teamSpawn.distanceSquared(arenaDetail.getA())
+                                    <= teamSpawn.distanceSquared(arenaDetail.getB());
+                        }
+                        if (gameRules.isParkour() && !arena.getParkourCheckpoints(teamA).isEmpty()
+                                && arena.getYLimit() > player.getLocation().getY()) {
+                            match.teleportToParkourRespawn(player);
+                            return;
+                        }
+
                         Util.damage(player, 99999);
                     }
                     return;

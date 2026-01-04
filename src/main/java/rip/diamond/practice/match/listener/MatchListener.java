@@ -74,6 +74,7 @@ public class MatchListener implements Listener {
     
     // Sub-listeners for specific game modes
     private final rip.diamond.practice.match.listener.kit.TNTSumoMatchListener tntSumoListener;
+    private final rip.diamond.practice.match.listener.kit.ParkourMatchListener parkourListener;
 
     public MatchListener(Eden plugin) {
         this.plugin = plugin;
@@ -81,6 +82,10 @@ public class MatchListener implements Listener {
         // Register TNT Sumo listener
         this.tntSumoListener = new rip.diamond.practice.match.listener.kit.TNTSumoMatchListener(plugin);
         plugin.getServer().getPluginManager().registerEvents(tntSumoListener, plugin);
+
+        // Register Parkour listener
+        this.parkourListener = new rip.diamond.practice.match.listener.kit.ParkourMatchListener();
+        plugin.getServer().getPluginManager().registerEvents(parkourListener, plugin);
     }
 
     @EventHandler
@@ -179,6 +184,37 @@ public class MatchListener implements Listener {
 
         if (profile.getPlayerState() == PlayerState.IN_MATCH && profile.getMatch() != null) {
             Match match = profile.getMatch();
+
+            // Parkour: never eliminate on death; teleport/respawn logic is handled elsewhere.
+            if (match.getKit().getGameRules().isParkour()
+                    && match.getArenaDetail() != null
+                    && match.getArenaDetail().getArena() != null) {
+
+                boolean teamA = true;
+                if (match.getTeam(player) != null && match.getTeam(player).getSpawnLocation() != null
+                        && match.getArenaDetail().getA() != null && match.getArenaDetail().getB() != null) {
+                    org.bukkit.Location teamSpawn = match.getTeam(player).getSpawnLocation();
+                    teamA = teamSpawn.distanceSquared(match.getArenaDetail().getA())
+                            <= teamSpawn.distanceSquared(match.getArenaDetail().getB());
+                }
+
+                if (!match.getArenaDetail().getArena().getParkourCheckpoints(teamA).isEmpty()) {
+                    event.setDroppedExp(0);
+                    event.getDrops().clear();
+                    // Keep HP stable
+                    player.setHealth(20);
+                    player.setVelocity(new Vector());
+
+                    // Extra safety: if Spigot still fires a death packet, immediately teleport back next tick.
+                    Tasks.runLater(() -> {
+                        if (profile.getPlayerState() == PlayerState.IN_MATCH && profile.getMatch() == match) {
+                            match.teleportToParkourRespawn(player);
+                        }
+                    }, 1L);
+                    return;
+                }
+            }
+
             TeamPlayer teamPlayer = match.getTeamPlayer(player);
             KitGameRules gameRules = match.getKit().getGameRules();
 
@@ -280,6 +316,20 @@ public class MatchListener implements Listener {
                 return;
             }
             if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
+                if (rules.isParkour() && match.getArenaDetail() != null && match.getArenaDetail().getArena() != null) {
+                    boolean teamA = true;
+                    if (match.getTeam(player) != null && match.getTeam(player).getSpawnLocation() != null
+                            && match.getArenaDetail().getA() != null && match.getArenaDetail().getB() != null) {
+                        org.bukkit.Location teamSpawn = match.getTeam(player).getSpawnLocation();
+                        teamA = teamSpawn.distanceSquared(match.getArenaDetail().getA())
+                                <= teamSpawn.distanceSquared(match.getArenaDetail().getB());
+                    }
+                    if (!match.getArenaDetail().getArena().getParkourCheckpoints(teamA).isEmpty()) {
+                        // Parkour listener replaces void death with a teleport back.
+                        return;
+                    }
+                }
+
                 Util.damage(player, 99999);
                 event.setCancelled(true);
                 return;

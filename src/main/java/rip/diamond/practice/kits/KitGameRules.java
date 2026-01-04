@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import rip.diamond.practice.config.Language;
-import rip.diamond.practice.kits.menu.button.impl.KitRulesSetIntegerButton;
-import rip.diamond.practice.kits.menu.button.impl.KitRulesSetStringButton;
-import rip.diamond.practice.kits.menu.button.impl.KitRulesToggleButton;
 import rip.diamond.practice.match.Match;
 import rip.diamond.practice.queue.QueueType;
 
@@ -67,6 +64,13 @@ public class KitGameRules implements Cloneable {
 	private boolean dropItems = true;
 	@Getter
 	private boolean tntsumo = false;
+
+	// Parkour rules
+	@Getter
+	private boolean parkour = false;
+	@Getter
+	private int parkourCheckpointBuildRadius = 0;
+
 	@Getter
 	private boolean teamProjectile = true;
 	@Getter
@@ -176,6 +180,7 @@ public class KitGameRules implements Cloneable {
 		dropItems(Language.KIT_GAME_RULES_DROP_ITEMS_RULES.toString(),
 				Language.KIT_GAME_RULES_DROP_ITEMS_DESCRIPTION.toString()),
 		tntsumo("TNT Sumo", "Enable TNT Sumo mode"),
+		parkour("Parkour", "Enable parkour checkpoints & void-to-checkpoint respawn"),
 		teamProjectile(Language.KIT_GAME_RULES_TEAM_PROJECTILE_RULES.toString(),
 				Language.KIT_GAME_RULES_TEAM_PROJECTILE_DESCRIPTION.toString()),
 		bowBoosting(Language.KIT_GAME_RULES_BOW_BOOSTING_RULES.toString(),
@@ -198,6 +203,7 @@ public class KitGameRules implements Cloneable {
 
 		
 		tntsumoMaxInstaBoomTnt("TNT Sumo Max Insta Boom TNT", "Maximum number of Insta Boom TNT per player in TNT Sumo mode"),
+		parkourCheckpointBuildRadius("Parkour Checkpoint Build Radius", "Prevents placing/breaking blocks within this many blocks of any parkour checkpoint"),
 		;
 
 		private final String rule;
