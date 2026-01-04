@@ -716,6 +716,7 @@ match:
   use-again-golden-head: "&cYou need to wait &c&l{0} &cseconds before using Golden Head again"
   use-again-ender-pearl: "&cYou need to wait &c&l{0} &cseconds before using ender pearl again"
   use-again-fireball: "&cYou need to wait &c&l{0} &cseconds before using fireball again"
+  use-again-insta-boom-tnt: "&cYou need to wait &c&l{0} &cseconds before placing Insta Boom TNT again"
   received-kit-loadout: "&fYou have received &b{0} &fkit loadout"
   received-kit-loadout-because-timeout: "No selected kit loadout. You have been automatically equipped &bdefault &fkit loadout"
   auto-equipped-kit: "&a{0} automatically equipped."

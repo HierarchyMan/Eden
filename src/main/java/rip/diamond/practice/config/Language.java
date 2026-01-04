@@ -439,6 +439,7 @@ public enum Language {
     MATCH_USE_AGAIN_GOLDEN_HEAD("match.use-again-golden-head"),
     MATCH_USE_AGAIN_ENDER_PEARL("match.use-again-ender-pearl"),
     MATCH_USE_AGAIN_FIREBALL("match.use-again-fireball"),
+    MATCH_USE_AGAIN_INSTA_BOOM_TNT("match.use-again-insta-boom-tnt"),
     MATCH_RECEIVED_KIT_LOADOUT("match.received-kit-loadout"),
     MATCH_RECEIVED_KIT_LOADOUT_BECAUSE_TIMEOUT("match.received-kit-loadout-because-timeout"),
     MATCH_AUTO_EQUIPPED_KIT("match.auto-equipped-kit"),

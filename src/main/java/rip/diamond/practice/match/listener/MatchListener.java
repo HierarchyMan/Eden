@@ -1060,9 +1060,10 @@ public class MatchListener implements Listener {
                     if (timeSince < cooldownMs) {
                         event.setCancelled(true);
                         player.updateInventory();
-                        // Optionally send cooldown message
+                        // Send cooldown message
                         long remainingMs = cooldownMs - timeSince;
-                        player.sendMessage(CC.RED + "Wait " + (remainingMs / 1000.0) + "s before placing Insta Boom TNT!");
+                        double remainingSeconds = Math.ceil(remainingMs / 1000.0);
+                        Language.MATCH_USE_AGAIN_INSTA_BOOM_TNT.sendMessage(player, String.format("%.1f", remainingSeconds));
                         return;
                     }
                 }
