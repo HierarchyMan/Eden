@@ -66,6 +66,8 @@ public class KitGameRules implements Cloneable {
 	@Getter
 	private boolean dropItems = true;
 	@Getter
+	private boolean tntsumo = false;
+	@Getter
 	private boolean teamProjectile = true;
 	@Getter
 	private boolean bowBoosting = true;
@@ -83,6 +85,9 @@ public class KitGameRules implements Cloneable {
 	private String knockbackName = "default";
 	@Getter
 	private boolean showMatchStartScoreboard = true;
+
+	@Getter
+	private int tntsumoMaxInstaBoomTnt = 10;
 
 	public boolean isPoint(Match match) {
 		switch (match.getMatchType()) {
@@ -170,6 +175,7 @@ public class KitGameRules implements Cloneable {
 				Language.KIT_GAME_RULES_GIVE_BACK_ARROW_DESCRIPTION.toString()),
 		dropItems(Language.KIT_GAME_RULES_DROP_ITEMS_RULES.toString(),
 				Language.KIT_GAME_RULES_DROP_ITEMS_DESCRIPTION.toString()),
+		tntsumo("TNT Sumo", "Enable TNT Sumo mode"),
 		teamProjectile(Language.KIT_GAME_RULES_TEAM_PROJECTILE_RULES.toString(),
 				Language.KIT_GAME_RULES_TEAM_PROJECTILE_DESCRIPTION.toString()),
 		bowBoosting(Language.KIT_GAME_RULES_BOW_BOOSTING_RULES.toString(),
@@ -189,6 +195,9 @@ public class KitGameRules implements Cloneable {
 		knockbackName(Language.KIT_GAME_RULES_KNOCKBACK_NAME_RULES.toString(),
 				Language.KIT_GAME_RULES_KNOCKBACK_NAME_DESCRIPTION.toString()),
 		showMatchStartScoreboard("Show Match Start Scoreboard", "Show the match start scoreboard/holograms"),
+
+		
+		tntsumoMaxInstaBoomTnt("TNT Sumo Max Insta Boom TNT", "Maximum number of Insta Boom TNT per player in TNT Sumo mode"),
 		;
 
 		private final String rule;

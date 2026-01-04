@@ -1,6 +1,6 @@
 package rip.diamond.practice.match.listener;
 
-import lombok.RequiredArgsConstructor;
+
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -65,13 +65,23 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class MatchListener implements Listener {
 
     private final Eden plugin;
     
     // Track last Insta Boom TNT placement time per player (for cooldown)
     private final java.util.Map<java.util.UUID, Long> lastInstaTntPlacement = new java.util.HashMap<>();
+    
+    // Sub-listeners for specific game modes
+    private final rip.diamond.practice.match.listener.kit.TNTSumoMatchListener tntSumoListener;
+
+    public MatchListener(Eden plugin) {
+        this.plugin = plugin;
+        
+        // Register TNT Sumo listener
+        this.tntSumoListener = new rip.diamond.practice.match.listener.kit.TNTSumoMatchListener(plugin);
+        plugin.getServer().getPluginManager().registerEvents(tntSumoListener, plugin);
+    }
 
     @EventHandler
     public void onStart(MatchStartEvent event) {
@@ -409,6 +419,7 @@ public class MatchListener implements Listener {
                     player.getLocation(),
                     event.getDamager().getLocation(),
                     Config.MATCH_FIREBALL_YIELD.toDouble(),
+                    Config.MATCH_FIREBALL_YIELD.toDouble() * 2.0,
                     maxDamage,
                     obstructionBlocks);
 
@@ -429,6 +440,12 @@ public class MatchListener implements Listener {
             boolean isInstaBoom = tnt.hasMetadata("INSTA_BOOM");
             
             if (isInstaBoom && Config.MATCH_INSTA_TNT_ENABLED.toBoolean()) {
+                // Skip if already manually processed in EntityExplodeEvent
+                if (tnt.hasMetadata("MANUALLY_PROCESSED")) {
+                    event.setCancelled(true);
+                    return;
+                }
+                
                 // Get match for exclusion checks
                 PlayerProfile profile = PlayerProfile.get(player);
                 Match match = (profile != null) ? profile.getMatch() : null;
@@ -466,6 +483,7 @@ public class MatchListener implements Listener {
                                 player.getLocation(),
                                 tnt.getLocation(),
                                 Config.MATCH_INSTA_TNT_YIELD.toDouble(),
+                                Config.MATCH_INSTA_TNT_RADIUS.toDouble(),
                                 maxDamage,
                                 obstructionBlocks);
 
@@ -489,6 +507,7 @@ public class MatchListener implements Listener {
                             player.getLocation(),
                             tnt.getLocation(),
                             Config.MATCH_INSTA_TNT_YIELD.toDouble(),
+                            Config.MATCH_INSTA_TNT_RADIUS.toDouble(),
                             maxDamage,
                             obstructionBlocks);
 
@@ -510,6 +529,7 @@ public class MatchListener implements Listener {
                     player.getLocation(),
                     event.getDamager().getLocation(),
                     Config.MATCH_TNT_YIELD.toDouble(),
+                    Config.MATCH_TNT_YIELD.toDouble() * 2.0,
                     maxDamage,
                     obstructionBlocks);
 
@@ -1475,7 +1495,7 @@ public class MatchListener implements Listener {
         TeamPlayer teamPlayer = match.getTeamPlayer(player);
         Kit kit = match.getKit();
 
-        if (kit.getGameRules().isBed() || kit.getGameRules().isPoint(match)) {
+        if (kit.getGameRules().isBed() || kit.getGameRules().isPoint(match) || kit.getGameRules().isTntsumo()) {
             match.getTeam(player).dye(teamPlayer);
         }
         player.updateInventory();

@@ -54,18 +54,18 @@ public class ExplosionDamageUtil {
      *
      * @param victimLocation    The victim's location
      * @param explosionLocation The explosion center location
-     * @param explosionYield    The explosion power/yield
+     * @param explosionYield    The explosion power/yield (for block breaking)
+     * @param explosionRadius   The damage/effect radius (independent from yield)
      * @param configMaxDamage   The configured max damage at point-blank
      * @param obstructionBlocks Number of solid blocks between explosion and victim (pre-calculated)
      * @return The calculated damage value
      */
     public static double calculateDamage(org.bukkit.Location victimLocation, org.bukkit.Location explosionLocation, 
-                                          double explosionYield, double configMaxDamage, int obstructionBlocks) {
+                                          double explosionYield, double explosionRadius, double configMaxDamage, int obstructionBlocks) {
         double distance = victimLocation.distance(explosionLocation);
-        double radius = explosionYield * 2.0;
         
         // Gradual falloff using square root - damage drops slower near center
-        double distanceRatio = Math.max(0.0, 1.0 - (distance / radius));
+        double distanceRatio = Math.max(0.0, 1.0 - (distance / explosionRadius));
         double gradualRatio = Math.sqrt(distanceRatio);
         double baseDamage = configMaxDamage * gradualRatio;
         
