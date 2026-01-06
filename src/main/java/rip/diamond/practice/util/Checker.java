@@ -126,26 +126,29 @@ public class Checker {
 
     public static boolean canDamage(Player player) {
         PlayerProfile profile = PlayerProfile.get(player);
-        if (Util.isNPC(player)) {
-            return profile != null;
+        if (profile == null) {
+            return false;
         }
 
-        
+        if (Util.isNPC(player)) {
+            return true;
+        }
+
         if (profile.getPlayerState() == PlayerState.IN_MATCH
                 && profile.getMatch() != null
+                && profile.getMatch().getTeamPlayer(player) != null
                 && profile.getMatch().getTeamPlayer(player).isAlive()
                 && !profile.getMatch().getTeamPlayer(player).isRespawning()
                 && profile.getMatch().getState() == MatchState.FIGHTING) {
             return true;
         }
 
-        
         if (profile.getPlayerState() == PlayerState.IN_EVENT) {
             rip.diamond.practice.events.PracticeEvent<?> event = rip.diamond.practice.Eden.INSTANCE.getEventManager().getEventPlaying(player);
-            
+
             return event != null
-                && event.getState() == rip.diamond.practice.events.EventState.PLAYING
-                && event.getPlayers().containsKey(player.getUniqueId());
+                    && event.getState() == rip.diamond.practice.events.EventState.PLAYING
+                    && event.getPlayers().containsKey(player.getUniqueId());
         }
 
         return false;

@@ -1,6 +1,7 @@
 package io.github.epicgo.sconey;
 
 import io.github.epicgo.sconey.element.SconeyElementAdapter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,9 +19,14 @@ public class SconeyHandler {
     public SconeyHandler(final JavaPlugin plugin, final SconeyElementAdapter adapter) {
         this.adapter = adapter;
 
-        plugin.getServer().getPluginManager().registerEvents(new SconeyListener(this), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new SconeyListener(this, plugin), plugin);
 
         this.startThread();
+
+        // Ensure already-online players get a board if the handler is created after they're online.
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            this.ensureScoreboard(player);
+        }
     }
 
     /**
@@ -40,6 +46,32 @@ public class SconeyHandler {
         if (this.sconeyThread != null) {
             this.sconeyThread.shutdown();
             this.sconeyThread = null;
+        }
+    }
+
+    /**
+     * @return true if the update thread exists and is alive
+     */
+    public boolean isRunning() {
+        return this.sconeyThread != null && this.sconeyThread.isAlive();
+    }
+
+    /**
+     * Ensure a player has a scoreboard registered in this handler.
+     */
+    public void ensureScoreboard(final Player player) {
+        if (this.getScoreboard(player) == null) {
+            this.addScoreboard(player);
+        }
+    }
+
+    /**
+     * Rebuild all boards (useful for reload recovery).
+     */
+    public void rebuildAll() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            this.removeScoreboard(player);
+            this.addScoreboard(player);
         }
     }
 

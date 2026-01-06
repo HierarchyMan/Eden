@@ -11,8 +11,8 @@ import rip.diamond.practice.party.fight.menu.ChooseKitMenu;
 import rip.diamond.practice.party.fight.menu.ChooseMatchTypeMenu;
 import rip.diamond.practice.profile.PlayerProfile;
 import rip.diamond.practice.profile.PlayerState;
+import rip.diamond.practice.profile.ProfileSettings;
 import rip.diamond.practice.util.Checker;
-import rip.diamond.practice.util.Common;
 import rip.diamond.practice.util.command.Command;
 import rip.diamond.practice.util.command.CommandArgs;
 import rip.diamond.practice.util.command.argument.CommandArguments;
@@ -75,13 +75,23 @@ public class ChooseMatchTypeCommand extends Command {
                 return;
             }
 
+            // If arena selection is not enabled for this player (or they don't have permission),
+            // don't allow specifying an arena name directly.
+            if (profile.getSettings() == null
+                    || profile.getSettings().get(ProfileSettings.ARENA_SELECTION) == null
+                    || !profile.getSettings().get(ProfileSettings.ARENA_SELECTION).isEnabled()
+                    || !player.hasPermission(ProfileSettings.ARENA_SELECTION.getPermission())) {
+                new ChooseArenaMenu(type, kit).openMenu(player);
+                return;
+            }
+
             Arena arena = Arena.getEnabledArena(args[2], kit);
             if (arena == null) {
                 Language.PARTY_INVALID_ARENA.sendMessage(player, args[2]);
                 return;
             }
 
-            plugin.getPartyFightManager().startPartyEvent(player, type, kit, Arena.getEnabledArena(kit));
+            plugin.getPartyFightManager().startPartyEvent(player, type, kit, arena);
             return;
         }
     }

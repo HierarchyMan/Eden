@@ -35,7 +35,8 @@ public class Party {
     @Setter private long lastAnnounced = 0;
 
     public static Party getByPlayer(Player player) {
-        return PlayerProfile.get(player).getParty();
+        PlayerProfile profile = PlayerProfile.get(player);
+        return profile != null ? profile.getParty() : null;
     }
 
     public Party(Player player, int size) {

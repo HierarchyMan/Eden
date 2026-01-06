@@ -120,6 +120,33 @@ public abstract class Match {
    public void start() {
       setupTeamSpawnLocation();
 
+      // Validate arena spawns before doing anything expensive (like equipping kits)
+      if (arenaDetail == null || arenaDetail.getArena() == null) {
+         end(true, "Arena detail is missing");
+         return;
+      }
+      if (getMatchType() == MatchType.FFA) {
+         if (arenaDetail.getA() == null || arenaDetail.getA().getWorld() == null) {
+            end(true, "Arena spawn A is not set");
+            return;
+         }
+      } else {
+         if (arenaDetail.getA() == null || arenaDetail.getA().getWorld() == null
+               || arenaDetail.getB() == null || arenaDetail.getB().getWorld() == null) {
+            end(true, "Arena spawns A/B are not set");
+            return;
+         }
+      }
+      for (Team t : teams) {
+         if (t == null || t.getSpawnLocation() == null || t.getSpawnLocation().getWorld() == null) {
+            Common.log("&c[Eden] Match start aborted: team spawn not set (match=" + uuid + ", kit="
+                  + (kit != null ? kit.getName() : "null") + ", arena="
+                  + arenaDetail.getArena().getName() + ")");
+            end(true, "Team spawn is not set");
+            return;
+         }
+      }
+
       if (kit.getGameRules().isBuild() || kit.getGameRules().isSpleef()) {
          if (Match.getMatches().values().stream().filter(match -> match != this).anyMatch(
                match -> (match.getKit().getGameRules().isBuild() || match.getKit().getGameRules().isSpleef())

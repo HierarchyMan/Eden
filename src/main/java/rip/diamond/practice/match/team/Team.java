@@ -10,7 +10,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.github.paperspigot.Title;
 import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.Common;
 import rip.diamond.practice.util.TitleSender;
@@ -181,6 +180,9 @@ public class Team {
 	}
 
 	public Location getSpawnLocation() {
+		if (spawnLocation == null) {
+			return null;
+		}
 		return spawnLocation.clone().add(0, 1, 0);
 	}
 
@@ -208,6 +210,11 @@ public class Team {
 	}
 
 	public void teleport(Location location) {
+		if (location == null || location.getWorld() == null) {
+			Common.log(CC.RED + "[Eden] Tried to teleport a team to a null location/world (leader="
+					+ (leader != null ? leader.getUsername() : "unknown") + ")");
+			return;
+		}
 		if (!location.getChunk().isLoaded()) {
 			Common.debug(LocationSerialization.toReadable(location) + CC.RED
 					+ " 的區塊還沒加載, 可是系統正在傳送玩家到該位置, 這可能會造成伺服器卡頓, 請盡快修復");

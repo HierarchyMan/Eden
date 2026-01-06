@@ -246,12 +246,15 @@ public class Eden extends JavaPlugin {
     }
 
     private void reapplyPlayerVisuals() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (scoreboardHandler != null) {
-                scoreboardHandler.removeScoreboard(player);
-                scoreboardHandler.addScoreboard(player);
+        // Bring scoreboards back even if the Sconey thread stopped (e.g., after some other plugin disables/reloads).
+        if (scoreboardHandler != null) {
+            if (!scoreboardHandler.isRunning()) {
+                scoreboardHandler.startThread();
             }
+            scoreboardHandler.rebuildAll();
+        }
 
+        for (Player player : Bukkit.getOnlinePlayers()) {
             if (Config.FANCY_TABLIST_ENABLED.toBoolean() && tabHandler != null) {
                 tabHandler.removePlayerTablist(player);
                 tabHandler.registerPlayerTablist(player);

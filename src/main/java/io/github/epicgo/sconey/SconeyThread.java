@@ -1,6 +1,5 @@
 package io.github.epicgo.sconey;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import rip.diamond.practice.util.Util;
 
@@ -43,8 +42,9 @@ public class SconeyThread extends Thread {
         for (final Player player : Util.getOnlinePlayers()) {
             try {
                 final SconeyPlayer sconeyPlayer = this.sconeyHandler.getScoreboard(player);
-                if (sconeyPlayer == null)
-                    return;
+                if (sconeyPlayer == null) {
+                    continue; // don't abort the entire tick if one player has no board
+                }
 
                 sconeyPlayer.handleUpdate();
             } catch (Exception e) {

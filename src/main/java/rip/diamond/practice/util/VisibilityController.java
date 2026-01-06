@@ -143,9 +143,21 @@ public class VisibilityController {
             return configSettings || viewerPlayingMatch || viewerSameParty;
         } else {
 
-            boolean targetIsSpectator = targetMatch.getSpectators().contains(target)
-                    || !targetMatch.getTeamPlayer(target).isAlive() || targetMatch.getTeamPlayer(target).isRespawning();
-            boolean viewerSpectateSetting = pViewer.getSettings().get(ProfileSettings.SPECTATOR_VISIBILITY).isEnabled();
+            // Defensive: during match boot/teardown the team player wrapper can be temporarily null
+            // (or spectators list may be null depending on implementation).
+            boolean spectatorListContainsTarget = targetMatch.getSpectators() != null && targetMatch.getSpectators().contains(target);
+            rip.diamond.practice.match.team.TeamPlayer targetTeamPlayer = targetMatch.getTeamPlayer(target);
+            if (targetTeamPlayer == null) {
+                return false;
+            }
+
+            boolean targetIsSpectator = spectatorListContainsTarget
+                    || !targetTeamPlayer.isAlive()
+                    || targetTeamPlayer.isRespawning();
+
+            boolean viewerSpectateSetting = pViewer.getSettings() != null
+                    && pViewer.getSettings().get(ProfileSettings.SPECTATOR_VISIBILITY) != null
+                    && pViewer.getSettings().get(ProfileSettings.SPECTATOR_VISIBILITY).isEnabled();
             boolean viewerIsSpectator = pViewer.getPlayerState() == PlayerState.IN_SPECTATING
                     && pViewer.getMatch() != null;
 
