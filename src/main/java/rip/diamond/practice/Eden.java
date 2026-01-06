@@ -1,7 +1,7 @@
 package rip.diamond.practice;
 
 import com.google.gson.Gson;
-import io.github.epicgo.sconey.SconeyHandler;
+import rip.diamond.practice.util.scoreboard.ScoreboardHandler;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -117,7 +117,7 @@ public class Eden extends JavaPlugin {
 
     private SpigotAPI spigotAPI;
     private EntityHider entityHider;
-    private SconeyHandler scoreboardHandler;
+    private ScoreboardHandler scoreboardHandler;
     private ImanityTabHandler tabHandler;
     private EdenCache cache;
     private EdenPlaceholder placeholder;
@@ -374,7 +374,7 @@ public class Eden extends JavaPlugin {
         new MatchMovementHandler();
 
         this.entityHider = new EntityHider(this, EntityHider.Policy.BLACKLIST).init();
-        this.scoreboardHandler = new SconeyHandler(this, new ScoreboardAdapter());
+        this.scoreboardHandler = new ScoreboardHandler(this, new ScoreboardAdapter());
         this.cache = new EdenCache();
         this.placeholder = new EdenPlaceholder(this);
         if (Config.NAMETAG_ENABLED.toBoolean())

@@ -1,8 +1,8 @@
 package rip.diamond.practice.layout;
 
-import io.github.epicgo.sconey.element.SconeyElement;
-import io.github.epicgo.sconey.element.SconeyElementAdapter;
-import io.github.epicgo.sconey.element.SconeyElementMode;
+import rip.diamond.practice.util.scoreboard.element.ScoreboardElement;
+import rip.diamond.practice.util.scoreboard.element.ScoreboardElementAdapter;
+import rip.diamond.practice.util.scoreboard.element.ScoreboardElementMode;
 import org.bukkit.entity.Player;
 import rip.diamond.practice.Eden;
 import rip.diamond.practice.config.Language;
@@ -20,16 +20,16 @@ import rip.diamond.practice.util.CC;
 
 import java.util.List;
 
-public class ScoreboardAdapter implements SconeyElementAdapter {
+public class ScoreboardAdapter implements ScoreboardElementAdapter {
 
     private final Eden plugin = Eden.INSTANCE;
 
     @Override
-    public SconeyElement getElement(final Player player) {
-        SconeyElement element = new SconeyElement();
+    public ScoreboardElement getElement(final Player player) {
+        ScoreboardElement element = new ScoreboardElement();
 
         element.setTitle(Language.SCOREBOARD_TITLE.toString(player));
-        element.setMode(SconeyElementMode.CUSTOM);
+        element.setMode(ScoreboardElementMode.CUSTOM);
 
         PlayerProfile profile = PlayerProfile.get(player);
 

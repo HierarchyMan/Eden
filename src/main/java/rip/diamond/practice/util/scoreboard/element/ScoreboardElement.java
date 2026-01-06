@@ -1,4 +1,4 @@
-package io.github.epicgo.sconey.element;
+package rip.diamond.practice.util.scoreboard.element;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +11,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class SconeyElement {
+public class ScoreboardElement {
 
     /**
     * List of format strings to place the scoreboard line on
@@ -25,7 +25,7 @@ public class SconeyElement {
     /**
      * The position numbers being displayed on the right column of the scoreboard
      */
-    private SconeyElementMode mode = SconeyElementMode.UP;
+    private ScoreboardElementMode mode = ScoreboardElementMode.UP;
 
     /**
      * Add a new line to the scoreboard element

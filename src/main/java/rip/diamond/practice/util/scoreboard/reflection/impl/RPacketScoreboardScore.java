@@ -1,6 +1,6 @@
-package io.github.epicgo.sconey.reflection.impl;
+package rip.diamond.practice.util.scoreboard.reflection.impl;
 
-import io.github.epicgo.sconey.reflection.Reflection;
+import rip.diamond.practice.util.scoreboard.reflection.Reflection;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.entity.Player;

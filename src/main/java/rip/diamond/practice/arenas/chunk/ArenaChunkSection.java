@@ -1,6 +1,6 @@
 package rip.diamond.practice.arenas.chunk;
 
-import io.github.epicgo.sconey.reflection.Reflection;
+import rip.diamond.practice.util.scoreboard.reflection.Reflection;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.server.v1_8_R3.ChunkSection;

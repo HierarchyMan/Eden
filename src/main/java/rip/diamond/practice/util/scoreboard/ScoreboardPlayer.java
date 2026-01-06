@@ -1,11 +1,10 @@
-package io.github.epicgo.sconey;
+package rip.diamond.practice.util.scoreboard;
 
 import com.google.common.collect.ImmutableSet;
-import io.github.epicgo.sconey.element.SconeyElement;
-import io.github.epicgo.sconey.element.SconeyElementAdapter;
-import io.github.epicgo.sconey.element.SconeyElementMode;
-import io.github.epicgo.sconey.reflection.impl.RPacketScoreboardScore;
-import io.github.epicgo.sconey.reflection.impl.RPacketScoreboardTeam;
+import rip.diamond.practice.util.scoreboard.element.ScoreboardElement;
+import rip.diamond.practice.util.scoreboard.element.ScoreboardElementAdapter;
+import rip.diamond.practice.util.scoreboard.reflection.impl.RPacketScoreboardScore;
+import rip.diamond.practice.util.scoreboard.reflection.impl.RPacketScoreboardTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -16,7 +15,7 @@ import rip.diamond.practice.util.CC;
 
 import java.util.*;
 
-public class SconeyPlayer {
+public class ScoreboardPlayer {
 
     private final Map<String, Integer> displayedScores = new HashMap<>();
     private final Map<String, String> scorePrefixes = new HashMap<>();
@@ -25,11 +24,11 @@ public class SconeyPlayer {
     private final Set<String> recentlyUpdatedScores = new HashSet<>();
 
     private final Player player;
-    private final SconeyElementAdapter adapter;
+    private final ScoreboardElementAdapter adapter;
     private final Objective objective;
     private Objective healthObjective;
 
-    public SconeyPlayer(final Player player, final SconeyElementAdapter adapter) {
+    public ScoreboardPlayer(final Player player, final ScoreboardElementAdapter adapter) {
         this.player = player;
         this.adapter = adapter;
 
@@ -44,7 +43,7 @@ public class SconeyPlayer {
      * Handle a sidebar to send to a player scoreboard
      */
     public void handleUpdate() {
-        final SconeyElement boardElement = this.adapter.getElement(player);
+        final ScoreboardElement boardElement = this.adapter.getElement(player);
         String title = rip.diamond.practice.util.ColorUtil.colorize(boardElement.getTitle());
         if (title.length() > 32)
             title = title.substring(0, 32);

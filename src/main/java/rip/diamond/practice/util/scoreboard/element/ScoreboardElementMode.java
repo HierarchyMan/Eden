@@ -1,10 +1,10 @@
-package io.github.epicgo.sconey.element;
+package rip.diamond.practice.util.scoreboard.element;
 
 
 import lombok.Getter;
 
 @Getter
-public enum SconeyElementMode {
+public enum ScoreboardElementMode {
 
     DOWN(true, 15),
     NEGATIVE(true, -1),
@@ -15,26 +15,26 @@ public enum SconeyElementMode {
     private int startNumber;
 
     /**
-     * Constructor a new SconeyElementMode instance
+     * Constructor a new ScoreboardElementMode instance
      *
      * @param descending  whether the positions are going down or up.
      * @param startNumber from where to loop from.
      */
-    private SconeyElementMode(final boolean descending, final int startNumber) {
+    private ScoreboardElementMode(final boolean descending, final int startNumber) {
         this.descending = descending;
         this.startNumber = startNumber;
     }
 
-    public SconeyElementMode reverse() {
+    public ScoreboardElementMode reverse() {
         return descending(!this.descending);
     }
 
-    public SconeyElementMode descending(boolean descending) {
+    public ScoreboardElementMode descending(boolean descending) {
         this.descending = descending;
         return this;
     }
 
-    public SconeyElementMode startNumber(int startNumber) {
+    public ScoreboardElementMode startNumber(int startNumber) {
         this.startNumber = startNumber;
         return this;
     }

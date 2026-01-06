@@ -1,15 +1,15 @@
-package io.github.epicgo.sconey;
+package rip.diamond.practice.util.scoreboard;
 
 import org.bukkit.entity.Player;
 import rip.diamond.practice.util.Util;
 
-public class SconeyThread extends Thread {
+public class ScoreboardThread extends Thread {
 
-    private final SconeyHandler sconeyHandler;
+    private final ScoreboardHandler scoreboardHandler;
 
-    public SconeyThread(final SconeyHandler sconeyHandler) {
+    public ScoreboardThread(final ScoreboardHandler scoreboardHandler) {
         super("Board - Thread tick");
-        this.sconeyHandler = sconeyHandler;
+        this.scoreboardHandler = scoreboardHandler;
 
         this.setDaemon(true);
     }
@@ -41,12 +41,12 @@ public class SconeyThread extends Thread {
     private void tick() {
         for (final Player player : Util.getOnlinePlayers()) {
             try {
-                final SconeyPlayer sconeyPlayer = this.sconeyHandler.getScoreboard(player);
-                if (sconeyPlayer == null) {
+                final ScoreboardPlayer scoreboardPlayer = this.scoreboardHandler.getScoreboard(player);
+                if (scoreboardPlayer == null) {
                     continue; // don't abort the entire tick if one player has no board
                 }
 
-                sconeyPlayer.handleUpdate();
+                scoreboardPlayer.handleUpdate();
             } catch (Exception e) {
                 e.printStackTrace();
             }

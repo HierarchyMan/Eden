@@ -1,4 +1,4 @@
-package io.github.epicgo.sconey.reflection;
+package rip.diamond.practice.util.scoreboard.reflection;
 
 import lombok.SneakyThrows;
 import org.bukkit.Bukkit;

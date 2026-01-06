@@ -1,14 +1,12 @@
 package rip.diamond.practice.arenas.chunk;
 
-import com.boydti.fawe.FaweAPI;
-import io.github.epicgo.sconey.reflection.Reflection;
+import rip.diamond.practice.util.scoreboard.reflection.Reflection;
 import lombok.Getter;
 import net.minecraft.server.v1_8_R3.ChunkSection;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_8_R3.CraftChunk;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import rip.diamond.practice.util.Common;
 import rip.diamond.practice.util.exception.PracticeUnexpectedException;
 
 public class ArenaChunk extends Reflection implements IArenaChunk {

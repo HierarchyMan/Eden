@@ -1,6 +1,6 @@
-package io.github.epicgo.sconey;
+package rip.diamond.practice.util.scoreboard;
 
-import io.github.epicgo.sconey.element.SconeyElementAdapter;
+import rip.diamond.practice.util.scoreboard.element.ScoreboardElementAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -9,17 +9,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class SconeyHandler {
+public class ScoreboardHandler {
 
-    private final Map<UUID, SconeyPlayer> players = new HashMap<>();
+    private final Map<UUID, ScoreboardPlayer> players = new HashMap<>();
 
-    private final SconeyElementAdapter adapter;
-    private SconeyThread sconeyThread;
+    private final ScoreboardElementAdapter adapter;
+    private ScoreboardThread scoreboardThread;
 
-    public SconeyHandler(final JavaPlugin plugin, final SconeyElementAdapter adapter) {
+    public ScoreboardHandler(final JavaPlugin plugin, final ScoreboardElementAdapter adapter) {
         this.adapter = adapter;
 
-        plugin.getServer().getPluginManager().registerEvents(new SconeyListener(this, plugin), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new ScoreboardListener(this, plugin), plugin);
 
         this.startThread();
 
@@ -35,17 +35,17 @@ public class SconeyHandler {
     public void startThread() {
         this.stopThread();
 
-        this.sconeyThread = new SconeyThread(this);
-        this.sconeyThread.start();
+        this.scoreboardThread = new ScoreboardThread(this);
+        this.scoreboardThread.start();
     }
 
     /**
      * Stops the threads
      */
     public void stopThread() {
-        if (this.sconeyThread != null) {
-            this.sconeyThread.shutdown();
-            this.sconeyThread = null;
+        if (this.scoreboardThread != null) {
+            this.scoreboardThread.shutdown();
+            this.scoreboardThread = null;
         }
     }
 
@@ -53,7 +53,7 @@ public class SconeyHandler {
      * @return true if the update thread exists and is alive
      */
     public boolean isRunning() {
-        return this.sconeyThread != null && this.sconeyThread.isAlive();
+        return this.scoreboardThread != null && this.scoreboardThread.isAlive();
     }
 
     /**
@@ -81,7 +81,7 @@ public class SconeyHandler {
      * @param player the player scoreboard to display the board for
      */
     public void addScoreboard(final Player player) {
-        this.players.put(player.getUniqueId(), new SconeyPlayer(player, adapter));
+        this.players.put(player.getUniqueId(), new ScoreboardPlayer(player, adapter));
     }
 
     /**
@@ -94,12 +94,12 @@ public class SconeyHandler {
     }
 
     /**
-     * Get the {@link SconeyPlayer} board of a player scoreboard
+     * Get the {@link ScoreboardPlayer} board of a player scoreboard
      *
      * @param player the player to get the board by
      * @return the board
      */
-    public SconeyPlayer getScoreboard(final Player player) {
+    public ScoreboardPlayer getScoreboard(final Player player) {
         return this.players.get(player.getUniqueId());
     }
 }
