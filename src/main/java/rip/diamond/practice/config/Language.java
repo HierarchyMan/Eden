@@ -415,6 +415,8 @@ public enum Language {
     KIT_GAME_RULES_BOW_BOOSTING_DESCRIPTION("kit.game-rules.bow-boosting.description"),
     KIT_GAME_RULES_RESPAWN_TIME_RULES("kit.game-rules.respawn-time.rules"),
     KIT_GAME_RULES_RESPAWN_TIME_DESCRIPTION("kit.game-rules.respawn-time.description"),
+    KIT_GAME_RULES_RESPAWN_INVULNERABILITY_SECONDS_RULES("kit.game-rules.respawn-invulnerability-seconds.rules"),
+    KIT_GAME_RULES_RESPAWN_INVULNERABILITY_SECONDS_DESCRIPTION("kit.game-rules.respawn-invulnerability-seconds.description"),
     KIT_GAME_RULES_MAXIMUM_POINTS_RULES("kit.game-rules.maximum-points.rules"),
     KIT_GAME_RULES_MAXIMUM_POINTS_DESCRIPTION("kit.game-rules.maximum-points.description"),
     KIT_GAME_RULES_MATCH_COUNTDOWN_DURATION_RULES("kit.game-rules.match-countdown-duration.rules"),

@@ -78,6 +78,8 @@ public class KitGameRules implements Cloneable {
 	@Getter
 	private int respawnTime = 5;
 	@Getter
+	private int respawnInvulnerabilitySeconds = 3;
+	@Getter
 	private int maximumPoints = 3;
 	@Getter
 	private int matchCountdownDuration = 5;
@@ -188,6 +190,8 @@ public class KitGameRules implements Cloneable {
 
 		respawnTime(Language.KIT_GAME_RULES_RESPAWN_TIME_RULES.toString(),
 				Language.KIT_GAME_RULES_RESPAWN_TIME_DESCRIPTION.toString()),
+		respawnInvulnerabilitySeconds(Language.KIT_GAME_RULES_RESPAWN_INVULNERABILITY_SECONDS_RULES.toString(),
+				Language.KIT_GAME_RULES_RESPAWN_INVULNERABILITY_SECONDS_DESCRIPTION.toString()),
 		maximumPoints(Language.KIT_GAME_RULES_MAXIMUM_POINTS_RULES.toString(),
 				Language.KIT_GAME_RULES_MAXIMUM_POINTS_DESCRIPTION.toString()),
 		matchCountdownDuration(Language.KIT_GAME_RULES_MATCH_COUNTDOWN_DURATION_RULES.toString(),

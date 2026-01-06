@@ -185,34 +185,28 @@ public class MatchListener implements Listener {
         if (profile.getPlayerState() == PlayerState.IN_MATCH && profile.getMatch() != null) {
             Match match = profile.getMatch();
 
-            // Parkour: never eliminate on death; teleport/respawn logic is handled elsewhere.
-            if (match.getKit().getGameRules().isParkour()
-                    && match.getArenaDetail() != null
-                    && match.getArenaDetail().getArena() != null) {
+            // Parkour: never eliminate on death; use the standard respawn timer.
+            if (match.getKit().getGameRules().isParkour()) {
+                TeamPlayer teamPlayer = match.getTeamPlayer(player);
 
-                boolean teamA = true;
-                if (match.getTeam(player) != null && match.getTeam(player).getSpawnLocation() != null
-                        && match.getArenaDetail().getA() != null && match.getArenaDetail().getB() != null) {
-                    org.bukkit.Location teamSpawn = match.getTeam(player).getSpawnLocation();
-                    teamA = teamSpawn.distanceSquared(match.getArenaDetail().getA())
-                            <= teamSpawn.distanceSquared(match.getArenaDetail().getB());
-                }
-
-                if (!match.getArenaDetail().getArena().getParkourCheckpoints(teamA).isEmpty()) {
+                // Don't start respawn workflow if match is ending, player is already respawning/dead, etc.
+                if (match.getState() == MatchState.ENDING || teamPlayer == null || !teamPlayer.isAlive()
+                        || teamPlayer.isRespawning()) {
                     event.setDroppedExp(0);
                     event.getDrops().clear();
-                    // Keep HP stable
-                    player.setHealth(20);
-                    player.setVelocity(new Vector());
-
-                    // Extra safety: if Spigot still fires a death packet, immediately teleport back next tick.
-                    Tasks.runLater(() -> {
-                        if (profile.getPlayerState() == PlayerState.IN_MATCH && profile.getMatch() == match) {
-                            match.teleportToParkourRespawn(player);
-                        }
-                    }, 1L);
                     return;
                 }
+
+                event.setDroppedExp(0);
+                event.getDrops().clear();
+
+                // Restore HP so Spigot doesn't keep them in a dead state.
+                player.setHealth(player.getMaxHealth());
+                player.setVelocity(new Vector());
+
+                // Use the same respawn countdown used by bed/goal.
+                new MatchRespawnTask(match, teamPlayer);
+                return;
             }
 
             TeamPlayer teamPlayer = match.getTeamPlayer(player);
@@ -1110,10 +1104,9 @@ public class MatchListener implements Listener {
                     if (timeSince < cooldownMs) {
                         event.setCancelled(true);
                         player.updateInventory();
-                        // Send cooldown message
-                        long remainingMs = cooldownMs - timeSince;
-                        double remainingSeconds = Math.ceil(remainingMs / 1000.0);
-                        Language.MATCH_USE_AGAIN_INSTA_BOOM_TNT.sendMessage(player, String.format("%.1f", remainingSeconds));
+                        // Send cooldown message (show remaining milliseconds)
+                        long remainingMs = Math.max(0L, cooldownMs - timeSince);
+                        Language.MATCH_USE_AGAIN_INSTA_BOOM_TNT.sendMessage(player, String.valueOf(remainingMs));
                         return;
                     }
                 }
@@ -1337,22 +1330,21 @@ public class MatchListener implements Listener {
             }
             if (profile.getPlayerState() == PlayerState.IN_MATCH && profile.getMatch() != null) {
                 Match match = profile.getMatch();
-                if (match.getState() != MatchState.FIGHTING) {
-                    return;
-                }
-                if (!match.getTeamPlayer(player).isAlive() || match.getTeamPlayer(player).isRespawning()) {
-                    return;
-                }
-
-                if (event.getEntityType() == EntityType.SNOWBALL) {
-                    Location location = event.getEntity().getLocation().clone().add(0, -1, 0);
-                    if (location.getBlock().getType() == Material.SNOW_BLOCK
-                            && match.getKit().getGameRules().isSpleef()) {
-                        location.getBlock().setType(Material.AIR);
+                if (match.getState() == MatchState.FIGHTING) {
+                    if (!match.getTeamPlayer(player).isAlive() || match.getTeamPlayer(player).isRespawning()) {
+                        return;
                     }
+
+                    if (event.getEntityType() == EntityType.SNOWBALL) {
+                        Location location = event.getEntity().getLocation().clone().add(0, -1, 0);
+                        if (location.getBlock().getType() == Material.SNOW_BLOCK
+                                && match.getKit().getGameRules().isSpleef()) {
+                            location.getBlock().setType(Material.AIR);
+                        }
+                    }
+                    match.getEntities()
+                            .removeIf(matchEntity -> matchEntity.getEntity().getEntityId() == projectile.getEntityId());
                 }
-                match.getEntities()
-                        .removeIf(matchEntity -> matchEntity.getEntity().getEntityId() == projectile.getEntityId());
             }
         }
     }

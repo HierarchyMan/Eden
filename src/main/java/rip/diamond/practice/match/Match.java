@@ -311,6 +311,32 @@ public abstract class Match {
 
    public void respawn(TeamPlayer teamPlayer) {
       Player player = teamPlayer.getPlayer();
+
+      int protectionSeconds = 3;
+      if (kit != null && kit.getGameRules() != null) {
+         protectionSeconds = Math.max(0, kit.getGameRules().getRespawnInvulnerabilitySeconds());
+      }
+
+      // Parkour: respawn at last checkpoint/team spawn fallback, not necessarily the team spawn.
+      if (kit != null && kit.getGameRules() != null && kit.getGameRules().isParkour()) {
+         teleportToParkourRespawn(player);
+         player.setAllowFlight(false);
+         player.setFlying(false);
+         teamPlayer.setRespawning(false);
+         getMatchPlayers().forEach(VisibilityController::updateVisibility);
+
+         PlayerProfile profile = PlayerProfile.get(player);
+         profile.getCooldowns().get(CooldownType.ARROW).cancelCountdown();
+
+         player.setExp(0);
+         player.setLevel(0);
+
+         teamPlayer.setProtectionUntil(System.currentTimeMillis() + (protectionSeconds * 1000L));
+         teamPlayer.respawn(this);
+         Language.MATCH_RESPAWN_MESSAGE.sendMessage(player);
+         return;
+      }
+
       Team team = getTeam(player);
       team.getSpawnLocation().clone().add(0, 0, 0).getBlock().setType(Material.AIR);
       team.getSpawnLocation().clone().add(0, 1, 0).getBlock().setType(Material.AIR);
@@ -327,7 +353,7 @@ public abstract class Match {
       player.setExp(0);
       player.setLevel(0);
 
-      teamPlayer.setProtectionUntil(System.currentTimeMillis() + (3 * 1000));
+      teamPlayer.setProtectionUntil(System.currentTimeMillis() + (protectionSeconds * 1000L));
       teamPlayer.respawn(this);
       Language.MATCH_RESPAWN_MESSAGE.sendMessage(player);
    }

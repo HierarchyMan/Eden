@@ -16,6 +16,7 @@ import rip.diamond.practice.profile.PlayerProfile;
 import rip.diamond.practice.profile.PlayerState;
 import rip.diamond.practice.util.Common;
 import rip.diamond.practice.config.Config;
+import rip.diamond.practice.match.task.MatchRespawnTask;
 
 /**
  * Handles Parkour-with-checkpoints behavior for matches.
@@ -28,6 +29,27 @@ import rip.diamond.practice.config.Config;
  * - When the player "fails" (void/y-limit), teleport them back to last checkpoint
  */
 public class ParkourMatchListener implements Listener {
+
+    // Anti-spam for opponent-death sound during parkour fails/kills.
+    private static final long OPPONENT_DEATH_SOUND_COOLDOWN_MS = 750L;
+    private final java.util.Map<java.util.UUID, Long> lastOpponentDeathSound = new java.util.concurrent.ConcurrentHashMap<>();
+
+    private void playOpponentDeathSoundLimited(Match match, Player victim) {
+        if (match == null || victim == null) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        Long last = lastOpponentDeathSound.get(victim.getUniqueId());
+        if (last != null && (now - last) < OPPONENT_DEATH_SOUND_COOLDOWN_MS) {
+            return;
+        }
+        lastOpponentDeathSound.put(victim.getUniqueId(), now);
+
+        // Play to opponents (same behavior as other kits).
+        match.getMatchPlayers().stream()
+                .filter(p -> p != null && match.getTeam(p) != match.getTeam(victim))
+                .forEach(EdenSound.OPPONENT_DEATH::play);
+    }
 
     private boolean isTeamA(Match match, Player player) {
         if (match == null || player == null || match.getArenaDetail() == null) {
@@ -63,6 +85,7 @@ public class ParkourMatchListener implements Listener {
             return null;
         }
 
+        // Don't run parkour logic for spectators/respawning players.
         if (profile.getPlayerState() != PlayerState.IN_MATCH) {
             return null;
         }
@@ -73,6 +96,12 @@ public class ParkourMatchListener implements Listener {
         }
 
         if (match.getState() == MatchState.ENDING) {
+            return null;
+        }
+
+        // Only apply parkour behavior to alive, non-respawning match players.
+        rip.diamond.practice.match.team.TeamPlayer teamPlayer = match.getTeamPlayer(player);
+        if (teamPlayer == null || !teamPlayer.isAlive() || teamPlayer.isRespawning()) {
             return null;
         }
 
@@ -279,9 +308,19 @@ public class ParkourMatchListener implements Listener {
             return;
         }
 
-        // We replace void death with a teleport back.
+        // We replace void death with a respawn countdown (same system as bed/goal).
         event.setCancelled(true);
-        match.teleportToParkourRespawn(player);
+
+        if (match.getState() != MatchState.FIGHTING) {
+            return;
+        }
+        rip.diamond.practice.match.team.TeamPlayer teamPlayer = match.getTeamPlayer(player);
+        if (teamPlayer == null || teamPlayer.isRespawning() || !teamPlayer.isAlive()) {
+            return;
+        }
+
+        playOpponentDeathSoundLimited(match, player);
+        new MatchRespawnTask(match, teamPlayer);
     }
 
     @EventHandler(priority = org.bukkit.event.EventPriority.HIGHEST, ignoreCancelled = true)
@@ -312,7 +351,7 @@ public class ParkourMatchListener implements Listener {
             return;
         }
 
-        // Cancel death/elimination and just respawn back.
+        // Cancel death/elimination and trigger respawn countdown.
         event.setCancelled(true);
 
         // Minimal reset to avoid stuck-in-combat states.
@@ -320,6 +359,12 @@ public class ParkourMatchListener implements Listener {
         player.setVelocity(new org.bukkit.util.Vector());
         player.setHealth(player.getMaxHealth());
 
-        match.teleportToParkourRespawn(player);
+        rip.diamond.practice.match.team.TeamPlayer teamPlayer = match.getTeamPlayer(player);
+        if (teamPlayer == null || teamPlayer.isRespawning() || !teamPlayer.isAlive()) {
+            return;
+        }
+
+        playOpponentDeathSoundLimited(match, player);
+        new MatchRespawnTask(match, teamPlayer);
     }
 }

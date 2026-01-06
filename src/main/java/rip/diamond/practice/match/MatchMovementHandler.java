@@ -7,6 +7,7 @@ import rip.diamond.practice.Eden;
 import rip.diamond.practice.arenas.Arena;
 import rip.diamond.practice.arenas.ArenaDetail;
 import rip.diamond.practice.config.Config;
+import rip.diamond.practice.config.EdenSound;
 import rip.diamond.practice.kits.Kit;
 import rip.diamond.practice.kits.KitGameRules;
 import rip.diamond.practice.match.team.Team;
@@ -21,6 +22,26 @@ import rip.diamond.practice.util.cuboid.CuboidDirection;
 import java.util.Comparator;
 
 public class MatchMovementHandler {
+
+    // Anti-spam for opponent-death sound during parkour y-limit fails.
+    private static final long PARKOUR_FAIL_SOUND_COOLDOWN_MS = 750L;
+    private final java.util.Map<java.util.UUID, Long> lastParkourFailSound = new java.util.concurrent.ConcurrentHashMap<>();
+
+    private void playOpponentDeathSoundLimited(Match match, org.bukkit.entity.Player victim) {
+        if (match == null || victim == null) {
+            return;
+        }
+        long now = System.currentTimeMillis();
+        Long last = lastParkourFailSound.get(victim.getUniqueId());
+        if (last != null && (now - last) < PARKOUR_FAIL_SOUND_COOLDOWN_MS) {
+            return;
+        }
+        lastParkourFailSound.put(victim.getUniqueId(), now);
+
+        match.getMatchPlayers().stream()
+                .filter(p -> p != null && match.getTeam(p) != match.getTeam(victim))
+                .forEach(EdenSound.OPPONENT_DEATH::play);
+    }
 
     public MatchMovementHandler() {
         Eden.INSTANCE.getSpigotAPI().getMovementHandler().injectLocationUpdate((player, from, to) -> {
@@ -54,7 +75,7 @@ public class MatchMovementHandler {
                     TeamPlayer teamPlayer = match.getTeamPlayer(player);
 
                     if (teamPlayer.isAlive() && !teamPlayer.isRespawning()) {
-                        // Parkour mode: falling below y-limit should "fail" and teleport back, not die.
+                        // Parkour mode: falling below y-limit should "fail" and respawn back (with respawn timer).
                         Team team = match.getTeam(player);
                         boolean teamA = true;
                         if (team != null && team.getSpawnLocation() != null && arenaDetail.getA() != null
@@ -65,7 +86,15 @@ public class MatchMovementHandler {
                         }
                         if (gameRules.isParkour() && !arena.getParkourCheckpoints(teamA).isEmpty()
                                 && arena.getYLimit() > player.getLocation().getY()) {
-                            match.teleportToParkourRespawn(player);
+
+                            // Don't start parkour respawn if match is ending/starting.
+                            if (match.getState() != MatchState.FIGHTING) {
+                                return;
+                            }
+
+                            playOpponentDeathSoundLimited(match, player);
+                            // Use existing respawn-time system.
+                            new rip.diamond.practice.match.task.MatchRespawnTask(match, teamPlayer);
                             return;
                         }
 
