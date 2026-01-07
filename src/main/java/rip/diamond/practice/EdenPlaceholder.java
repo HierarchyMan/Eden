@@ -88,7 +88,7 @@ public class EdenPlaceholder {
                                                         .replace("{match-parkour-checkpoints-crossed}", SKIP_LINE)
                                                         .replace("{match-parkour-checkpoints-total}", SKIP_LINE);
                                 }
-
+ 
                                 for (int i = 0; i < match.getTeams().size(); i++) {
                                         Team team = match.getTeams().get(i);
                                         str = str.replace("{match-team" + (i + 1) + "-logo}",
