@@ -1,6 +1,7 @@
 package rip.diamond.practice.match.task;
 
 import net.minecraft.server.v1_8_R3.PacketPlayOutTitle;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import rip.diamond.practice.config.Config;
 import rip.diamond.practice.config.Language;
@@ -9,6 +10,7 @@ import rip.diamond.practice.match.MatchState;
 import rip.diamond.practice.match.MatchTaskTicker;
 import rip.diamond.practice.match.team.TeamPlayer;
 import rip.diamond.practice.util.Common;
+import rip.diamond.practice.util.PlayerUtil;
 import rip.diamond.practice.util.TitleSender;
 import rip.diamond.practice.util.Util;
 import rip.diamond.practice.util.VisibilityController;
@@ -53,6 +55,8 @@ public class MatchRespawnTask extends MatchTaskTicker {
         teamPlayer.setRespawning(true);
         match.getMatchPlayers().forEach(VisibilityController::updateVisibility);
         player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+        player.setFireTicks(0);
+        PlayerUtil.clearArrow(player);
         player.setAllowFlight(true);
         player.setFlying(true);
         if (getStartTick() > 0 && Config.MATCH_RESPAWN_TELEPORT_TO_SPAWN_WHEN_DIE.toBoolean()) {

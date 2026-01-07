@@ -83,9 +83,10 @@ public class EdenPlaceholder {
                                                         .replace("{match-parkour-checkpoints-crossed}", String.valueOf(crossed))
                                                         .replace("{match-parkour-checkpoints-total}", String.valueOf(total));
                                 } else {
+                                        // If parkour is disabled, hide the entire checkpoint line by replacing with skip marker
                                         str = str
-                                                        .replace("{match-parkour-checkpoints-crossed}", "0")
-                                                        .replace("{match-parkour-checkpoints-total}", "0");
+                                                        .replace("{match-parkour-checkpoints-crossed}", SKIP_LINE)
+                                                        .replace("{match-parkour-checkpoints-total}", SKIP_LINE);
                                 }
 
                                 for (int i = 0; i < match.getTeams().size(); i++) {

@@ -2,10 +2,7 @@ package rip.diamond.practice.match.listener;
 
 
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -852,6 +849,43 @@ public class MatchListener implements Listener {
                 else if (itemStack.getType() == Material.FIREBALL && action.name().startsWith("RIGHT_")
                         && Config.MATCH_FIREBALL_ENABLED.toBoolean()) {
                     Kit kit = match.getKit();
+
+                    // Require per-kit gamerule to shoot fireballs
+                    if (kit == null || kit.getGameRules() == null) {
+                        event.setCancelled(true);
+                        return;
+                    }
+                    if (!kit.getGameRules().isShootFireball()) {
+                        // When shooting fireballs is disabled, allow normal fire charge behavior
+                        // Check if fire was actually placed/ignited, then manually consume if not consumed
+                        if (event.getClickedBlock() != null && event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                            Block targetBlock = event.getClickedBlock().getRelative(event.getBlockFace());
+                            int amountBefore = itemStack.getAmount();
+
+                            org.bukkit.Bukkit.getScheduler().runTask(Eden.INSTANCE, () -> {
+                                // Check if fire was actually placed or TNT was ignited
+                                boolean wasIgnited = targetBlock.getType() == Material.FIRE ||
+                                                    (event.getClickedBlock().getType() == Material.TNT && targetBlock.getType() == Material.AIR);
+
+                                if (wasIgnited) {
+                                    ItemStack currentItem = player.getItemInHand();
+                                    if (currentItem != null && currentItem.getType() == Material.FIREBALL) {
+                                        // If amount is the same, the fire charge wasn't consumed, so consume it manually
+                                        if (currentItem.getAmount() == amountBefore) {
+                                            if (currentItem.getAmount() == 1) {
+                                                player.setItemInHand(null);
+                                            } else {
+                                                player.setItemInHand(new ItemStack(Material.FIREBALL, currentItem.getAmount() - 1));
+                                            }
+                                            player.updateInventory();
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                        return;
+                    }
+
                     if (match.getState() == MatchState.STARTING && kit.getGameRules().isStartFreeze()) {
                         event.setCancelled(true);
                         return;
@@ -1039,9 +1073,11 @@ public class MatchListener implements Listener {
         if (profile.getPlayerState() == PlayerState.IN_MATCH && profile.getMatch() != null) {
             Match match = profile.getMatch();
             if (match.getState() == MatchState.STARTING && match.getKit().getGameRules().isStartFreeze()) {
-                // Allow TNT during freeze ONLY in Bed mode, but NOT if it's Insta Boom TNT (treated as normal block)
+                // Allow regular TNT during freeze only for Bed kits that also have auto-ignite enabled.
+                // (Insta Boom TNT is treated separately.)
                 boolean isRegularTNT = block.getType() == Material.TNT && !isInstaBoomTNT(player.getItemInHand());
-                if (!(match.getKit().getGameRules().isBed() && isRegularTNT)) {
+                if (!(match.getKit().getGameRules().isBed() && match.getKit().getGameRules().isAutoIgniteTnt()
+                        && isRegularTNT)) {
                     event.setCancelled(true);
                     player.updateInventory();
                     return;
@@ -1069,11 +1105,11 @@ public class MatchListener implements Listener {
             }
 
 
-            // Convert regular TNT to TNTPrimed entity ONLY in Bed Fight matches
+            // Convert regular TNT to TNTPrimed entity ONLY when enabled by kit rules
             // In other matches, TNT will just place as a normal block
             if (block.getType() == Material.TNT && Config.MATCH_TNT_ENABLED.toBoolean() 
                     && !isInstaBoomTNT(player.getItemInHand())
-                    && match.getKit().getGameRules().isBed()) {
+                    && match.getKit().getGameRules().isAutoIgniteTnt()) {
                 ItemStack itemStack = player.getItemInHand();
                 itemStack.setAmount(itemStack.getAmount() - 1);
                 player.setItemInHand(itemStack);
@@ -1244,14 +1280,14 @@ public class MatchListener implements Listener {
             }
             if (profile.getPlayerState() == PlayerState.IN_MATCH && profile.getMatch() != null) {
                 Match match = profile.getMatch();
-                if (match.getState() != MatchState.FIGHTING) {
-                    return;
-                }
-                if (!match.getTeamPlayer(player).isAlive() || match.getTeamPlayer(player).isRespawning()) {
-                    return;
-                }
-                if (event.getIntensity(player) <= 0.5D) {
-                    match.getTeamPlayer(player).addPotionsMissed();
+                if (match.getState() == MatchState.FIGHTING) {
+                    if (!match.getTeamPlayer(player).isAlive() || match.getTeamPlayer(player).isRespawning()) {
+                        return;
+                    }
+
+                    if (event.getIntensity(player) <= 0.5D) {
+                        match.getTeamPlayer(player).addPotionsMissed();
+                    }
                 }
             }
         }

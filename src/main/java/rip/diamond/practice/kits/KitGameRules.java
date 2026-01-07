@@ -65,6 +65,12 @@ public class KitGameRules implements Cloneable {
 	@Getter
 	private boolean tntsumo = false;
 
+	// Fireball/TNT mechanics
+	@Getter
+	private boolean shootFireball = false;
+	@Getter
+	private boolean autoIgniteTnt = false;
+
 	// Parkour rules
 	@Getter
 	private boolean parkour = false;
@@ -182,6 +188,8 @@ public class KitGameRules implements Cloneable {
 		dropItems(Language.KIT_GAME_RULES_DROP_ITEMS_RULES.toString(),
 				Language.KIT_GAME_RULES_DROP_ITEMS_DESCRIPTION.toString()),
 		tntsumo("TNT Sumo", "Enable TNT Sumo mode"),
+		shootFireball("Shoot Fireball", "Allow right-click fire charge to shoot (requires match.fireball.enabled)"),
+		autoIgniteTnt("Auto Ignite TNT", "When placing TNT it becomes primed TNT (requires match.tnt.enabled)"),
 		parkour("Parkour", "Enable parkour checkpoints & void-to-checkpoint respawn"),
 		teamProjectile(Language.KIT_GAME_RULES_TEAM_PROJECTILE_RULES.toString(),
 				Language.KIT_GAME_RULES_TEAM_PROJECTILE_DESCRIPTION.toString()),
