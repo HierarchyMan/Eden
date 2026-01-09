@@ -39,18 +39,36 @@ public class MatchStartingHologram extends LeaderboardHologram {
             if (line.contains("{entries}")) {
                 List<LeaderboardPlayerCache> topPlayers = getTopPlayers();
                 String entryFormat = config.getString("format");
+                rip.diamond.practice.title.TitleManager titleManager = Eden.INSTANCE.getTitleManager();
                 for (int i = 0; i < 10; i++) {
                     if (i < topPlayers.size()) {
                         LeaderboardPlayerCache player = topPlayers.get(i);
+                        // Get title based on wins data from leaderboard
+                        String titleDisplay = "";
+                        String titleShort = "";
+                        if (titleManager != null && titleManager.isEnabled()) {
+                            rip.diamond.practice.title.Title title;
+                            if (getKit() != null) {
+                                title = titleManager.getTitleFromKitWins(player.getData());
+                            } else {
+                                title = titleManager.getTitleFromWins(player.getData());
+                            }
+                            titleDisplay = titleManager.getTitleDisplay(title);
+                            titleShort = titleManager.getShortTitleDisplay(title);
+                        }
                         getLines().add(CC.translate(entryFormat
                                 .replace("{number}", String.valueOf(i + 1))
                                 .replace("{name}", player.getPlayerName())
-                                .replace("{value}", String.valueOf(player.getData()))));
+                                .replace("{value}", String.valueOf(player.getData()))
+                                .replace("{title}", titleDisplay)
+                                .replace("{title-short}", titleShort)));
                     } else {
                         getLines().add(CC.translate(entryFormat
                                 .replace("{number}", String.valueOf(i + 1))
                                 .replace("{name}", "-")
-                                .replace("{value}", "-")));
+                                .replace("{value}", "-")
+                                .replace("{title}", "")
+                                .replace("{title-short}", "")));
                     }
                 }
             } else {

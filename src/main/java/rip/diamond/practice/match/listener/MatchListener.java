@@ -98,17 +98,49 @@ public class MatchListener implements Listener {
             PlayerProfile.get(p).getCooldowns().forEach((s, cooldown) -> cooldown.cancelCountdown());
 
             String opponents;
+            rip.diamond.practice.title.TitleManager titleManager = plugin.getTitleManager();
             switch (match.getMatchType()) {
                 case SOLO:
                     opponents = match.getOpponent(match.getTeamPlayer(p)).getUsername();
                     break;
                 case SPLIT:
-                    opponents = ((TeamMatch) match).getOpponentTeam(p).getTeamPlayers().stream()
-                            .map(TeamPlayer::getUsername)
+                    java.util.List<TeamPlayer> opponentPlayers = ((TeamMatch) match).getOpponentTeam(p).getTeamPlayers();
+                    boolean useShort = opponentPlayers.size() >= 3;
+                    opponents = opponentPlayers.stream()
+                            .map(tp -> {
+                                String prefix = "";
+                                if (titleManager != null && titleManager.isEnabled()) {
+                                    PlayerProfile opProfile = PlayerProfile.get(tp.getUuid());
+                                    if (opProfile != null) {
+                                        rip.diamond.practice.title.Title title = titleManager.getKitTitle(opProfile, match.getKit());
+                                        String titleDisplay = useShort ? titleManager.getShortTitleDisplay(title) : titleManager.getTitleDisplay(title);
+                                        if (!titleDisplay.isEmpty()) {
+                                            prefix = titleDisplay + " ";
+                                        }
+                                    }
+                                }
+                                return prefix + tp.getUsername();
+                            })
                             .collect(Collectors.joining(Language.MATCH_SEPARATE.toString()));
                     break;
                 case FFA:
-                    opponents = match.getTeams().stream().map(team -> team.getLeader().getUsername())
+                    java.util.List<Team> teams = match.getTeams();
+                    boolean useShortFfa = teams.size() >= 3;
+                    opponents = teams.stream().map(team -> {
+                                TeamPlayer leader = team.getLeader();
+                                String prefix = "";
+                                if (titleManager != null && titleManager.isEnabled()) {
+                                    PlayerProfile opProfile = PlayerProfile.get(leader.getUuid());
+                                    if (opProfile != null) {
+                                        rip.diamond.practice.title.Title title = titleManager.getKitTitle(opProfile, match.getKit());
+                                        String titleDisplay = useShortFfa ? titleManager.getShortTitleDisplay(title) : titleManager.getTitleDisplay(title);
+                                        if (!titleDisplay.isEmpty()) {
+                                            prefix = titleDisplay + " ";
+                                        }
+                                    }
+                                }
+                                return prefix + leader.getUsername();
+                            })
                             .collect(Collectors.joining(Language.MATCH_SEPARATE.toString()));
                     break;
                 default:
@@ -117,14 +149,14 @@ public class MatchListener implements Listener {
             }
 
             if (match.getQueueType() == QueueType.UNRANKED) {
-                Language.MATCH_START_UNRANKED.toStringList(match.getMatchType().getReadable(), kit.getDisplayName(),
+                Language.MATCH_START_UNRANKED.toStringList(p, match.getMatchType().getReadable(), kit.getDisplayName(),
                         match.getArenaDetail().getArena().getDisplayName(), opponents).forEach(s -> {
                             Common.sendMessage(p, s);
                         });
             } else if (match.getQueueType() == QueueType.RANKED && match.getMatchType() == MatchType.SOLO) {
                 int elo = PlayerProfile.get(match.getOpponent(match.getTeamPlayer(p)).getUuid()).getKitData()
                         .get(kit.getName()).getElo();
-                Language.MATCH_START_RANKED.toStringList(match.getMatchType().getReadable(), kit.getDisplayName(),
+                Language.MATCH_START_RANKED.toStringList(p, match.getMatchType().getReadable(), kit.getDisplayName(),
                         match.getArenaDetail().getArena().getDisplayName(), opponents, elo).forEach(s -> {
                             Common.sendMessage(p, s);
                         });
