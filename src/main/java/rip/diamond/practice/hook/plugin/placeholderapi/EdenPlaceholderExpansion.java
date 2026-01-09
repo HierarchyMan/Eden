@@ -14,6 +14,8 @@ import rip.diamond.practice.profile.PlayerProfile;
 import rip.diamond.practice.profile.data.ProfileKitData;
 import rip.diamond.practice.queue.Queue;
 import rip.diamond.practice.queue.QueueType;
+import rip.diamond.practice.title.Title;
+import rip.diamond.practice.title.TitleManager;
 
 import java.util.LinkedHashMap;
 
@@ -220,6 +222,63 @@ public class EdenPlaceholderExpansion extends PlaceholderExpansion {
                 return profile.getKitData().get(kitName).getWinstreak() + "";
             }
         }
+
+        // Title placeholders
+        // %eden_player_title% - overall title
+        // %eden_player_title_short% - overall title SHORT
+        // %eden_player_title_kit_KITNAME% - kit-specific title
+        // %eden_player_title_kit_short_KITNAME% - kit-specific title SHORT
+        // %eden_title_PLAYERNAME% - another player's overall title
+        // %eden_title_PLAYERNAME_KITNAME% - another player's kit title
+        if (args[0].equalsIgnoreCase("player") && param.equalsIgnoreCase("player_title")) {
+            TitleManager titleManager = Eden.INSTANCE.getTitleManager();
+            if (titleManager == null || !titleManager.isEnabled()) return "";
+            Title title = titleManager.getOverallTitle(profile);
+            return titleManager.getTitleDisplay(title);
+        }
+        if (args[0].equalsIgnoreCase("player") && param.equalsIgnoreCase("player_title_short")) {
+            TitleManager titleManager = Eden.INSTANCE.getTitleManager();
+            if (titleManager == null || !titleManager.isEnabled()) return "";
+            Title title = titleManager.getOverallTitle(profile);
+            return titleManager.getShortTitleDisplay(title);
+        }
+        if (param.startsWith("player_title_kit_short_")) {
+            TitleManager titleManager = Eden.INSTANCE.getTitleManager();
+            if (titleManager == null || !titleManager.isEnabled()) return "";
+            String kitName = param.substring("player_title_kit_short_".length());
+            Title title = titleManager.getKitTitle(profile, kitName);
+            return titleManager.getShortTitleDisplay(title);
+        }
+        if (param.startsWith("player_title_kit_")) {
+            TitleManager titleManager = Eden.INSTANCE.getTitleManager();
+            if (titleManager == null || !titleManager.isEnabled()) return "";
+            String kitName = param.substring("player_title_kit_".length());
+            Title title = titleManager.getKitTitle(profile, kitName);
+            return titleManager.getTitleDisplay(title);
+        }
+        if (args[0].equalsIgnoreCase("title")) {
+            TitleManager titleManager = Eden.INSTANCE.getTitleManager();
+            if (titleManager == null || !titleManager.isEnabled()) return "";
+            
+            // %eden_title_PLAYERNAME% or %eden_title_PLAYERNAME_KITNAME%
+            String targetPlayerName = args[1];
+            org.bukkit.OfflinePlayer targetOffline = org.bukkit.Bukkit.getOfflinePlayer(targetPlayerName);
+            if (targetOffline == null) return "";
+            
+            PlayerProfile targetProfile = PlayerProfile.get(targetOffline.getUniqueId());
+            if (targetProfile == null) return "";
+            
+            if (args.length == 2) {
+                // Overall title
+                Title title = titleManager.getOverallTitle(targetProfile);
+                return titleManager.getTitleDisplay(title);
+            } else if (args.length >= 3) {
+                // Kit-specific title
+                String kitName = args[2];
+                Title title = titleManager.getKitTitle(targetProfile, kitName);
+                return titleManager.getTitleDisplay(title);
+            }
+        }
         if (args[0].equalsIgnoreCase("leaderboard")) {
 
             if (Eden.INSTANCE.getDatabaseManager().getHandler() == null) {
@@ -230,6 +289,25 @@ public class EdenPlaceholderExpansion extends PlaceholderExpansion {
             Kit kit = Kit.getByName(kitName);
             int position = Integer.parseInt(args[4]);
             LeaderboardManager manager = Eden.INSTANCE.getLeaderboardManager();
+
+            // Leaderboard title placeholder: %eden_leaderboard_title_KITNAME_1%
+            // Returns the title of the player at that leaderboard position
+            if (param.startsWith("leaderboard_title_")) {
+                TitleManager titleManager = Eden.INSTANCE.getTitleManager();
+                if (titleManager == null || !titleManager.isEnabled()) return "";
+                
+                LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getWinsLeaderboard().get(kit)
+                        .getLeaderboard();
+                if (leaderboard.size() < position) return "-";
+                
+                LeaderboardPlayerCache cacheEntry = leaderboard.get(position);
+                if (cacheEntry == null) return "-";
+                
+                // Get title based on their win count (from leaderboard data)
+                int wins = cacheEntry.getData();
+                Title title = titleManager.getTitleFromWins(wins);
+                return titleManager.getTitleDisplay(title);
+            }
             if (param.startsWith("leaderboard_bestWinstreak_player_")) {
                 LinkedHashMap<Integer, LeaderboardPlayerCache> leaderboard = manager.getBestWinstreakLeaderboard()
                         .get(kit).getLeaderboard();

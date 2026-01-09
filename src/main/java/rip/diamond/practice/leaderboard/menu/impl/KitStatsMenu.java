@@ -81,6 +81,17 @@ public class KitStatsMenu extends LeaderboardMenu {
 
         private List<String> replacePlaceholders(List<String> lore, int unrankedWins, int unrankedLosses, String unrankedWL,
                                                   int rankedElo, int rankedWins, int rankedLosses, String rankedWL) {
+            // Get player's overall title
+            String playerTitle = "";
+            String playerTitleShort = "";
+            rip.diamond.practice.title.TitleManager titleManager = Eden.INSTANCE.getTitleManager();
+            if (titleManager != null && titleManager.isEnabled()) {
+                int totalWins = unrankedWins + rankedWins;
+                rip.diamond.practice.title.Title title = titleManager.getTitleFromWins(totalWins);
+                playerTitle = titleManager.getTitleDisplay(title);
+                playerTitleShort = titleManager.getShortTitleDisplay(title);
+            }
+            
             List<String> replaced = new ArrayList<>();
             for (String line : lore) {
                 replaced.add(line
@@ -90,7 +101,9 @@ public class KitStatsMenu extends LeaderboardMenu {
                         .replace("{ranked-elo}", String.valueOf(rankedElo))
                         .replace("{ranked-wins}", String.valueOf(rankedWins))
                         .replace("{ranked-losses}", String.valueOf(rankedLosses))
-                        .replace("{ranked-wl}", rankedWL));
+                        .replace("{ranked-wl}", rankedWL)
+                        .replace("{player-title}", playerTitle)
+                        .replace("{player-title-short}", playerTitleShort));
             }
             return replaced;
         }
@@ -138,6 +151,17 @@ public class KitStatsMenu extends LeaderboardMenu {
         private List<String> replacePlaceholders(List<String> lore, int unrankedWins, int unrankedLosses,
                                                   int winstreak, int bestWinstreak, String unrankedWL,
                                                   int elo, int peakElo, int rankedWins, int rankedLosses, String rankedWL) {
+            // Get player's kit-specific title
+            String kitTitle = "";
+            String kitTitleShort = "";
+            rip.diamond.practice.title.TitleManager titleManager = Eden.INSTANCE.getTitleManager();
+            if (titleManager != null && titleManager.isEnabled()) {
+                int totalWins = unrankedWins + rankedWins;
+                rip.diamond.practice.title.Title title = titleManager.getTitleFromWins(totalWins);
+                kitTitle = titleManager.getTitleDisplay(title);
+                kitTitleShort = titleManager.getShortTitleDisplay(title);
+            }
+            
             List<String> replaced = new ArrayList<>();
             for (String line : lore) {
                 replaced.add(line
@@ -150,7 +174,9 @@ public class KitStatsMenu extends LeaderboardMenu {
                         .replace("{peak-elo}", String.valueOf(peakElo))
                         .replace("{ranked-wins}", String.valueOf(rankedWins))
                         .replace("{ranked-losses}", String.valueOf(rankedLosses))
-                        .replace("{ranked-wl}", rankedWL));
+                        .replace("{ranked-wl}", rankedWL)
+                        .replace("{player-kit-title}", kitTitle)
+                        .replace("{player-kit-title-short}", kitTitleShort));
             }
             return replaced;
         }

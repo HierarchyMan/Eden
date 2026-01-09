@@ -64,6 +64,7 @@ import rip.diamond.practice.queue.Queue;
 import rip.diamond.practice.queue.QueueListener;
 import rip.diamond.practice.queue.command.QueueCommand;
 import rip.diamond.practice.util.BasicConfigFile;
+import rip.diamond.practice.title.TitleManager;
 import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.EntityHider;
 import rip.diamond.practice.util.InventoryUtil;
@@ -114,6 +115,7 @@ public class Eden extends JavaPlugin {
     private ChunkRestorationManager chunkRestorationManager;
     private rip.diamond.practice.managers.chunk.ChunkManager chunkManager;
     private rip.diamond.practice.leaderboard.hologram.HologramManager hologramManager;
+    private TitleManager titleManager;
 
     private SpigotAPI spigotAPI;
     private EntityHider entityHider;
@@ -230,6 +232,8 @@ public class Eden extends JavaPlugin {
             chestManager.reload();
         if (hologramManager != null)
             hologramManager.loadHolograms();
+        if (titleManager != null)
+            titleManager.reload();
 
         rip.diamond.practice.match.Match.updateKitReferences();
 
@@ -285,6 +289,7 @@ public class Eden extends JavaPlugin {
 
         this.chunkManager = new rip.diamond.practice.managers.chunk.ChunkManager();
         this.hologramManager = new rip.diamond.practice.leaderboard.hologram.HologramManager();
+        this.titleManager = new TitleManager(this);
     }
 
     private void loadListeners() {

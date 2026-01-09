@@ -8,7 +8,7 @@ holograms:
       - "{entries}"
       - ""
       - "&7Next update in {update}s"
-    format: "&b#{number} &f{name} &7- &b{value}"
+    format: "&b#{number} {title-short} &f{name} &7- &b{value}"
   elo:
     update-time: 10
     lines:
@@ -18,7 +18,7 @@ holograms:
       - "{entries}"
       - ""
       - "&7Next update in {update}s"
-    format: "&b#{number} &f{name} &7- &b{value}"
+    format: "&b#{number} {title-short} &f{name} &7- &b{value}"
   winstreak:
     update-time: 10
     lines:
@@ -28,7 +28,7 @@ holograms:
       - "{entries}"
       - ""
       - "&7Next update in {update}s"
-    format: "&b#{number} &f{name} &7- &b{value}"
+    format: "&b#{number} {title-short} &f{name} &7- &b{value}"
   losses:
     update-time: 10
     lines:
@@ -38,7 +38,7 @@ holograms:
       - "{entries}"
       - ""
       - "&7Next update in {update}s"
-    format: "&c#{number} &f{name} &7- &c{value}"
+    format: "&c#{number} {title-short} &f{name} &7- &c{value}"
   global_wins:
     update-time: 60
     lines:
@@ -48,7 +48,7 @@ holograms:
       - "{entries}"
       - ""
       - "&7Next update in {update}s"
-    format: "&b#{number} &f{name} &7- &b{value}"
+    format: "&b#{number} {title-short} &f{name} &7- &b{value}"
   global_elo:
     update-time: 60
     lines:
@@ -58,7 +58,7 @@ holograms:
       - "{entries}"
       - ""
       - "&7Next update in {update}s"
-    format: "&b#{number} &f{name} &7- &b{value}"
+    format: "&b#{number} {title-short} &f{name} &7- &b{value}"
 match-starting-holograms:
   left:
     type: WINS_MONTHLY
@@ -71,7 +71,7 @@ match-starting-holograms:
       - "&e{kit}"
       - ""
       - "{entries}"
-    format: "&b#{number} &f{name} &7- &b{value}"
+    format: "&b#{number} {title-short} &f{name} &7- &b{value}"
   right:
     type: WINSTREAK_DAILY
     offset:
@@ -83,4 +83,4 @@ match-starting-holograms:
       - "&e{kit}"
       - ""
       - "{entries}"
-    format: "&b#{number} &f{name} &7- &b{value}"
+    format: "&b#{number} {title-short} &f{name} &7- &b{value}"

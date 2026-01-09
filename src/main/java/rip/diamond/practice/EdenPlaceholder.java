@@ -19,6 +19,8 @@ import rip.diamond.practice.queue.QueueProfile;
 import rip.diamond.practice.util.CC;
 import rip.diamond.practice.util.TimeUtil;
 import rip.diamond.practice.util.Util;
+import rip.diamond.practice.title.Title;
+import rip.diamond.practice.title.TitleManager;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,6 +48,33 @@ public class EdenPlaceholder {
                         Party party = Party.getByPlayer(player);
                         QueueProfile qProfile = Queue.getPlayers().get(player.getUniqueId());
                         Match match = profile.getMatch();
+                        TitleManager titleManager = plugin.getTitleManager();
+
+                        // Player's own title placeholders (always available)
+                        if (titleManager != null && titleManager.isEnabled()) {
+                                Title playerOverallTitle = titleManager.getOverallTitle(profile);
+                                str = str.replace("{player-title}", 
+                                                titleManager.getTitleDisplay(playerOverallTitle))
+                                                .replace("{player-title-short}", 
+                                                titleManager.getShortTitleDisplay(playerOverallTitle));
+                                
+                                // Kit-specific title (only in match context)
+                                if (match != null) {
+                                        Title playerKitTitle = titleManager.getKitTitle(profile, match.getKit());
+                                        str = str.replace("{player-kit-title}", 
+                                                        titleManager.getTitleDisplay(playerKitTitle))
+                                                        .replace("{player-kit-title-short}", 
+                                                        titleManager.getShortTitleDisplay(playerKitTitle));
+                                } else {
+                                        str = str.replace("{player-kit-title}", "")
+                                                        .replace("{player-kit-title-short}", "");
+                                }
+                        } else {
+                                str = str.replace("{player-title}", "")
+                                                .replace("{player-title-short}", "")
+                                                .replace("{player-kit-title}", "")
+                                                .replace("{player-kit-title-short}", "");
+                        }
 
                         if (party != null) {
                                 str = str
@@ -120,6 +149,10 @@ public class EdenPlaceholder {
                                                 str = str
                                                                 .replace("{match-solo-opponent}",
                                                                                 opponent.getUsername())
+                                                                .replace("{opponent-kit-title}",
+                                                                                getOpponentKitTitle(match, opponent, titleManager))
+                                                                .replace("{opponent-kit-title-short}",
+                                                                                getOpponentKitTitleShort(match, opponent, titleManager))
                                                                 .replace("{match-solo-winner}",
                                                                                 match.getState() == MatchState.ENDING
                                                                                                 ? match.getWinningPlayers()
@@ -438,6 +471,41 @@ public class EdenPlaceholder {
                                         .replace("{event-wins}", PlayerProfile.get(player).getEventWins() + "")
                                         .replace("{events-played}", PlayerProfile.get(player).getEventsPlayed() + "");
                 }
+        }
+
+        /**
+         * Get opponent's kit title display string.
+         * Returns empty string if titles disabled or opponent profile not found.
+         */
+        private String getOpponentKitTitle(Match match, TeamPlayer opponent, TitleManager titleManager) {
+                if (titleManager == null || !titleManager.isEnabled() || opponent == null) {
+                        return "";
+                }
+                
+                PlayerProfile opponentProfile = PlayerProfile.get(opponent.getUuid());
+                if (opponentProfile == null) {
+                        return "";
+                }
+                
+                Title opponentTitle = titleManager.getKitTitle(opponentProfile, match.getKit());
+                return titleManager.getTitleDisplay(opponentTitle);
+        }
+
+        /**
+         * Get opponent's kit title SHORT display string (for scoreboards).
+         */
+        private String getOpponentKitTitleShort(Match match, TeamPlayer opponent, TitleManager titleManager) {
+                if (titleManager == null || !titleManager.isEnabled() || opponent == null) {
+                        return "";
+                }
+                
+                PlayerProfile opponentProfile = PlayerProfile.get(opponent.getUuid());
+                if (opponentProfile == null) {
+                        return "";
+                }
+                
+                Title opponentTitle = titleManager.getKitTitle(opponentProfile, match.getKit());
+                return titleManager.getShortTitleDisplay(opponentTitle);
         }
 
 }

@@ -698,7 +698,7 @@ match:
     - "&b{0}"
     - "&9 • &7Kit: &b{1}"
     - "&9 • &7Map: &b{2}"
-    - "&9 • &7Opponent(s): &b{3}"
+    - "&9 • &7Opponent(s): {opponent-kit-title} &b{3}"
     - ""
   start-ranked:
     - ""

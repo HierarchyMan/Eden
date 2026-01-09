@@ -89,7 +89,7 @@ GENERAL:
   in-match-solo:
     fighting:
       - "&7&m----------------------"
-      - "&b&l┃ &fFighting: &b{match-solo-opponent}"
+      - "&b&l┃ &fFighting: {opponent-kit-title-short} &b{match-solo-opponent}"
       - ""
       - "&b&l┃ &fCheckpoints: &b{match-parkour-checkpoints-crossed}&7/&b{match-parkour-checkpoints-total}"
       - ""
@@ -100,7 +100,7 @@ GENERAL:
       - "&7&m----------------------"
     boxing:
       - "&7&m----------------------"
-      - "&b&l┃ &fFighting: &b{match-solo-opponent}"
+      - "&b&l┃ &fFighting: {opponent-kit-title-short} &b{match-solo-opponent}"
       - ""
       - "&b&l┃ &bHits: {match-solo-boxing-difference-color}({match-solo-boxing-difference-symbol}{match-solo-boxing-difference})"
       - "&b&l┃ &a You: &f{match-solo-boxing-self-hit}"
@@ -114,7 +114,7 @@ GENERAL:
       - "&7&m----------------------"
     bed:
       - "&7&m----------------------"
-      - "&b&l┃ &fFighting: &b{match-solo-opponent}"
+      - "&b&l┃ &fFighting: {opponent-kit-title-short} &b{match-solo-opponent}"
       - ""
       - "&b&l┃ &f{match-team1-logo}&7: &f{match-team1-bed-status}"
       - "&b&l┃ &f{match-team2-logo}&7: &f{match-team2-bed-status}"
@@ -128,7 +128,7 @@ GENERAL:
       - "&7&m----------------------"
     point:
       - "&7&m----------------------"
-      - "&b&l┃ &fFighting: &b{match-solo-opponent}"
+      - "&b&l┃ &fFighting: {opponent-kit-title-short} &b{match-solo-opponent}"
       - ""
       - "&b&l┃ &f{match-team1-logo}&7: &f{match-team1-points}"
       - "&b&l┃ &f{match-team2-logo}&7: &f{match-team2-points}"

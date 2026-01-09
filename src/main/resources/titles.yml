@@ -1,0 +1,229 @@
+# Titles Configuration
+# Titles are visual badges earned through wins (not Elo)
+
+enabled: true
+
+# Format for displaying titles with player names
+# {title} = title display, {name} = player name
+format: "[{title}] {name}"
+
+# Define your titles below
+# Each title needs: display, short-display (for scoreboards), min-wins, max-wins, priority
+# Priority determines which title to show when ranges overlap (higher = preferred)
+titles:
+  unranked:
+    display: "&8Unranked"
+    short-display: "&8[U]"
+    min-wins: 0
+    max-wins: 9
+    kit-min-wins: 0
+    kit-max-wins: 4
+    priority: 0
+  bronze_5:
+    display: "&6Bronze V"
+    short-display: "&6[V]"
+    min-wins: 10
+    max-wins: 24
+    kit-min-wins: 5
+    kit-max-wins: 11
+    priority: 1
+  bronze_4:
+    display: "&6Bronze IV"
+    short-display: "&6[IV]"
+    min-wins: 25
+    max-wins: 49
+    kit-min-wins: 12
+    kit-max-wins: 24
+    priority: 2
+  bronze_3:
+    display: "&6Bronze III"
+    short-display: "&6[III]"
+    min-wins: 50
+    max-wins: 74
+    kit-min-wins: 25
+    kit-max-wins: 36
+    priority: 3
+  bronze_2:
+    display: "&6Bronze II"
+    short-display: "&6[II]"
+    min-wins: 75
+    max-wins: 99
+    kit-min-wins: 37
+    kit-max-wins: 49
+    priority: 4
+  bronze_1:
+    display: "&6Bronze I"
+    short-display: "&6[I]"
+    min-wins: 100
+    max-wins: 149
+    kit-min-wins: 50
+    kit-max-wins: 74
+    priority: 5
+  iron_5:
+    display: "&7Iron V"
+    short-display: "&7[V]"
+    min-wins: 150
+    max-wins: 199
+    kit-min-wins: 75
+    kit-max-wins: 99
+    priority: 6
+  iron_4:
+    display: "&7Iron IV"
+    short-display: "&7[IV]"
+    min-wins: 200
+    max-wins: 249
+    kit-min-wins: 100
+    kit-max-wins: 124
+    priority: 7
+  iron_3:
+    display: "&7Iron III"
+    short-display: "&7[III]"
+    min-wins: 250
+    max-wins: 299
+    kit-min-wins: 125
+    kit-max-wins: 149
+    priority: 8
+  iron_2:
+    display: "&7Iron II"
+    short-display: "&7[II]"
+    min-wins: 300
+    max-wins: 349
+    kit-min-wins: 150
+    kit-max-wins: 174
+    priority: 9
+  iron_1:
+    display: "&7Iron I"
+    short-display: "&7[I]"
+    min-wins: 350
+    max-wins: 449
+    kit-min-wins: 175
+    kit-max-wins: 224
+    priority: 10
+  gold_5:
+    display: "&eGold V"
+    short-display: "&e[V]"
+    min-wins: 450
+    max-wins: 549
+    kit-min-wins: 225
+    kit-max-wins: 274
+    priority: 11
+  gold_4:
+    display: "&eGold IV"
+    short-display: "&e[IV]"
+    min-wins: 550
+    max-wins: 649
+    kit-min-wins: 275
+    kit-max-wins: 324
+    priority: 12
+  gold_3:
+    display: "&eGold III"
+    short-display: "&e[III]"
+    min-wins: 650
+    max-wins: 749
+    kit-min-wins: 325
+    kit-max-wins: 374
+    priority: 13
+  gold_2:
+    display: "&eGold II"
+    short-display: "&e[II]"
+    min-wins: 750
+    max-wins: 849
+    kit-min-wins: 375
+    kit-max-wins: 424
+    priority: 14
+  gold_1:
+    display: "&eGold I"
+    short-display: "&e[I]"
+    min-wins: 850
+    max-wins: 999
+    kit-min-wins: 425
+    kit-max-wins: 499
+    priority: 15
+  platinum_5:
+    display: "&bPlatinum V"
+    short-display: "&b[V]"
+    min-wins: 1000
+    max-wins: 1149
+    kit-min-wins: 500
+    kit-max-wins: 574
+    priority: 16
+  platinum_4:
+    display: "&bPlatinum IV"
+    short-display: "&b[IV]"
+    min-wins: 1150
+    max-wins: 1299
+    kit-min-wins: 575
+    kit-max-wins: 649
+    priority: 17
+  platinum_3:
+    display: "&bPlatinum III"
+    short-display: "&b[III]"
+    min-wins: 1300
+    max-wins: 1449
+    kit-min-wins: 650
+    kit-max-wins: 724
+    priority: 18
+  platinum_2:
+    display: "&bPlatinum II"
+    short-display: "&b[II]"
+    min-wins: 1450
+    max-wins: 1599
+    kit-min-wins: 725
+    kit-max-wins: 799
+    priority: 19
+  platinum_1:
+    display: "&bPlatinum I"
+    short-display: "&b[I]"
+    min-wins: 1600
+    max-wins: 1799
+    kit-min-wins: 800
+    kit-max-wins: 899
+    priority: 20
+  diamond_5:
+    display: "&3Diamond V"
+    short-display: "&3[V]"
+    min-wins: 1800
+    max-wins: 1999
+    kit-min-wins: 900
+    kit-max-wins: 999
+    priority: 21
+  diamond_4:
+    display: "&3Diamond IV"
+    short-display: "&3[IV]"
+    min-wins: 2000
+    max-wins: 2249
+    kit-min-wins: 1000
+    kit-max-wins: 1124
+    priority: 22
+  diamond_3:
+    display: "&3Diamond III"
+    short-display: "&3[III]"
+    min-wins: 2250
+    max-wins: 2499
+    kit-min-wins: 1125
+    kit-max-wins: 1249
+    priority: 23
+  diamond_2:
+    display: "&3Diamond II"
+    short-display: "&3[II]"
+    min-wins: 2500
+    max-wins: 2749
+    kit-min-wins: 1250
+    kit-max-wins: 1374
+    priority: 24
+  diamond_1:
+    display: "&3Diamond I"
+    short-display: "&3[I]"
+    min-wins: 2750
+    max-wins: 2999
+    kit-min-wins: 1375
+    kit-max-wins: 1499
+    priority: 25
+  master:
+    display: "&cMaster"
+    short-display: "&c[M]"
+    min-wins: 3000
+    max-wins: 999999
+    kit-min-wins: 1500
+    kit-max-wins: 999999
+    priority: 26
