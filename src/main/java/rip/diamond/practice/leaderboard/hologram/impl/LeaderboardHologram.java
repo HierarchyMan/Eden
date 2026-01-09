@@ -81,19 +81,26 @@ public class LeaderboardHologram extends PracticeHologram {
                 for (int i = 0; i < 10; i++) {
                     if (i < topPlayers.size()) {
                         LeaderboardPlayerCache player = topPlayers.get(i);
-                        // Get title based on wins data from leaderboard
                         String titleDisplay = "";
                         String titleShort = "";
                         if (titleManager != null && titleManager.isEnabled()) {
-                            // If this is a kit leaderboard, use kit thresholds. otherwise use overall thresholds.
-                            rip.diamond.practice.title.Title title;
-                            if (kit != null) {
-                                title = titleManager.getTitleFromKitWins(player.getData());
-                            } else {
-                                title = titleManager.getTitleFromWins(player.getData());
+                            rip.diamond.practice.profile.PlayerProfile profile = rip.diamond.practice.profile.PlayerProfile.get(player.getPlayerUUID());
+                            if (profile != null) {
+                                rip.diamond.practice.title.Title title;
+                                // If this is a kit leaderboard, use kit thresholds and wins. otherwise use overall thresholds and wins.
+                                if (kit != null) {
+                                    rip.diamond.practice.profile.data.ProfileKitData kitData = profile.getKitData().get(kit.getName());
+                                    int wins = kitData != null ? kitData.getWon() : 0;
+                                    title = titleManager.getTitleFromKitWins(wins);
+                                } else {
+                                    int totalWins = profile.getKitData().values().stream()
+                                            .mapToInt(rip.diamond.practice.profile.data.ProfileKitData::getWon)
+                                            .sum();
+                                    title = titleManager.getTitleFromWins(totalWins);
+                                }
+                                titleDisplay = titleManager.getTitleDisplay(title);
+                                titleShort = titleManager.getShortTitleDisplay(title);
                             }
-                            titleDisplay = titleManager.getTitleDisplay(title);
-                            titleShort = titleManager.getShortTitleDisplay(title);
                         }
                         getLines().add(CC.translate(entryFormat
                                 .replace("{number}", String.valueOf(i + 1))

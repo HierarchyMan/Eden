@@ -70,6 +70,17 @@ public class TitleManager {
 
         // Sort by priority descending (highest priority first for lookup)
         titles.sort(Comparator.comparingInt(Title::getPriority).reversed());
+        
+        this.rankedMatchEloFormat = titlesFile.getString("ranked-match-elo-format");
+        if (this.rankedMatchEloFormat == null) {
+            this.rankedMatchEloFormat = "&8[&b{elo}&8]";
+        }
+    }
+
+    private String rankedMatchEloFormat;
+    
+    public String getEloDisplay(int elo) {
+        return rip.diamond.practice.util.CC.translate(rankedMatchEloFormat.replace("{elo}", String.valueOf(elo)));
     }
 
     /**

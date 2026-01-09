@@ -10,6 +10,7 @@ format: "[{title}] {name}"
 # Define your titles below
 # Each title needs: display, short-display (for scoreboards), min-wins, max-wins, priority
 # Priority determines which title to show when ranges overlap (higher = preferred)
+ranked-match-elo-format: "&8[&b{elo}&8]"
 titles:
   unranked:
     display: "&8Unranked"

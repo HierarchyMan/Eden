@@ -908,7 +908,7 @@ public abstract class Match {
             hologramLoc.getX() + ", " + hologramLoc.getY() + ", " + hologramLoc.getZ());
 
       rip.diamond.practice.leaderboard.hologram.impl.MatchStartingHologram hologram = new rip.diamond.practice.leaderboard.hologram.impl.MatchStartingHologram(
-            hologramLoc, 20, type, type.getTimePeriod(), getKit(), team, side);
+            hologramLoc, 20, type, type.getTimePeriod(), getKit(), team, side, getQueueType() == QueueType.RANKED);
       hologram.start();
       startingHolograms.add(hologram);
    }

@@ -20,55 +20,85 @@ public class MatchStartingHologram extends LeaderboardHologram {
 
     private final Team team;
     private final String side;
+    private final boolean isRanked;
 
     public MatchStartingHologram(Location location, int time, LeaderboardType type, LeaderboardType.TimePeriod period,
-            Kit kit, Team team, String side) {
+            Kit kit, Team team, String side, boolean isRanked) {
         super(location, time, type, period, kit);
         this.team = team;
         this.side = side;
+        this.isRanked = isRanked;
         this.viewerFilter = player -> team.getPlayers().contains(player);
     }
 
     @Override
     public void updateLines() {
-        ConfigCursor config = new ConfigCursor(Eden.INSTANCE.getLeaderboardsConfig(),
-                "match-starting-holograms." + side);
-        List<String> formatLines = config.getStringList("lines");
+        if (getLines() == null) {
+            return;
+        }
+        getLines().clear();
+        
+        ConfigCursor cursor = new ConfigCursor(Eden.INSTANCE.getLeaderboardsConfig(), "match-starting-holograms." + side);
+        List<String> lines = cursor.getStringList("lines");
+        String entryFormat = cursor.getString("format");
 
-        for (String line : formatLines) {
+        rip.diamond.practice.title.TitleManager titleManager = Eden.INSTANCE.getTitleManager();
+        
+        for (String line : lines) {
             if (line.contains("{entries}")) {
                 List<LeaderboardPlayerCache> topPlayers = getTopPlayers();
-                String entryFormat = config.getString("format");
-                rip.diamond.practice.title.TitleManager titleManager = Eden.INSTANCE.getTitleManager();
-                for (int i = 0; i < 10; i++) {
-                    if (i < topPlayers.size()) {
-                        LeaderboardPlayerCache player = topPlayers.get(i);
-                        // Get title based on wins data from leaderboard
-                        String titleDisplay = "";
-                        String titleShort = "";
-                        if (titleManager != null && titleManager.isEnabled()) {
-                            rip.diamond.practice.title.Title title;
-                            if (getKit() != null) {
-                                title = titleManager.getTitleFromKitWins(player.getData());
-                            } else {
-                                title = titleManager.getTitleFromWins(player.getData());
+                if (topPlayers.isEmpty()) {
+                    getLines().add(CC.translate("&cLoading..."));
+                } else {
+                    for (int i = 0; i < 10; i++) {
+                        if (i < topPlayers.size()) {
+                            LeaderboardPlayerCache player = topPlayers.get(i);
+                            String titleDisplay = "";
+                            String titleShort = "";
+                            
+                            if (titleManager != null && titleManager.isEnabled()) {
+                                rip.diamond.practice.profile.PlayerProfile profile = rip.diamond.practice.profile.PlayerProfile.get(player.getPlayerUUID());
+                                if (profile != null) {
+                                    if (isRanked && getKit() != null) {
+                                        // SHOW ELO FOR RANKED MATCHES
+                                        rip.diamond.practice.profile.data.ProfileKitData kitData = profile.getKitData().get(getKit().getName());
+                                        int elo = kitData != null ? kitData.getElo() : 1000;
+                                        // Use Elo Display format for both full and short title in ranked context
+                                        titleDisplay = titleManager.getEloDisplay(elo);
+                                        titleShort = titleDisplay; 
+                                    } else {
+                                        // SHOW TITLES FOR UNRANKED / GLOBAL
+                                        rip.diamond.practice.title.Title title;
+                                        if (getKit() != null) {
+                                            rip.diamond.practice.profile.data.ProfileKitData kitData = profile.getKitData().get(getKit().getName());
+                                            int wins = kitData != null ? kitData.getWon() : 0;
+                                            title = titleManager.getTitleFromKitWins(wins);
+                                        } else {
+                                            int totalWins = profile.getKitData().values().stream()
+                                                    .mapToInt(rip.diamond.practice.profile.data.ProfileKitData::getWon)
+                                                    .sum();
+                                            title = titleManager.getTitleFromWins(totalWins);
+                                        }
+                                        titleDisplay = titleManager.getTitleDisplay(title);
+                                        titleShort = titleManager.getShortTitleDisplay(title);
+                                    }
+                                }
                             }
-                            titleDisplay = titleManager.getTitleDisplay(title);
-                            titleShort = titleManager.getShortTitleDisplay(title);
+                            getLines().add(CC.translate(entryFormat
+                                    .replace("{number}", String.valueOf(i + 1))
+                                    .replace("{name}", player.getPlayerName())
+                                    .replace("{value}", String.valueOf(player.getData()))
+                                    .replace("{title}", titleDisplay)
+                                    .replace("{title-short}", titleShort)));
+                        } else {
+                            getLines().add(CC.translate(entryFormat
+                                    .replace("{number}", String.valueOf(i + 1))
+                                    .replace("{name}", "-")
+                                    .replace("{value}", "-")
+                                    .replace("{title}", "")
+                                    .replace("{title-short}", "")));
                         }
-                        getLines().add(CC.translate(entryFormat
-                                .replace("{number}", String.valueOf(i + 1))
-                                .replace("{name}", player.getPlayerName())
-                                .replace("{value}", String.valueOf(player.getData()))
-                                .replace("{title}", titleDisplay)
-                                .replace("{title-short}", titleShort)));
-                    } else {
-                        getLines().add(CC.translate(entryFormat
-                                .replace("{number}", String.valueOf(i + 1))
-                                .replace("{name}", "-")
-                                .replace("{value}", "-")
-                                .replace("{title}", "")
-                                .replace("{title-short}", "")));
+
                     }
                 }
             } else {

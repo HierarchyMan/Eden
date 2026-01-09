@@ -487,6 +487,14 @@ public class EdenPlaceholder {
                         return "";
                 }
                 
+                if (match.getQueueType() == rip.diamond.practice.queue.QueueType.RANKED) {
+                        if (match.getKit() != null) {
+                                rip.diamond.practice.profile.data.ProfileKitData kitData = opponentProfile.getKitData().get(match.getKit().getName());
+                                int elo = kitData != null ? kitData.getElo() : 1000;
+                                return titleManager.getEloDisplay(elo);
+                        }
+                }
+
                 Title opponentTitle = titleManager.getKitTitle(opponentProfile, match.getKit());
                 return titleManager.getTitleDisplay(opponentTitle);
         }
@@ -504,6 +512,14 @@ public class EdenPlaceholder {
                         return "";
                 }
                 
+                if (match.getQueueType() == rip.diamond.practice.queue.QueueType.RANKED) {
+                        if (match.getKit() != null) {
+                                rip.diamond.practice.profile.data.ProfileKitData kitData = opponentProfile.getKitData().get(match.getKit().getName());
+                                int elo = kitData != null ? kitData.getElo() : 1000;
+                                return titleManager.getEloDisplay(elo);
+                        }
+                }
+
                 Title opponentTitle = titleManager.getKitTitle(opponentProfile, match.getKit());
                 return titleManager.getShortTitleDisplay(opponentTitle);
         }

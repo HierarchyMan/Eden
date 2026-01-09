@@ -1,7 +1,9 @@
 this is a java project 
 1) do not use git commands
 2) always make helper methods and classes for single source of truth
-3) dont keep adding stuff to a single file, cuz if possible try to make new files to keep maintainable code
+3) dont keep adding stuff to a single file, cuz if possible try to make new files to 
+4) no assumptions in any case no matter what, either investigate fully or ask the user for clarification
+keep maintainable code
 
 
 how to navigate this project
